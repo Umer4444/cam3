@@ -1,0 +1,286 @@
+<? $this->headTitle('Set Timezone'); ?>
+
+<?
+$timezones = array();
+foreach ($this->timezones as $t) {
+    $timezones[$t->id] = $t['name'];
+}
+//$timezones = timezone_identifiers_list();
+?>
+<? if ($this->acl->isAllowed($_SESSION['group'], "mod-timezone", "edit")) { ?>
+    <?= $this->notice ?>
+    <div class="page-content round-corners">
+
+
+        <h1 class="page-title">System timezone</h1>
+
+        <? if ($this->acl->isAllowed($_SESSION['group'], "mod-timezone", "edit")) { ?>
+            <form name="timezone" id="timezoneedit" action="" method="POST">
+                <br>
+
+                <div class="join-box-fields">
+                    <div class="field" style="width:600px; margin: 10px auto">
+                        <label for="timezone">Select timezone:</label>
+                        <?= $this->formSelect('timezone', config()->timezone, array(), $timezones) ?>
+
+                    </div>
+                </div>
+                <br><br>
+
+                <div class="join-button">
+                    <input type="submit" name="save" value="Save timezone" class="btn btn-success">
+                </div>
+
+            </form>
+        <? } else { ?>
+            <div class="join-box-fields">
+                <div class="field" style="width:600px; margin: 10px auto">
+                    <label for="timezone">System timezone:</label>
+                    <input style="width:250px;" class="timezone" name="timezone" type="text" disabled="disabled"
+                           value="<?= $timezones[config()->timezone] ?>"/>
+
+                </div>
+            </div>
+        <? } ?>
+    </div>
+<? } ?>
+
+<? if ($this->acl->isAllowed($_SESSION['group'], "max_allowed_time", "edit")) { ?>
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Maxim allowed time on chat for guest</h1>
+
+        <form name="timezone" id="timezoneedit" action="" method="POST">
+            <br>
+
+            <div class="join-box-fields">
+                <div class="field" style="width:600px; margin: 10px auto">
+                    <label for="max_allowed_time">Time allowed (min):</label>
+                    <?= $this->formText('max_allowed_time', config()->max_allowed_time, array("class" => "small_field")) ?>
+                </div>
+            </div>
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="save" value="Save guest time" class="btn btn-success">
+            </div>
+
+        </form>
+
+    </div>
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Maxim allowed time on chat for user without chips</h1>
+
+        <form name="timezone" id="timezoneedit" action="" method="POST">
+            <br>
+
+            <div class="join-box-fields">
+                <div class="field" style="width:600px; margin: 10px auto">
+                    <label for="max_allowed_time_without_chips">Time allowed (min):</label>
+                    <?= $this->formText('max_allowed_time_without_chips', config()->max_allowed_time_without_chips, array("class" => "small_field")) ?>
+                </div>
+            </div>
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="save" value="Save user time" class="btn btn-success">
+            </div>
+
+        </form>
+
+    </div>
+<? } ?>
+<? if ($this->acl->isAllowed($_SESSION['group'], "max_group_users", "edit")) { ?>
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Maxim users in group chat</h1>
+
+        <form name="timezone" id="timezoneedit" action="" method="POST">
+            <br>
+
+            <div class="join-box-fields">
+                <div class="field" style="width:600px; margin: 10px auto">
+                    <label for="max_allowed_time">Maxim users:</label>
+                    <?= $this->formText('max_group_users', config()->max_group_users, array("class" => "small_field")) ?>
+                </div>
+            </div>
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="save" value="Save user number" class="btn btn-success">
+            </div>
+
+        </form>
+
+    </div>
+<? } ?>
+
+
+<? if ($this->acl->isAllowed($_SESSION['group'], "gift_office_address", "edit")) { ?>
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Office gift address</h1>
+
+        <form name="timezone" id="timezoneedit" action="" method="POST">
+            <br>
+
+            <div class="join-box-fields">
+                <span class="gift_address">
+                    <div class="field">
+                        <label for="address">Gift receive address</label>
+
+                        <div class="field_wrapper">
+                            <?
+                            $opt = array();
+                            //if($this->model->same_address || $this->model->address == $this->model->address_real) $opt["disabled"] = "disabled";
+                            echo $this->formText('gift_address', config()->gift_address, $opt)?>
+
+                        </div>
+                    </div>
+
+                   <div class="field">
+                       <label for="region">Gift receive country</label>
+
+                       <div class="field_wrapper">
+                           <input type="text" id="gift_country_name" name="gift_country_name"/>
+                           <input name="gift_country" id="gift_country" type="hidden"
+                                  value="<?= $this->gift_country->id; ?>"/>
+                       </div>
+                   </div>
+                   <div class="field">
+                       <label for="region">Gift receive region</label>
+
+                       <div class="field_wrapper">
+                           <input type="text" id="gift_region_name" name="gift_region_name"/>
+                           <input name="gift_region" id="gift_region" type="hidden"
+                                  value="<?= $this->gift_region->id; ?>"/>
+                       </div>
+                   </div>
+
+
+                    <div class="field">
+                        <label for="city">Gift receive city</label>
+
+                        <div class="field_wrapper">
+                            <input type="text" id="gift_city_name" name="gift_city_name"/>
+                            <input name="gift_city" id="gift_city" type="hidden" value="<?= $this->gift_city->id; ?>"/>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="gift_zip">Gift ZIP</label>
+
+                        <div class="field_wrapper">
+                            <input name="gift_zip" id="gift_zip" type="text" class="small_field2"
+                                   value="<?= config()->gift_zip; ?>"/>
+                        </div>
+                    </div>
+                    <br/>
+                </span>
+            </div>
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="save" value="Save gift address" class="btn btn-success">
+            </div>
+
+        </form>
+
+    </div>
+
+    <script type="text/javascript">
+        /** autocomplete */
+        $(document).ready(function () {
+            /* function to get selected country */
+            /* it will be called by token Input every time it make as post*/
+            /* send variabile as get */
+
+            /* gift address */
+
+            function gift_buildCountryUrl() {
+                return "/autocomplete/location/type/country";
+            }
+
+            function gift_buildRegionUrl() {
+                return "/autocomplete/location/type/region/id/" + $("#gift_country").val();
+            }
+
+            function gift_buildCityUrl() {
+                return "/autocomplete/location/type/city/id/" + $("#gift_region").val();
+            }
+
+            $("#gift_country_name").tokenInput(gift_buildCountryUrl, {
+                method: "POST",
+                tokenLimit: "1",
+                resultsLimit: "1",
+                hintText: "Type country name",
+                onAdd: function (item) {
+                    console.log(item);
+                    $('#gift_country').val(item.id);
+                    $('#gift_region').val('');
+                    $('#gift_city').val('');
+                    $('#gift_region_name').tokenInput('clear');
+                    $('#gift_city_name').tokenInput('clear');
+                },
+                onDelete: function (item) {
+                    $('#gift_region_name').tokenInput('clear');
+                    $('#gift_city_name').tokenInput('clear');
+                    $('#gift_country').val('');
+                    $('#gift_region').val('');
+                    $('#gift_city').val('');
+                },
+                prePopulate: [
+                    <?php  if($this->gift_country) {
+                             echo   '{id: "'.$this->gift_country->id.'", name: "'.trim($this->gift_country->name).'"}';
+                    } ?>
+                ]
+            });
+
+            /* to use dymanic values make a dunction to build url    */
+            /* and pass function name (not funcion name() ) as url   */
+            $("#gift_region_name").tokenInput(gift_buildRegionUrl, {
+                method: "POST",
+                tokenLimit: "1",
+                resultsLimit: "1",
+                hintText: "Select country and type region name",
+                onAdd: function (item) {
+                    $('#gift_region').val(item.id);
+                    $('#gift_city').val('');
+                    $('#gift_city_name').tokenInput('clear');
+                },
+                onDelete: function (item) {
+                    $('#gift_region').val('');
+                    $('#gift_city').val('');
+                    $('#gift_city_name').tokenInput('clear');
+                },
+                prePopulate: [
+                    <?php if($this->gift_region) {
+                              echo   '{id: "'.$this->gift_region->id.'", name: "'.trim($this->gift_region->name).'"}';
+                    } ?>
+                ]
+            });
+
+            $("#gift_city_name").tokenInput(gift_buildCityUrl, {
+                method: "POST",
+                tokenLimit: "1",
+                resultsLimit: "1",
+                hintText: "Select country, region and type city name",
+                onAdd: function (item) {
+                    $('#gift_city').val(item.id);
+                },
+                onDelete: function (item) {
+                    $('#gift_city').val('');
+                },
+                prePopulate: [
+                    <?php if($this->gift_city) {
+                              echo   '{id: "'.$this->gift_city->id.'", name: "'.trim($this->gift_city->name).'"}';
+                    } ?>
+                ]
+            });
+
+        });
+
+    </script>
+
+
+<? } ?>

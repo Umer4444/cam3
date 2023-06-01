@@ -1,0 +1,7 @@
+#events-admin-fix .row{
+    margin-top:10px;
+}
+#events-admin-fix input,
+#events-admin-fix textarea{
+    border-radius:4px;
+}

@@ -1,0 +1,70 @@
+{% extends('solo.twig') %}
+
+{% block title %}
+    {% do headTitle('Signup') %}
+{% endblock title %}
+
+{% block content %}
+    <div class="row row-no-margin">
+        <div class="col-md-4 col-md-offset-4 login forms">
+            <h2 class="margin-10 generic-h2 text-center">Register</h2>
+        </div>
+        <div class="col-md-4 col-md-offset-4 login forms">
+            <div class="margin-10 generic-border padding-10">
+                {% set form = registerForm.prepare().setAttribute('class', 'form-horizontal').setAttribute('id', 'form_signup').setAttribute('action', url('zfcuser/register')) %}
+                {% do form.get('username').setAttributes({'class' : 'form-control'}).setOptions({'skipLabel' : false}) %}
+                {% do form.get('email').setAttributes({'class' : 'form-control'}).setOptions({'skipLabel' : false}) %}
+                {% do form.get('password').setAttributes({'class' : 'form-control'}).setOptions({'skipLabel' : false}) %}
+                {% do form.get('passwordVerify').setAttributes({'class' : 'form-control'}).setOptions({'skipLabel' : false}) %}
+                {% do form.get('submit').setAttributes({'class' : 'btn btn-info'}).setOptions({'skipLabel' : true}) %}
+                <form method="POST" action="/account/register" class="form-horizontal" id="form_signup">
+                    {% for element in form %}
+                        {% if element.getName() == 'type' %}
+                            <section>
+                                <div class="control-group" id="control-group-passwordVerify">
+                                    <input type="hidden" class="form-username form-control"
+                                           name='{{ element.getName() }}'
+                                           id='{{ element.getName() }}'
+                                           autofocus="autofocus"
+                                           placeholder="{{ element.getLabel() }}"
+                                           value="user"
+                                           autocomplete="off">
+                                </div>
+                            </section>
+                        {% elseif element.getName() == 'submit' %}
+                            <section>
+                                <div class="control-group" id="control-group-passwordVerify">
+                                    <button type="submit" name="submit" class="btn btn-info" value="">Register</button>
+                                </div>
+                            </section>
+                        {% else %}
+                            <section>
+                                <div class="control-group" id="control-group-passwordVerify">
+                                    <label class="control-label" for="form-username">{{ element.getLabel() }}</label>
+                                    <div class="controls" id="controls-passwordVerify">
+                                        <input type="{{ element.getType() }}" class="form-username form-control"
+                                               name='{{ element.getName() }}'
+                                               id='{{ element.getName() }}'
+                                               autofocus="autofocus"
+                                               placeholder="{{ element.getLabel() }}"
+                                               value="{{ element.getValue() }}"
+                                               autocomplete="off">
+                                    </div>
+                                </div>
+                                <ul class="help-inline">
+                                    <li>{{ formElementErrors(element) }}</li>
+                                </ul>
+                            </section>
+                        {% endif %}
+                    {% endfor %}
+                </form>
+            </div>
+         </div>
+     </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#control-group-submit label:first').remove();
+        })
+    </script>
+{% endblock content %}

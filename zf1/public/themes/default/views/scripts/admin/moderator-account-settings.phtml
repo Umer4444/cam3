@@ -1,0 +1,16 @@
+<? $this->headTitle('Edit ' . $this->moderator->username . '\'s Account - Settings');
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "moderator",
+        "acl" => $this->acl,
+        "user" => $this->moderator));
+
+echo $this->partial('partials/moderator-account-settings.phtml', $this);
+
+if ($this->acl->isAllowed($_SESSION['group'], "moderator-permissions", "view") && $this->moderator->id != 0) {
+
+    echo $this->partial('partials/moderator-permissions.phtml', $this);
+
+}
+?>   

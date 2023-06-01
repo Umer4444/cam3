@@ -1,0 +1,59 @@
+<div id="admin_menu" class="col-sm-2">
+    <?php
+
+    $serviceLocator = Zend_Registry::get('service_manager');
+    $auth = $serviceLocator->get('zfcuser_auth_service');
+
+    $viewHelperManager = $serviceLocator->get('ViewHelperManager');
+
+    $navigation = $viewHelperManager->get('navigation');
+
+    ?>
+    <div class="nohover user_info" href="javascript:;" title="Logged in as">
+        <div class="menu_user">
+            <div class="menu_label">Role Admin:</div>
+            <div class="menu_name">
+                <?php
+                if ($auth->hasIdentity()) {
+                    echo $auth->getIdentity()->getDisplayName();
+                    $role = $auth->getIdentity()->getRoles()[0]->getRoleId();
+                    if ($role == 'performer') $role = 'model';
+                    if ($role == 'super_admin') $role = 'admin';
+                }
+                ?>
+            </div>
+
+            <div class="clear"></div>
+        </div>
+    </div>
+
+    <div class="nohover" href="javascript:;" title="New notifications">
+        <a class="menu_notifications" href="/<?= $role ?>/messages/inbox" title="0 New messages">
+            <span class="msg"> <?php
+                echo $viewHelperManager->get('countMessages')->__invoke()
+                ?></span>
+        </a>
+        <a class="menu_notifications" href="/<?= $role ?>/notifications">
+            <span>
+                <?php
+                echo $viewHelperManager->get('countNotifications')->__invoke()
+                ?>
+            </span>
+        </a>
+        <a class="menu_notifications_text" href="/<?= $role ?>/notifications">New notifications</a>
+
+        <div class="clear"></div>
+    </div>
+
+    <?php
+        echo $navigation('backend')->menu();
+    ?>
+</div>
+
+<script type="text/javascript">
+    $('#admin_menu li.active a[href="#"]').append('<div class="menu_arrow" style="display: block;"></div>');
+    $('#admin_menu li a[href="#"]').click(function () {
+        $(this).parent().find('ul:first').slideToggle().parent().toggleClass('active');
+        return false;
+    });
+</script>

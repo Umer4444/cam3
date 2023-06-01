@@ -1,0 +1,75 @@
+{% if rows|length == 0 %}
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert">
+            No Video on demand uploaded yet!
+        </div>
+    </div>
+{% else %}
+
+    {% for video in rows %}
+
+        <div class="col-lg-3 col-sm-6 col-md-3 col-xs-12  block-box ">
+
+            {% set slug = slugify(video.getTitle())~"-"~video.getId() %}
+            {% set url = url("vods/vod", {(constant("Application\\Mapper\\Injector::VIDEO")) : video.getId(), "slug" : slug}) %}
+
+            {% set url2 = object(video.getCategory).toUrl() %}
+
+
+            {% set cost = video.getCost()|trim ('0') %}
+            {% set difference = date("NOW").diff(date(date("NOW").getTimestamp() + video.getDuration())) %}
+            <div class="club-title">
+                <h4 class="pull-left">
+                    <a href="{{ url }}">{{ video.getTitle() | slice(0, 20) }}...</a>
+                </h4><br>
+                <a href="{{   url2   }}">{#  video.getCategory()  #}
+                    <small class="cat_name">{{ video.getCategory() }}.{# {{ video.getId }} #}
+                         </small></a>
+                <span class="pull-right vod-time">[{{ difference.format("%H:%M:%S")|slice (0, 59) }}]</span>
+            </div>
+            <div class="club-img">
+                <div data-popover="true" data-html="true" data-content='
+						<div><h4>{{ video.getTitle() }}</h4></div>
+						<div>from DLMike</div>
+						<div>
+							<div>
+                   <div class="pull-left"><strong>Length </strong>{{ difference.format("%H:%M:%S")|slice (0,59)}}</div>
+                                <div class="pull-right"><div class="profile-like-un pull-right">
+                  <a href="{{ url }}"><img src="/assets/images/like.jpg" style="height:20px;width:20px;" height="20" width="20"></a> 42
+                    <a href="{{ url }}"><img src="/assets/images/unlike.jpg" height="20" width="20" style="height:20px;width:20px;"></a> 52 <br>
+                                </div>
+							</div>
+							<div class="clearfix"></div>
+							<div><strong>Added  </strong> {{ date(video.getUploadedOn().getTimestamp()).format("Y-m-d") }}</div>
+							<div><strong>Views  </strong> {{ video.getViews() }}</div>
+							<div><strong>Category  </strong> {{ video.getCategory() }}</div>
+						</div>
+						<div class="clearfix"></div>
+						<div class="clearfix">
+							{{ video.getDescription() }}
+						</div>
+						<div class ="btn-wrp">
+						{{ buy(video)|trim ('0')}}
+                        </div>
+
+					  ' data-original-title="" title="">
+                    <a href="{{ url }}"><img src="{{ video.getCover() }}" alt="image" class="img-responsive"></a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+<script>
+    $("body").popover
+    ({
+        selector: "[data-popover]",
+        trigger: "click hover",
+        placement: "top",
+        delay:
+        {
+            show: 50,
+            hide: 50
+        }
+    });
+
+</script>

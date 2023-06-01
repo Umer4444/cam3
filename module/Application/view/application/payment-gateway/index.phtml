@@ -1,0 +1,37 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Buy Credit !</div>
+    <div class="panel-body">
+        <form method="post" name="payment-form" id="payment-form">
+
+            <div class="btn-group" data-toggle="buttons">
+                <?php
+                    foreach ($this->paymentMethods as $payment) {
+                        if ($payment->getStatus()) {
+                            echo '<label class="btn btn-primary">
+                                <input type="radio" name="paymentMethod" value="'.$payment->getId().'"
+                                class="btn btn-default">'.$payment.'
+                            </label>';
+                        }
+                    }
+                ?>
+            </div>
+            <br><br>
+            <?php
+                foreach ($this->packages as $package) {
+                    echo $this->partial('payment/package', array("package" => $package));
+                }
+            ?>
+            <div class="clear"></div>
+            <input type="hidden" name="package" id="package">
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("input.buy-chips").click(function () {
+        $("#package").val($(this).data("value"));
+        $("#payment-form").submit();
+    });
+
+</script>

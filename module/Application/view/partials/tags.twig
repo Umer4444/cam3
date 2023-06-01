@@ -1,0 +1,7 @@
+{% set tags = (tags is iterable) ? tags : tags|split(', ') %}
+
+{% for tag in tags %}
+    <span>
+        <a href="{{ url(route, {'tag': tag}) }}">{{ tag }}</a>
+    </span>
+{% endfor %}

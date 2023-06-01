@@ -1,0 +1,10 @@
+<? $this->headTitle('My Favorite Models'); ?>
+
+<?
+if (count($this->models)) {
+    foreach ($this->models as $model) echo $this->partial('partials/model-item.phtml', array('model' => $model, 'show_favorite_btn' => '1'));
+} else {
+    echo "<br><br>You don't have any favorite models";
+}
+?>
+<div class="clear"></div>

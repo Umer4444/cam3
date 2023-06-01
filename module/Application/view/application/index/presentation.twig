@@ -1,0 +1,138 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    <div class="main">
+        <div class="container">
+            <div class="main-content">
+                <div class="search_bar visible-xs">
+                    <form class="form-search form-inline">
+                        <input type="text" class="form-control input-sm" placeholder="Search">
+                    </form>
+                </div>
+                <div class="content">
+                    <div class="col-lg-3 col-sm-3 col-xs-12">
+                        <div class="perform-side">
+                            <div class="title-perform-side">
+                                Cast
+                            </div>
+                            <ul>
+                                <li>
+                                    <a href="#" class="tooltip-img">
+                                        {{ video.getCast() }}
+                                        <span class="tooltip_body">
+                                            <img src="{{ video.getModel.getCover() }}"/>
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="perform-side">
+                            <div class="title-perform-side">
+                                Tags
+                            </div>
+                            <ul class="perform-tag">
+                                <li>
+                                    <a href="#" >
+                                        {{ video.getTags() }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-sm-9 col-xs-12 perform-main">
+                        <h3>{{ video.getTitle() }}</h3>
+                        <div class="row">
+                            <div class="col-sm-6 pull-left">
+                                <div>
+                                    <small class="text-muted">
+                                        Director:
+                                        <span class="theme-color">
+                                            John H. Bennaduty
+                                        </span>
+                                    </small>
+                                </div>
+                                <div>
+                                    <small class="text-muted">
+                                        Length:
+                                        <span class="black">
+                                            {{ video.getDuration() }}
+                                        </span>
+                                    </small>
+                                </div>
+                                <div>
+                                    <small class="text-muted">
+                                        Day Uploaded:
+                                        <span class="black">
+                                           {{ video.getUploadedOn().format('y-m-d') }}
+                                        </span>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 pull-right">
+                                <span class="like-des-stat">
+                                    {{ interaction(video.getUser()).likes()|raw }}
+                                </span>
+                                <div class="pull-right">
+                                    <a href="#" class="grey-gre-btn">DETAILED REVIEW</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="small-content">
+                            <small class="text-muted">
+                                {{ video.getDescription() }}
+                            </small>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="perf-pic-gal form-group">
+                                    <div class="gal-title">
+                                        Picture Gallery
+                                    </div>
+                                    <div class="pic-gal">
+                                        <ul>
+                                            <li><img src="{{ video.getUser().getAvatar() }}" alt="gallery"></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="profile-post">
+                                    {{ commentCustom() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pres-main2">
+                        <div class="col-sm-12">
+                            <h3 class="text-left">
+                                Others Videos from
+                                <span class="theme-color">
+                                    {{ video.getUser().getScreenName() }}
+                                </span>
+                            </h3>
+                            <div class="pull-right">
+                                <a href="#" class="block-view-more">
+                                    View More
+                                </a>
+                            </div>
+                        </div>
+                        <div class="main-bar form-group ">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="clearfix">&nbsp;</div>
+                                <div class="products">
+                                    <div class="row form-group">
+                                        {{ related(newInstance('Videos\\Entity\\Video'), 'partials/presentation', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_RELATED')) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

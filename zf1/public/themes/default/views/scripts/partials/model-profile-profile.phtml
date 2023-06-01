@@ -1,0 +1,269 @@
+<?/*
+<div style="width: 604px;height: 468px;margin: 20px auto;background: #000;color:#fff;"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;video of model's bio</div>
+*/
+?>
+<style>
+    .player_box {
+        width: 100%;
+    }
+</style>
+
+<?php
+$serviceLocator = Zend_Registry::get('service_manager');
+$videoRepo = $serviceLocator->get('doctrine.entity_manager.orm_default')->getRepository('Videos\Entity\Video');
+$viewHelperManager = $serviceLocator->get('ViewHelperManager');
+
+$guestbook = $viewHelperManager->get('commentCustom');
+$set = $this->settings;
+
+$user = $this->performer;
+
+?>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading"><?= $user->getBio("label") ?></div>
+            <div class="panel-body">
+                <span class=""><?= $user->getBio("value") ?> </span>
+                <?php if ($user->getBioVideo('value')) {
+                    $video = $user->getBioVideo('value');
+                    ?>
+                    <div class="player_box">
+                        <a id="player_bio"></a>
+                        <script language="JavaScript">
+                            flashembed("player_bio", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+                                        url: '/uploads/videos/<?= $video->getFilename(); ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="panel panel-default">
+            <div class="panel-heading"><?= $user->getTurnOn("label") ?></div>
+
+            <div class="panel-body">
+                <span> <?= $user->getTurnOn("value") ?> </span>
+                <?php if ($user->getTurnOnVideo('value')) { ?>
+                    <div class="player_box" style="height: 250px;">
+                        <a id="player_turn"></a>
+                        <script language="JavaScript">
+                            flashembed("player_turn", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+
+                                        url: '/uploads/videos/<?= $video->getFilename() ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><?= $user->getTurnOff("label") ?></div>
+            <div class="panel-body">
+                <span> <?= $user->getTurnOff("value") ?> </span>
+                <?php if ($user->getTurnOffVideo('value')) {
+                    $video = $user->getTurnOffVideo('value'); ?>
+                    <div class="player_box" style="height: 250px;">
+                        <a id="player_turnoff"></a>
+                        <script language="JavaScript">
+                            flashembed("player_turnoff", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+
+                                        url: '/uploads/videos/<?= $video->getFilename() ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><?= $user->getPrivateDo("label") ?></div>
+            <div class="panel-body">
+                <span> <?= $user->getPrivateDo("value") ?> </span>
+                <?php if ($user->getPrivateDoVideo("value")) {
+                    $video = $user->getPrivateDoVideo("value"); ?>
+                    <div class="player_box" style="height: 250px;">
+                        <a id="player_private"></a>
+                        <script language="JavaScript">
+                            flashembed("player_private", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+
+                                        url: '/uploads/videos/<?= $video->getFilename() ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><?= $user->getPrivateDont("label") ?></div>
+            <div class="panel-body">
+                <span> <?= $user->getPrivateDont("value") ?> </span>
+                <?php if ($user->getPrivateDontVideo("value")) {
+                    $video = $user->getPrivateDontVideo("value"); ?>
+                    <div class="player_box" style="height: 250px;">
+                        <a id="player_privateno"></a>
+                        <script language="JavaScript">
+                            flashembed("player_privateno", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+
+                                        url: '/uploads/videos/<?= $video->getFilename() ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><?= $user->getHobbies("label") ?></div>
+            <div class="panel-body">
+                <span> <?= $user->getHobbies("value") ?> </span>
+                <?php if ($user->getInterestsHobbiesVideo("value")) {
+                    $video = $user->getInterestsHobbiesVideo("value"); ?>
+                    <div class="player_box" style="height: 250px;">
+                        <a id="player_hobbies"></a>
+                        <script language="JavaScript">
+                            flashembed("player_hobbies", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+
+                                        url: '/uploads/videos/<?= $video->getFilename() ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php }  ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Rules</div>
+            <div class="panel-body">
+                <span> <?= $user->getRules("value") ?> </span>
+
+                <?php if ($user->getRoomRulesVideo('value')) {
+                    $video = $user->getRoomRulesVideo('value'); ?>
+                    <div class="player_box" style="height: 250px;">
+                        <a id="player_rules"></a>
+                        <script language="JavaScript">
+                            flashembed("player_rules", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+
+                                        url: '/uploads/videos/<?= $video->getFilename() ?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Top gifters</div>
+            <div class="panel-body"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Top tippers</div>
+            <div class="panel-body"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Reviews</div>
+            <div class="panel-body">
+                <span>
+                    There are no reviews for <b><?= $user->getScreenName() ?></b> yet.
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Friends</div>
+            <div class="panel-body">
+                <?php echo $this->friends ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Guestbook</div>
+            <div class="panel-body">
+                <?php echo $guestbook('default', 1, ($user->getGuestbook() == 1 ?: 'null'), $user->getId()); ?>
+            </div>
+        </div>
+    </div>
+</div>
+

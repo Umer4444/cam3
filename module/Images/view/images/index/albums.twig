@@ -1,0 +1,11 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    <div class="album-solo-content">
+        <div class="row row-no-margin">
+            {% for album in user().getUser().getAlbums() %}
+                {% include 'album/item' %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

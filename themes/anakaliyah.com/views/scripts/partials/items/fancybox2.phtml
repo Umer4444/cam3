@@ -1,0 +1,36 @@
+    <!-- Add mousewheel plugin (this is optional) -->
+    <script type="text/javascript" src="/scripts/fancybox2/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+
+    <!-- Add fancyBox main JS and CSS files -->
+    <script type="text/javascript" src="/scripts/fancybox2/source/jquery.fancybox.js?v=2.1.4"></script>
+    <link rel="stylesheet" type="text/css" href="/scripts/fancybox2/source/jquery.fancybox.css?v=2.1.4" media="screen" />
+
+    <!-- Add Button helper (this is optional) -->
+    <link rel="stylesheet" type="text/css" href="/scripts/fancybox2/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" />
+    <script type="text/javascript" src="/scripts/fancybox2/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+
+    <!-- Add Thumbnail helper (this is optional) -->
+    <link rel="stylesheet" type="text/css" href="/scripts/fancybox2/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7" />
+    <script type="text/javascript" src="/scripts/fancybox2/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+
+    <!-- Add Media helper (this is optional) -->
+    <script type="text/javascript" src="/scripts/fancybox2/source/helpers/jquery.fancybox-media.js?v=1.0.5"></script>
+    
+<?
+       if(!isset($this->div) || empty($this->div))
+            $div = "a[rel=group]";
+          else
+            $div = $this->div;     
+    ?>    
+<script type="text/javascript">
+    $(document).ready(function() {
+                $("<?=$div?>").fancybox({
+                    'transitionIn'        : 'none',
+                    'transitionOut'        : 'none',
+                    'titlePosition'     : 'over',
+                    'titleFormat'        : function(title, currentArray, currentIndex, currentOpts) {
+                        return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
+                    }
+                });
+    });
+</script>

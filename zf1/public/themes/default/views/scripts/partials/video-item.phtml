@@ -1,0 +1,59 @@
+<?php
+var_dump($this->video);
+die();
+$buttons = Zend_Registry::get('service_manager')->get('ViewHelperManager')->get('buttons');
+$url = $this->url(array("id" => $this->video->id, "name" => $this->video->title), "video");
+$disable = "";
+if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["video"]))
+    if (in_array($this->video->id, $_SESSION["rate"]["video"])) $disable = " disableRate";
+?>
+<div class="col-lg-3 col-sm-6 col-md-3 col-xs-12  block-box ">
+    <div>
+        <div class="club-title">
+            <span class="pull-left">
+                <a href="<?=$url?>"><?= $this->video->title ?></a>
+            </span>
+            <span class="pull-right">
+                <?php //echo $buttons->buy(VodVideo::class, $url, $this->video->id); ?>
+            </span>
+        </div>
+        <div class="club-img">
+            <a href="<?=$url?>">
+                <?php if ($this->video->getCover() != null) { ?>
+                    <img alt="" class="img-responsive" src="<?= $this->video->getCover() ?>">
+                <?php } else { ?>
+                    <img alt="" class="img-responsive" src="/assets/images/video-front.jpg">
+                <?php }?>
+            </a>
+        </div>
+        <div class="club-cont">
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <div class="clip-page">
+                        <span>
+                            <a href="#" data-toggle="tooltip" data-placement="left" title="" data-original-title="Views">
+                                <i class="fa fa-eye"></i>
+                                <?= $this->video->getDuration() ?>
+                            </a>
+
+                            <a href="<?=$url?>#disqus_thread" data-toggle="tooltip" data-placement="left" title="" data-original-title="Comments">
+                                <i class="fa fa-comment"></i>
+                                Comments
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <div class="clip-page">
+                        <span class="">
+                            <a href="#" data-toggle="tooltip" data-placement="left" title="" data-original-title="Length">
+                                <i class="fa fa-arrows-h"></i>
+                                <?= $this->video->getDuration() ?>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

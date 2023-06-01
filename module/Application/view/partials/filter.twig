@@ -1,0 +1,58 @@
+{% block filters %}
+     <div class="collapse navbar-collapse menu1" id="filter-menu">
+        <ul class="nav navbar-nav  submenu2">
+            <li><a href="#girls" class="active">Girls </a></li>
+            <li><a href="#boys">Boys</a></li>
+            <li><a href="#couples">Couples </a></li>
+            <li><a href="#transgendered">Transgendered </a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Filter
+                    Categories <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for categorie in categories %}
+                        <li><a href="#">{{ categorie.getName() }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="dropdown menu-large">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Filters <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu megamenu row">
+                    <li class="col-sm-12">
+                        <ul class="row">
+                            {% for filter in filters %}
+                                <li class="col-sm-3"><a href="#">{{ filter.getFilterName() }}</a></li>
+                            {% endfor %}
+                            <li class="divider"></li>
+                        </ul>
+                    </li>
+                    <li class="col-sm-12">
+                        <hr>
+                        <p class="pull-right"><a href="#">Clear All Filter</a></p>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown-toggle trending">
+                <ul>
+                    <li><a>Trending :</a></li>
+                    {% for trending in trendings %}
+                        <li><a href="#">{{ trending.getTags() }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="search_bar hidden-xs"style="
+                                    width: 220px;
+                                    margin-left: 900px;
+                                    margin-bottom: 0px;
+                                    margin-top: 0px;">
+                <form class="form-search form-inline">
+                    <input type="text" class="form-control input-sm" placeholder="Search">
+
+                </form>
+            </li>
+        </ul>
+    </div>
+{% endblock filters %}
+

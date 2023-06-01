@@ -1,0 +1,138 @@
+   <p>Create your new message with the form below.</p>
+           
+                <script src="/scripts/jquery.autocomplete.js"></script>
+                <form action="" method="post" id="messages_compose" class="form-horizontal">
+                   
+                 <?  echo form_field(
+                                    array("type" => "text", 
+                                            "name" => "sendtouser", 
+                                            "value" => "", 
+                                            "label" => "Send to"
+                                            ),
+                                     $attr = array("class" => "col-lg-6"),
+                                     $options = null, 
+                                     $icon = null,
+                                     $help = null
+                                 ); ?> 
+                 <?  echo form_field(
+                                    array("type" => "hidden", 
+                                            "name" => "id_receiver", 
+                                            "value" => (isset($this->replyto) ? $this->replyto["id"] : ""), 
+                                            )
+                                 ); ?> 
+                 <?  echo form_field(
+                                    array(  "type" => "hidden", 
+                                            "name" => "receiver_type",                                              
+                                            )
+                                 ); ?>
+                                                   
+                  <?  echo form_field(
+                                    array("type" => "text", 
+                                            "name" => "subject", 
+                                            "value" => "", 
+                                            "label" => "Subject"
+                                            ),
+                                     $attr = array("class" => "col-lg-6"),
+                                     $options = null, 
+                                     $icon = null,
+                                     $help = null
+                                 ); ?> 
+                                                   
+                  <?  echo form_field(
+                                    array("type" => "textarea", 
+                                            "name" => "message", 
+                                            "value" => "", 
+                                            "label" => "Message"
+                                            ),
+                                     $attr = array("class" => "col-lg-6"),
+                                     $options = null, 
+                                     $icon = null,
+                                     $help = ""
+                                 ); ?> 
+
+                    <?  echo form_field(
+                                    array("type" => "submit", 
+                                            "name" => "send", 
+                                            "value" => "Send Message", 
+                                            "label" => " "
+                                            ),
+                                     $attr = array("class" => "btn btn-purple"), 
+                                     $options = null, 
+                                     $icon = null,
+                                     $help = ""
+                                 ); ?> 
+
+                    <?  echo form_field(
+                                    array("type" => "hidden", 
+                                            "name" => "send", 
+                                            "value" => "Send Message", 
+                                            "label" => " "
+                                            )
+                                 ); ?> 
+                                 
+        <small> *all mail is monitored and personal contact information is forbidden</small>
+          <? /*                   
+                 <div class="join-box-fields">
+                        <div class="field">
+                            <label for="sendtouser">Send To</label>
+                            <div class="field_wrapper">
+                                <?=$this->formText('sendtouser', null)?>
+                                <input type="hidden" name="id_receiver" id="id_receiver" value="<?=(isset($this->replyto) ? $this->replyto["id"] : "")?>" />
+                                <input type="hidden" name="receiver_type" id="receiver_type" value="<?=(isset($this->replyto) ? $this->replyto["type"] : "")?>"/>
+                            </div>
+                        </div>
+                        
+                    
+                        <div class="field">
+                            <label for="subject">Subject</label>
+                            <div class="field_wrapper">
+                                <?=$this->formText('subject', null)?>
+                            </div>
+                        </div>
+                       
+                        <div class="field">
+                            <label for="message">Message</label>
+                            <div class="field_wrapper">
+                                <?=$this->formTextarea('message', null, array('cols'=>30,'rows'=>6))?>
+                            </div>
+                        </div>    
+                        <div class="field">
+                            <small> *all mail is monitored and personal contact information is forbidden</small>
+                        </div>            
+                    </div>
+                    <br>
+                    <div class="join-button">
+                        <input type="submit" name="send" value="Send Message" class="green-button">
+                        <input type="hidden" name="send" value="Send Message">
+                    </div>
+                    */?>
+                </form>
+                
+        <script type="text/javascript">
+        var sendTo = document.URL.split('#')[1];
+
+        if(sendTo){
+            $('#sendtouser').val(sendTo);
+        }
+         
+         
+         $("#sendtouser").tokenInput("/autocomplete/sendtousers", {
+                                    method: "POST",
+                                    tokenLimit: "1",
+                                    resultsLimit: "1",
+                                    hintText: "Type a username",
+                                    onAdd: function (item) {
+                                        $('#id_receiver').val(item.id);
+                                        $('#receiver_type').val(item.type);
+                                    },
+                                    onDelete: function (item) {
+                                        $('#id_receiver').val('');
+                                        $('#receiver_type').val('');
+                                    },
+                                    <? if(isset($this->replyto)) { ?>
+                                        prePopulate: [ {id: "<?=$this->replyto["id"]?>", name: "<?=$this->replyto["name"]?>"} ]
+                                    <? }  ?>
+                                    
+                                    
+                                });
+        </script> 

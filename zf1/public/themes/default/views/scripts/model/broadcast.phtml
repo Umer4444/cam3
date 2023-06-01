@@ -1,0 +1,282 @@
+<? use Application\Mapper\Injector;
+
+$viewHelperManager = Zend_Registry::get('service_manager')->get('ViewHelperManager');
+$user = Zend_Registry::get('service_manager')->get('zfcuser_auth_service')->getIdentity();
+$rtmp = $_SESSION['rtmp'];
+
+
+    ?>
+    <script src="/scripts/jquery.webcam.js"></script>
+    <script src="/scripts/swfobject.js"></script>
+
+
+    <div id="camera" style="width: 0px; height: 0px; margin: 0px; padding: 0px; border: 0px"></div>
+
+    <script>
+
+        window.current_cams_number = '<?=$this->cameras_number?>';
+
+        function setCamNumber() {
+            for (i = 1; i <= window.nr_cams; i++) {
+                if (window.current_cams_number.length > 0) {
+                    if (i == window.current_cams_number) selected = 'selected';
+                    else selected = '';
+                } else {
+                    if (i == window.nr_cams) selected = 'selected';
+                    else selected = '';
+                }
+                $("#cameras_number").append($("<option " + selected + "></option>")
+                    .attr("value", i)
+                    .text(i));
+            }
+        }
+
+        $("#camera").webcam({
+            width: 0,
+            height: 0,
+            mode: "callback",
+            swffile: "/scripts/jscam_canvas_only.swf",
+            onTick: function () {
+            },
+            onSave: function () {
+            },
+            onCapture: function () {
+            },
+            debug: function () {
+            },
+            onLoad: function () {
+                window.nr_cams = webcam.getCameraList().length;
+                if (window.nr_cams > 3) window.nr_cams = 3;
+                // window.init_cams();
+                //$("#cameras_number").val(window.nr_cams);
+                setCamNumber();
+            }
+
+        });
+
+        $(document).ready(function () {
+            $('.status label').click(function () {
+                labelID = $(this).attr('for');
+                if (labelID == "audio" || labelID == "text") {
+                    $("#cameras_number").prop('disabled', true);
+                    $("#cameras_number option").each(function (a, b) {
+                        if ($(this).html() == 1) $(this).attr("selected", "selected");
+                    });
+                } else {
+                    $("#cameras_number").prop('disabled', false);
+                }
+
+            });
+
+
+            $("#status_profile").hide();
+            $('#status_options').change(function () {
+                $("#status_profile").toggle();
+                $("#status").toggle();
+            });
+            if (window.nr_cams > 1) {
+                //$("#cameras_number").val(window.nr_cams);
+                setCamNumber();
+            }
+        });
+    </script>
+
+    <div class="status col-md-12">
+
+        <form method="post" action="">
+
+            <?
+
+            $disabled = ($this->acl->isAllowed($_SESSION['group'], "broadcast-quality", "view") ? "" : 'disabled="disabled"');
+
+            // echo $this->acl->isAllowed($_SESSION['group'],"broadcast-quality","view");
+            ?>
+            <input id="live" name="live" type="checkbox"
+                   class="<?= (isset($_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode']) ? 'live' : "offline") ?>"
+                   disabled="disabled"/>
+            <label for="live" title="OnAir/OffAir" data-toggle="tooltip" data-placement="top"><span>LIVE</span></label>
+
+            <span id="multi_cam_select">
+                <span class="webcam_multi"></span>
+                <select name="cameras_number" id="cameras_number" data-toggle="tooltip" data-placement="top"
+                        title="Select number of cameras connected and want to use for broadcast">
+            </span>
+
+            </select>
+
+
+            &nbsp;
+
+
+            <span id="spy_users"></span>
+        </form>
+
+    </div>
+
+    <? // player for user stream
+    //if($this->model->chat_type == 'private'){
+    if (Auth::isModel() && ($this->model->chat_type == 'private' || $this->model->chat_type == 'vip') && $_SESSION["member_camera"]) {
+        ?>
+
+        <div class="playerContainer_front" id="playerContainer_front">
+
+
+<?
+
+$content = '';
+
+$file_name = $this->stream_user;
+
+if ($this->model->chat_type == 'private' || $this->model->chat_type == 'vip') {
+    if (empty($file_name)) return '';
+
+    $volume = ($_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy' ? 0 : 100);
+    $content .= '<div class="player_wrapper_front" style="float: left; width: 655px; height: 530px; " id="player1"></div>';
+}
+
+echo $content;
+
+?>
+
+        </div>
+        <div class="clear"></div>
+    <?php } ?>
+
+
+
+    <div class="broadcastContainer col-md-6">
+
+
+        <div class="playerContainer">
+
+            <?
+            if (isset($_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode']) &&
+                $_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode'] == "text"
+            ) { echo "Live chat text only!"; }
+
+            if (isset($_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode']) &&
+                ($_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode'] == "duplex" ||
+                    $_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode'] == "video" ||
+                    $_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode'] == "audio")
+            ) {
+                $counter_streams = count($_SESSION["streams"]["model"]);
+                $params = [Injector::USER => $_SESSION["user"]["id"]];
+
+            for ($j = 1; $j <= $counter_streams; $j++){
+
+            ?>
+                <div id="playerID<?= $j ?>" style="width:657px; height:485px;"></div>
+            <? } ?>
+
+                <script language="javascript" type="text/javascript">
+
+                    function onBroadcasterReady(objid) {
+                        var broadcaster = swfobject.getObjectById(objid);
+                        broadcaster.addNotificationListener("BROADCASTBEGIN", "onBroadcastStarted");
+                        broadcaster.addNotificationListener("BROADCASTEND", "onBroadcastClosed");
+                        broadcaster.addNotificationListener("CAMERAINITIALIZE", "startBroadcast");
+
+                    }
+
+
+                    function onBroadcastStarted(objid, params) {
+                        var test = 'test';
+                        //var streamname = eval(params)[0];
+                        //alert(streamname+ " started");
+                        $("#live").removeClass();
+                        $("#live").addClass("live");
+                    }
+
+                    function onBroadcastClosed(objid, params) {
+                        var test = 'test';
+                        //var streamname = eval(params)[0];
+                        //alert(streamname+ " closed");
+                        $("#live").removeClass();
+                        $("#live").addClass("paused");
+                    }
+
+                    function startBroadcast(objid) {
+                        swfobject.getObjectById(objid).startBroadcast();
+                        //alert(objid);
+                    }
+
+                    function stopBroadcast(objid) {
+                        swfobject.getObjectById(objid).stopBroadcast();
+                    }
+                    <? for($i = 1; $i<=$counter_streams; $i++){
+                           if($i>3) break;
+                           ?>
+                    function onHTMLDOMReady<?=$i?>() {
+                        var flashvars = {
+                            scriptLocation: '<?=trim($viewHelperManager->get('url')->__invoke('stream/config', $params), '/')?>',
+                            current_stream: <?=($i-1)?>,
+                            autoStart: <?=($i>1 ? "false" : "true")?>
+                        };
+
+                        var params = {};
+                        params.base = "/wmle/swf/";
+                        params.wmode = "transparent";
+
+                        params.allowscriptaccess = "always";
+                        var attributes = {};
+                        attributes.id = "playerID" +<?=$i?>;
+                        attributes.name = attributes.id;
+                        swfobject.embedSWF("/wmle/swf/HDBroadcaster.swf", attributes.id, "657", "540", "11.1.0",
+                            "/wmle/swf/playerProductInstall.swf", flashvars, params, attributes);
+
+                    }
+
+                    swfobject.addLoadEvent(onHTMLDOMReady<?=(isset($i) ? (int)$i : "")?>);
+                    <? } ?>
+                </script>
+
+            <? } ?>
+
+
+        </div>
+
+        <div class="broadcast_cameras">
+            <div class="broadcast_content_quarter" id="player2" style="float: left;">
+                <div class="wrapper">
+                    <div id="playercontainer2" class="playercontainer_small">
+                        <script>
+                            if (window.nr_cams > 1)
+                                document.write('\
+                    <a id="player2" class="player" href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash">Get the Adobe Flash Player to see this video.</a>');
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <? if (isset($_SESSION["user_chat"][$_SESSION["user"]["id"]]['broadcastMode'])) { ?>
+        <div id="dialog-form" title="Edit notes">
+            <p class="validateTips"></p>
+
+            <form>
+                <label style="vertical-align: top;" for="notes">Notes</label>
+                <textarea style="width: auto !important;" name="notes" id="notes" rows="8" cols="30"
+                          class="text ui-widget-content ui-corner-all"></textarea>
+                <input type="hidden" name="user_id" id="user_id" value="">
+            </form>
+        </div>
+    <? } ?>
+
+    <div id="dialog-form-request" title="Accept request?">
+        <p class="validateTips"></p>
+        <span id="user_name"></span>
+        <br>
+        <form>
+            <input type="hidden" name="user_id" id="user_id_req" value="">
+        </form>
+    </div>
+
+
+    </div>
+
+
+<?php
+}//end terms agree condition
+?>

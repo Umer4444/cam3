@@ -1,0 +1,8 @@
+camclients:
+  extends:
+    file: common.yml
+    service: camclients
+  image: perfectweb/production:master
+  environment:
+    - APPLICATION_ENV=production
+  container_name: camclients_production

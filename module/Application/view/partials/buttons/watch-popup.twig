@@ -1,0 +1,7 @@
+{% extends 'buttons/call' %}
+
+{% block button_text %}Watch in popup{% endblock button_text %}
+{% block button_class %}btn btn-primary btn-sm btn-block {{ block('button_id') }}{% endblock button_class %}
+{% block button_href %}{{ url('performer/profile', {'action': 'watch', 'name': user.getDisplayName(), 'type': 'popup', (constant('Application\\Mapper\\Injector::USER')): user.getId()}) }}{% endblock button_href %}
+
+{% block button_javascript %}App.button.watchPopup('{{ block('button_id') }}'{{ isContext == false ? '' : ', key, options' }}){% endblock button_javascript %}

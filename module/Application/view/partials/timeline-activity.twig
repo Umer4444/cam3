@@ -1,0 +1,7 @@
+{% if results is not null %}
+    {% for key, result in results %}
+        {{ result|raw }}
+    {% endfor %}
+{% else %}
+    No data to show yet
+{% endif %}

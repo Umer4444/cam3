@@ -1,0 +1,137 @@
+<?
+    $type = array("public");
+    if(Auth::isUser()) $type[] = "members";
+    if(Auth::isModel()) $type[] = "performers";
+    if(Auth::isLogged()) $type[] = "everyone";
+    
+    if(isset($this->params->category)) 
+        $this->posts = $this->loadModel("blog_posts")->getAllPosts($type, $this->id_model, true, true, (int)$this->params->category);
+    else
+        $this->posts = $this->loadModel("blog_posts")->getAllPosts($type, $this->id_model, true, true);
+        
+    $page = isset($this->params->page) ? $this->params->page : 1;
+        
+    $paginator = Zend_Paginator::factory($this->posts);
+    $paginator->setItemCountPerPage(25);
+    $paginator->setCurrentPageNumber($page);
+    $this->paginator = $paginator;
+?>
+<?=$this->notice?>
+
+
+<div class="row">
+    <div class="col-lg-8">
+    <?         
+    if(count($this->posts)){   ?>
+       <h2 class="title">Blog</h2>
+
+        <? if($this->paginator){ ?>
+            
+            <? foreach($this->paginator  as $post) { ?>
+             <?
+                $types = (explode(',', $post->type));
+                $chips = (explode(',', $post->chips));
+                $dates = (explode(',', $post->date));
+
+                $key = array_search('everyone', $types);
+             
+                $post_chips = (!is_null($key) ? $chips[$key] : null);
+               
+                if(!$post_chips || $post_chips == 0){
+                    if(Auth::isUser()){
+                        $key = array_search('user', $types);
+                        if($key)
+                            $post_chips = $chips[$key];
+                    } elseif(Auth::isModel()){
+                        $key = array_search('model', $types);
+                        if($key)
+                            $post_chips = $chips[$key];
+                    } 
+                }
+                
+                $key = null;
+                if(Auth::isUser()) $key_ = array_search('members', $types);
+                elseif(Auth::isModel()) $key_ = array_search('members', $types);
+                
+                $post_date = $dates[$key_];
+                if($post_date == 0) {
+                    $key_ = array_search('everyone', $types);
+                    $post_date = $dates[$key_];
+                }
+                
+                if($post_date == 0) {
+                    $key_ = array_search('public', $types);
+                    $post_date = $dates[$key_];
+                }
+                
+             ?>
+               <div class="post_container">
+            <div class="post_header post_row">
+                <div class="post_title">
+                    <h2>
+                        <a href="<?=$this->url(array("profile_type" => "blog", "title" => slug($post->title), "id_post" => $post->id), "theme-blog")?>">
+                            <?=$post->title?>
+                        </a>
+                    </h2>
+                </div>
+                <div class="post_date"><?=($post_date ? date("Y/m/d H:i", $post_date) : "")?></div>
+                <div class="post_col1">
+                    
+                    <div class="post_category">
+                        <a href="<?=$this->url(array("profile_type" => "blog"), "theme-profile")?>/category/<?=$post->category?>">
+                            <?=$post->category_title?>
+                        </a>
+                    </div>
+                </div>
+                <div class="post_col2">
+                    
+                    <div class="post_tags"><?=$post->tags?></div>
+                </div>
+            </div>
+            <div class="post_cover post_row">
+                <a href="<?=$this->url(array("profile_type" => "blog", "title" => slug($post->title), "id_post" => $post->id), "theme-blog")?>">
+                    <img src = "/files/photos/<?=$post->full_cover?>">
+                </a>
+                <span class="post_caption">  
+                    <p>
+                        <span><?=$post->likes?> likes </span>
+                        <span><?=$post->dislikes?> dislikes </span>
+                        <span><?=$post->reposts?> reposts </span>
+                        <span>0 Comments </span>
+                        
+                    </p> 
+                </span> 
+            </div>
+            <div class="post_excerpt post_row">
+                <?=short_description($post->content)?>  
+                <a class="btn btn-purple" href="<?=$this->url(array("profile_type" => "blog", "title" => slug($post->title), "id_post" => $post->id), "theme-blog")?><?=(isset($post->purchased) && !empty($post->purchased) ? "" : ($post_chips > 0 ? "/purchase" : ""));?>">
+                    <?=(isset($post->purchased) && !empty($post->purchased) ? "Read more..." : ($post_chips > 0 ? "Purchase (".$post_chips." chips)" : "Read more..."));?>
+                </a>
+            </div>
+            <hr/>
+            <div class="post_reshares post_row"></div>
+        </div>
+            <? } ?>
+        <? } ?>
+        
+        <div class="row">
+            
+        <? echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml'); ?>
+        </div>
+
+    <? } else { ?>
+        No posts
+    <? } ?>
+    </div>
+ <div class="col-lg-4">
+        
+        <? echo $this->partial("partials/side-bar.phtml", $this); ?>
+        
+    </div>
+
+</div>
+
+ 
+
+
+

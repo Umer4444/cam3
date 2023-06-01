@@ -1,0 +1,54 @@
+
+<?     
+        switch($this->profile_type){
+            case "profile":
+           //p($this->model);
+                echo $this->partial('partials/model-profile-profile.phtml',array('model' => $this->model,'model_info' => $model_info, 'info_fields' => $info_fields));
+            break;
+            
+            case "wall":
+                echo $this->partial('partials/model-profile-wall.phtml',$this);    
+            break;
+            
+            case "pictures":
+                //$this->_data['albums'] = $this->loadModel('albums')->getAlbums($this->id_model,true, $active = 1, $parent_id = 0);
+                                     
+                //$this->_data['photos'] = $this->loadModel("photos")->recentPhotos($this->id_model);
+                echo $this->partial('partials/model-profile-pictures.phtml',$this);      
+            break;
+            
+            case "videos":    
+                $videos = $this->loadModel("video")->getVideos($this->id_model,null,null,'added desc',null, null, null, null);
+                echo $this->partial('partials/model-profile-videos.phtml', array("videos" => $videos, "params" => $this->params)); 
+               
+            break;            
+
+            
+            case "offers":
+                echo $this->partial('partials/model-profile-offers.phtml',array('model' => $this->model));    
+            break;
+            
+            case "blog":                
+                if($this->params->id_post && $this->params->title)
+                    echo $this->partial('partials/model-profile-blog-post.phtml',$this);    
+                else
+                    echo $this->partial('partials/model-profile-blog.phtml',$this);    
+            break;
+            
+            case "schedule":
+                echo $this->partial('partials/model-profile-schedule.phtml',$this);    
+            break;
+            
+            case "special-requests":
+                echo $this->partial('partials/model-profile-special-requests.phtml', $this);
+            break;  
+            
+            case "special-request":
+                echo $this->partial('partials/model-profile-special-request.phtml',array('model' => $this->model,'special_request' => $this->special_request,'notice' => $this->notice));
+            break;  
+                      
+            case "new-special-request":
+                echo $this->partial('partials/model-new-special-request.phtml',array('model' => $this->model,'special_request' => $this->special_request,'notice' => $this->notice));
+            break;           
+        }
+?>

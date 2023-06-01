@@ -1,0 +1,262 @@
+<?php
+
+$modelStatus = $this->model->getModelStatus();
+
+//get sign up url helper
+$serviceLocator = Zend_Registry::get('service_manager');
+$viewHelperManager = $serviceLocator->get('ViewHelperManager');
+$eventCalendarHelper = $viewHelperManager->get('eventCalendar');
+
+$urlHelper = $viewHelperManager->get('url');
+$likesHelper = $viewHelperManager->get('likes');
+$ratingHelper = $viewHelperManager->get('rating');
+
+//identity auth service from zf2
+$zfcIdentity = $serviceLocator->get('zfcuser_auth_service');
+
+
+$userViewHelper = $viewHelperManager->get('user');
+
+?>
+    <article id="widget_1" class="widget">
+        <div class="col-sm-4 text-center">
+            <a href="#"
+               class="btn btn-magenta btn-block"
+               id="friend_request"
+               data-performer="<?=$this->model->id?>"
+               data-action="<?=('isFriend' == 'isFriend' ? 'removeFriend' : 'addFriend') ?>">Friend Request
+            </a>
+            <br/>
+            <span>Friends</span>
+            <p><strong>0</strong></p>
+        </div>
+        <div class="col-sm-4 text-center">
+            <a href="#" class="btn btn-info btn-block" data-performer="<?= $this->model->id ?>">Add Favorite</a>
+            <br>
+            <span>Favorited</span>
+            <p><strong>0</strong></p>
+        </div>
+        <div class="col-sm-4 text-center">
+            <a href="#" class="btn btn-info btn-block" data-performer="<?= $this->model->id ?>">Follow</a>
+            <br/>
+            <div class="col-sm-6">
+                <span>Followers</span>
+                <p><strong>2</strong></p>
+            </div>
+            <div class="col-sm-6">
+                <span>Following</span>
+                <p><strong>0</strong></p>
+            </div>
+
+        </div>
+    </article>
+
+    <article id="widget_2" class="widget separator">
+        <img alt="Girl" src="<?= $this->model->getCover() ?>">
+
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam enim velit, hendrerit eget lacinia pretium,
+            feugiat ac arcu. Integer dapibus dolor a magna sagittis at feugiat neque laoreet. Sed nunc ligula,
+            pellentesque mollis mollis ut, vestibulum et orci. Fusce consectetur elementum tincidunt. Donec lectus
+            justo, feugiat sit amet dignissim nec, gravida nec tellus. Donec faucibus, arcu eget venenatis faucibus,
+            nulla turpis gravida enim, eget dictum velit mauris tempus nisi. </p>
+    </article>
+    <article id="widget_3" class="widget text-center separator">
+        <a href="<?= $this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name), "watch") ?>"
+           class="btn btn-lg btn-<?= ($modelStatus['id_status'] == 0 ? 'default' : 'success') ?>">
+            <?= $modelStatus['status'] ?>
+        </a>
+        <br>
+
+        <p>Last Online: <?= $modelStatus['id_status'] != 0 ? 'Just Now' : date('d, F Y', strtotime($this->model->last_login)) ?>
+        </p>
+    </article>
+    <article id="widget_4" class="separator">
+        <ul class="list-group">
+            <?php
+            $working = array("private_chat", "spy_mode", "group_chat", "vip_chat", "show_mode");
+            $i = 0;
+            foreach ($this->rates_fields as $rate) {
+                if (in_array($rate['type'], $working)) {
+                    $i++;
+                    ?>
+                    <li class="list-group-item<?=($i%2 == 0 ? ' gray' : '')?>">
+                        <?= ucwords(str_replace('_', ' ', $rate['type'])) ?><span class="badge"><?= $rate['value'] ?></span>
+                    </li>
+                <?
+                }
+            }?>
+        </ul>
+    </article>
+    <article id="widget_5" class="separator">
+        <div class="col-sm-4">
+            <p>Rating: <?= $this->model->rating ?><br>
+                Sellers Rating: 61<br>
+                Phone Rating: 90<br>
+                Cam level: 85</p>
+        </div>
+        <div class="col-sm-4">
+            <?php echo $ratingHelper($this->model->id, 'model',  $this->model->rating , array('div' => '.stars-model', 'size' => 'big')); ?>
+            <br>
+            <img src="/assets/images/rating_star_3.jpg">
+            <br>
+            <img src="/assets/images/rating_star_5.jpg">
+            <br>
+            <img src="/assets/images/rating_star_4.jpg">
+        </div>
+        <div class="col-sm-4" style="z-index:1">
+            <?php echo $likesHelper($this->model->id, 'model'); ?>
+            <br>
+        </div>
+    </article>
+    <article id="widget_6" class="separator">
+        <div class="row">
+            <div class="col-xs-6">
+
+                <?= $userViewHelper($this->model->id)->buttons()->tip(); ?>
+            </div>
+            <div class="col-xs-6">
+                <?php
+                    $msgUrl = $urlHelper('zfcuser/login');
+                    if ($zfcIdentity->hasIdentity()) {
+                        $msgUrl = $this->url(array("message_action" => "compose"), "messages") . '#' . $this->model->screen_name;
+                    }
+                ?>
+                <?/*= $userViewHelper($this->performer)->buttons()->message(); */?>
+                <a class="btn btn-info btn-block" href="<?=$msgUrl ?>">Send Message</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <a class="btn btn-info btn-block" href="#">Make Best Offer</a>
+            </div>
+            <div class="col-xs-6">
+                <?//$userViewHelper($this->model->id)->buttons()->call(); ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <a class="btn btn-info btn-block" href="#">Schedule Appointment</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <a class="btn btn-magenta btn-block" href="<?= $this->url(array("profile_type" => "special-requests", "id_model" => $this->model->id), "special-requests") ?>">
+                    Special Request
+                </a>
+            </div>
+        </div>
+    </article>
+    <article id="widget_7" class="separator">
+
+        <div class="title_widget">Personal Stats</div>
+        <ul class="list-group">
+            <li class="list-group-item">
+                Country<span class="badge"><?= $this->model->country_name ?></span>
+            </li>
+            <li class="list-group-item">
+                Body Type<span class="badge"><?= $this->model->body_type ?></span>
+            </li>
+            <li class="list-group-item">
+                Ethnicity<span class="badge"><?= $this->model->ethnicity ?></span>
+            </li>
+            <li class="list-group-item">
+                Height<span class="badge"><?= $this->model->height ?></span>
+            </li>
+            <li class="list-group-item">
+                Weight<span class="badge"><?= $this->model->weight ?></span>
+            </li>
+            <li class="list-group-item">
+                Measurement<span class="badge"><?= $this->model->measurements_bust . ' - ' . $this->model->measurements_waist . ' - ' . $this->model->measurements_bottom ?></span>
+            </li>
+            <li class="list-group-item">
+                Hair Color<span class="badge"><?= $this->model->hair_color ?></span>
+            </li>
+            <li class="list-group-item">
+                Orientation<span class="badge"><?= $this->model->orientation ?></span>
+            </li>
+            <li class="list-group-item">
+                Birthday<span class="badge"><?= $this->model->birthday ?></span>
+            </li>
+            <li class="list-group-item">
+                Lanuages<span class="badge"><?= $this->model_info['spoken_languages'] ?></span>
+            </li>
+            <li class="list-group-item">
+                Zodiac sign<span class="badge"><?= $this->model_info['zodiac_sign'] ?></span>
+            </li>
+            <li class="list-group-item">
+                Eye Color<span class="badge"><?= $this->model_info['eye_color'] ?></span>
+            </li>
+            <li class="list-group-item">
+                Pubic hair<span class="badge"><?= $this->model_info['pubic_hair'] ?></span>
+            </li>
+        </ul>
+    </article>
+    <article id="widget_8" class="separator">
+        <div class="title_widget">Share my Profile</div>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="col-sm-3">
+                    <a href="#"><img src="/assets/images/icon_em.png" width="24"> email</a></div>
+                <div class="col-sm-3">
+                    <a href="#"><img src="/assets/images/icon_fb.png" width="24"> facebook</a></div>
+                <div class="col-sm-3"><a href="#"><img src="/assets/images/icon_tw.png" width="24"> twitter</a></div>
+                <div class="col-sm-3"><a href="#"><img src="/assets/images/icon_go.png" width="24"> google+</a></div>
+            </li>
+        </ul>
+    </article>
+    <article id="widget_8" class="separator">
+        <div class="title_widget">Share my Profile's URL</div>
+        <?= $this->formText('share', 'http://' . $_SERVER['SERVER_NAME'] . $this->url(array("profile_type" => "profile", "id_model" => $this->model->id, "name" => $this->model->screen_name), "model-profile"), array()) ?>
+    </article>
+    <article id="widget_9">
+        <?php echo $eventCalendarHelper($this->model->id);?>
+    </article>
+
+<script>
+    $('#friend_request').click(function () {
+        elem = $(this);
+        $.ajax({
+            type: "POST",
+            url: '/processAjax',
+            data: {
+                'action': 'addFriend',
+                'friend': elem.data('performer')
+            },
+            dataType: 'json',
+            success: function(response) {
+                response = JSON.parse(response);
+                if (response.hasOwnProperty('status') && response.status == 'not-authenticated') {
+                    alert(response.message);
+                } else {
+                    $("#friend_request").addClass('hidden');
+                    $('#unfriend').removeClass('hidden');
+                }
+            }
+        });
+
+    });
+
+           $('#unfriend').click(function () {
+               elem = $(this);
+                $.ajax({
+                    type: "POST",
+                    url: '/processAjax',
+                    data: {
+                        'action': 'removeFriend',
+                        'friend': elem.data('performer')
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        response = JSON.parse(response);
+                        if (response.hasOwnProperty('status') && response.status == 'not-authenticated') {
+                            alert(response.message);
+                        } else {
+                            $("#friend_request").removeClass('hidden');
+                            $('#unfriend').addClass('hidden');
+                        }
+                    }
+                });
+
+            });
+
+</script>

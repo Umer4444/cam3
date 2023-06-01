@@ -1,0 +1,14 @@
+<div class="row row-no-margin">
+    {% for value in user.getSettings() if value.getResource().getFrotend() %}
+        <div class="col-md-6">
+            <div class="margin-10">
+                <strong>{{ value.getResource().getLabel() }} :</strong>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="margin-10">
+                {{ value.getValue() | slice(0, 100) }} ...
+            </div>
+        </div>
+    {% endfor %}
+</div>

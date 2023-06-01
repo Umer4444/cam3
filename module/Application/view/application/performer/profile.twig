@@ -1,0 +1,64 @@
+{% extends 'layout/profile' %}
+
+{% block content %}
+
+    {% set topPayersHelper = topPayers(user.getId()) %}
+
+    <div class="row row-no-margin">
+        <div class="col-md-12">
+            {% include 'performer/profile/blocks' with {user: user} %}
+        </div>
+    </div>
+
+    <div class="row row-no-margin margin-10">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Interest and Hobbies</div>
+                <div class="panel-body">
+                    {% include 'interests' with {user:user} %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-no-margin">
+        <div class="col-md-6">
+            <div class="panel margin-10 panel-default">
+                <div class="panel-heading">Top gifters</div>
+                <div class="panel-body">
+                    <div class="padding-10">
+                        {{ topPayersHelper.getGifters()| raw }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel margin-10 panel-default">
+                <div class="panel-heading">Top tippers</div>
+                <div class="panel-body">
+                    <div class="padding-10">
+                        {{ topPayersHelper.getGifters() | raw}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-no-margin margin-10">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Reviews</div>
+                <div class="panel-body">
+                    <span>
+                        There are no reviews for <b>{{ user }}</b> yet.
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $('.grid-stack').gridstack().data('gridstack').movable('.grid-stack-item', false).resizable('.grid-stack-item', false);
+    </script>
+
+{% endblock content %}

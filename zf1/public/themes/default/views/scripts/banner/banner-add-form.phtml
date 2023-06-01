@@ -1,0 +1,92 @@
+<?
+function tempFunc(&$item, $key, $prefix)
+{
+    $item = $item . "^" . $prefix;
+}
+
+if ($this->banner->id) {
+    $zArr = json_decode($this->banner->banner_zone);
+    array_walk($zArr, 'tempFunc', $this->banner->banner_size);
+
+} else {
+    $zArr = array();
+}
+
+?>
+
+<div class="page-content round-corners">
+
+    <form autocomplete="off" action="" method="post" id="">
+        <div class="join-box-fields">
+
+            <div class="field">
+                <label for="size">Size</label>
+
+                <div class="field_wrapper">
+                    <select name="banner_zone[]" multiple="multiple" size="5">
+                        <?php foreach ($this->banner_zone as $size => $zone) { ?>
+                            <optgroup label="Banner Size <?= $size ?>">
+                                <?php foreach ($zone as $key => $val) { ?>
+                                    <?
+                                    $value_z = $val . "^" . $size;
+                                    if (in_array($value_z, $zArr)) $check = true;
+                                    else $check = false;
+                                    ?>
+                                    <option
+                                        value="<?= $value_z ?>" <?= ($check ? "selected" : "") ?>><?= $val ?></option>
+                                <?php } ?>
+                            </optgroup>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label for="start_date">From</label>
+
+                <div class="field_wrapper">
+                    <input name="start_date" id="start_date" placeholder="start date" data-type="datetimepicker""
+                           value="<?= $this->banner->start_date ? date("m/d/Y", $this->banner->start_date) : "" ?>"/>
+                </div>
+            </div>
+            <div class="field">
+                <label for="end_date">To</label>
+
+                <div class="field_wrapper">
+                    <input name="end_date" id="end_date" placeholder="end date" data-type="datetimepicker""
+                           value="<?= $this->banner->end_date ? date("m/d/Y", $this->banner->end_date) : "" ?>"/>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="content">Content</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formTextarea('content', $this->banner->content, array("class" => "content", "style" => "width: 400px;")) ?>
+
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <div class="join-button">
+            <input type="submit" value="Save" name="save" class="btn btn-success">
+        </div>
+    </form>
+</div>
+
+<? echo $this->partial("/partials/editor.phtml", array()); ?>
+<script src="/scripts/jquery.multiselect.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("select").multiselect({
+            selectedList: 4 // 0-based index
+        });
+        $("select").multiselect({
+            selectedText: function (numChecked, numTotal, checkedItems) {
+                return numChecked + ' of ' + numTotal + ' checked';
+            }
+        });
+    });
+
+</script>

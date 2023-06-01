@@ -1,0 +1,14 @@
+<?  $this->headTitle('Edit ' . $this->user->username . '\'s Account - Settings');
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "user",
+        "acl" => $this->acl,
+        "user" => $this->user,
+
+    ));
+
+echo $this->partial('partials/user-account-settings.phtml', $this);
+?>
+    
+    

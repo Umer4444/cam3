@@ -1,0 +1,126 @@
+<? $this->headTitle(($this->type != 'all' ? ucwords($this->type) . ' ' : '') . 'Moderators'); ?>
+
+
+<div class="page-content round-corners">
+
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= ($this->type != 'all' ? ucwords($this->type) . ' ' : '') ?> Moderators</h1>
+
+    <br><br>
+    <table class="list_models" cellpadding="5" cellspacing="1">
+        <tr class="table_header">
+            <th>Name</th>
+            <th>Email</th>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-account-settings", "view")) { ?>
+                <th style="width: 50px">Account</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-settings", "view")) { ?>
+                <th style="width: 50px">Profile</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-settings", "edit")) { ?>
+                <th>Actions</th>
+            <? } ?>
+        </tr>
+        <?
+
+        if (!count($this->paginator)) {
+            $message = '';
+            switch ($this->type) {
+                case 'all':
+                    $message = "No moderators found.";
+                    break;
+                case 'active':
+                    $message = "There are no active moderators.";
+                    break;
+                case 'pending':
+                    $message = "There are no moderators waiting for approval.";
+                    break;
+                case 'denied':
+                    $message = "There are no denied moderators.";
+                    break;
+
+            }
+            echo "<tr><td colspan='100'>" . $message . "</td></tr>";
+        } else {
+
+            foreach ($this->paginator as $moderator) {
+
+                if ($this->acl->isAllowed($_SESSION['group'], "all_resources", "view")) {
+                    $view = 'all';
+                } else {
+                    $view = "none";
+                }
+
+                if ($moderator->id != 0 || $view == "all"/*($moderator->id !=0 && user()->id == 0)*/) {
+                    $type = '';
+                    switch ($moderator->active) {
+                        case 1:
+                            $type = 'active';
+                            break;
+                        case 0:
+                            $type = 'pending';
+                            break;
+                        case -1:
+                            $type = 'denied';
+                            break;
+
+                    }
+                    $cycle = $this->cycle(array("light", "dark"))->next();  ?>
+
+                    <tr class="<?= $cycle ?>">
+                        <td><?= $moderator->username ?></td>
+                        <td><?= $moderator->email; ?></td>
+
+                        <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-account-settings", "view")) { ?>
+                            <td style="width: 50px; text-align: center;">
+                                <a href="<?= $this->url(array("id" => $moderator->id, "name" => $moderator->username, "manage" => "edit"), "manage-moderator-account") ?>"><img
+                                        border="0" title="Edit moderator account" alt="Edit"
+                                        src="/images/icons/edit_account.png"></a>
+                            </td>
+                        <? } ?>
+                        <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-settings", "view")) { ?>
+                            <td style="width: 50px; text-align: center;">
+                                <a href="<?= $this->url(array("id" => $moderator->id, "name" => $moderator->username, "manage" => "edit"), "manage-moderator") ?>"><img
+                                        border="0" title="Edit moderator profile" alt="Edit"
+                                        src="/images/icons/edit.png"></a>
+                            </td>
+                        <? } ?>
+                        <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-settings", "edit")) { ?>
+                            <td style="width: 60px; text-align: right;">
+                                <? if ($type == 'denied' || $type == 'pending') { ?>
+                                    <a class="left"
+                                       href="<?= $this->url(array("id" => $moderator->id, "name" => $moderator->username, "manage" => "approve"), "manage-moderator") ?>"><img
+                                            border="0" title="Approve moderator" alt="Approve"
+                                            src="/images/icons/checked.png"></a>
+                                <? } ?>
+                                <? if ($type == 'active' || $type == 'pending') { ?>
+                                    <a onclick="return confirm('Are you sure you want to deny this moderator account?')"
+                                       href="<?= $this->url(array("id" => $moderator->id, "name" => $moderator->username, "manage" => "deny"), "manage-moderator") ?>"><img
+                                            border="0" title="Deny moderator" alt="Deny"
+                                            src="/images/icons/disable.png"></a>
+                                <? } ?>
+                                <? if ($type == 'denied') { ?>
+                                    <a onclick="return confirm('Are you sure you want to delete this moderator account?')"
+                                       href="<?= $this->url(array("id" => $moderator->id, "name" => $moderator->username, "manage" => "delete"), "manage-moderator") ?>"><img
+                                            border="0" title="Delete moderator" alt="Delete"
+                                            src="/images/icons/delete.png"></a>
+                                <? } ?>
+                            </td>
+                        <? } ?>
+
+                    </tr>
+                <?
+                }
+            }
+        }
+        ?>
+
+    </table>
+    <?
+
+    echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+
+    ?>
+</div>
+ 

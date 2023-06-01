@@ -1,0 +1,44 @@
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="page_title">Galleries</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <?
+
+if (!count($this->albums)) {
+    echo '<br><br><br><br><center>There are no galleries available at this time. Please check back later. </center><br><br><br><br><br>';
+} else {
+    foreach ($this->albums as $this->album) {
+        echo $this->partial('partials/album-item.phtml', $this);
+    }
+}
+?>
+</div>
+    </div>
+<div class="clear"></div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="page_title">Recent Photos</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+<? if (count($this->paginator) > 0) {
+    echo $this->partial('partials/fancy-box.phtml', array("element" => null));
+    foreach ($this->paginator as $photo) {
+        echo $this->partial('partials/photo-item.phtml', array("photo" => $photo, "album" => $this->album));
+    }
+
+} else {
+    echo '<br><br><br><br><center>There are no photos available at this time. Please check back later. </center><br><br><br><br><br>';
+} ?>
+</div>
+    </div>
+<div class="clear"></div>
+
+<? echo $this->partial('partials/rating-script.phtml'); ?>
+
+

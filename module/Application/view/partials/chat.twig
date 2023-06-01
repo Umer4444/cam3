@@ -1,0 +1,133 @@
+{% if ('"' ~ room ~ '"') in serviceLocator().get('Application').getRequest().getHeaders().get('Cookie').bannedRooms %}
+
+    You are banned from this room, so behave until the ban expires !
+
+{% else %}
+
+    {% if user.isBroadcasting() or zfcUserIdentity().getId() == user.getId() %}
+
+        {{ asset('chat_js') }}
+        {{ asset('chat_css') }}
+
+        <div id="main-chat-screen">
+            <div class="row row-no-margin">
+                <div class="col-md-3">
+                    <div class="margin-10" id="solo-chat">
+                        {% if zfcUserIdentity() %}
+
+                            <select id="chatOptions" multiple="multiple" class="btn-primary btn-sm">
+
+                                <option value="users">Hide users list</option>
+                                <option value="guests">Hide guests</option>
+
+                                {% if zfcUserIdentity().isVip() or zfcUserIdentity().hasAdminRole() %}
+                                    <option value="only-performer">Show only to performer</option>
+                                    <option value="fonts-colors">Ignore fonts & colors</option>
+                                    <option value="images">Hide images</option>
+                                {% endif %}
+
+                            </select>
+
+                        {% endif %}
+
+                        {% if params().fromRoute('type') != 'popup' and zfcUserIdentity().getRole() != constant('Application\\Entity\\Role::PERFORMER') %}
+                            {{ buttons(user).watchPopup() }}
+                        {% endif %}
+
+                        {% if showRooms %}
+                            <ul id="rooms"></ul>
+                        {% endif %}
+
+                        <ul id="people"></ul>
+                    </div>
+                </div>
+                <div class="col-md-{{ showRooms ? 7 : 9 }}">
+                    <div class="margin-10">
+                        <div id="conversation" style="background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.7) 100%), url('{{ background }}') no-repeat right top;">
+                        <ul id="msgs" class="list-unstyled"></ul>
+                    </div>
+                        <form id="chatForm" class="form-inline">
+                        <div class="row row-nomargin margin-10">
+                            <div class="form-group col-md-6 padding-10">
+                                <div class="margin-10">
+                                    <a name="chat"></a>
+                                    <input type="text" class="form-control input-lg padding-10" placeholder="Your message" id="msg" style="width:100%">
+                                </div>
+                            </div>
+                            <div class="col-md-2 padding-10">
+                                <div class="margin-10">
+                                    <input type="submit" name="send" id="send" value="Send" class="btn btn-success btn-lg btn-block">
+                                </div>
+                            </div>
+                            <div class="col-md-2 padding-10">
+                                <div class="margin-10">
+                                    <input type="button" name="start_button" id="start_button" value="Record" onclick="startButton(event)"
+                               class="btn btn-info btn-lg btn-block">
+                                </div>
+                            </div>
+
+                            {% if zfcUserIdentity().isVIP() or zfcUserIdentity().isPerformer() or zfcUserIdentity().hasAdminRole() %}
+                                <div class="col-md-2 padding-10">
+                                    <script src="/moxiemanager/js/moxman.api.min.js"></script>
+                                    <button id="chat-image" class="btn btn-default btn-lg"><i class="glyphicon glyphicon-camera"></i></button>
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        {% if showRooms %}
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-lg btn-info dropdown-toggle" data-toggle="dropdown">
+                                    Actions <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" name="createRoom" data-toggle="modal" data-target="#roomModal">Create room</a></li>
+                                    <li><a href="#" name="leave" id="leave">Leave current room</a></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                    </form>
+                    </div>
+                </div>
+                {% if showRooms %}
+                    <div class="col-md-2">
+                        <ul class="list-unstyled" id="updates"></ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <script type="text/javascript">
+
+            $(function(){
+
+                user.sounds = {
+                    userIn: '{{ zfcUserIdentity().getSetting('user-in') }}',
+                    userOut: '{{ zfcUserIdentity().getSetting('user-out') }}',
+                    noUsers: '{{ zfcUserIdentity().getSetting('no-users') }}'
+                };
+
+                {% if socketAction == 'joinRoom' %}
+
+                    socket.on("roomList", function (data) {
+                        if (!jQuery.isEmptyObject(data.rooms)) {
+                            $.each(data.rooms, function (id, room) {
+                                if (room.name == '{{ room }}') {
+                                    socket.emit("{{ socketAction }}", id);
+                                }
+                            });
+                        }
+                    });
+
+                {% else %}
+                    socket.emit("{{ socketAction }}", '{{ room }}', {{ zfcUserIdentity().getId() }});
+                {% endif %}
+
+            });
+
+        </script>
+    {% else %}
+        This model is not broadcasting at this time !
+    {% endif %}
+
+{% endif %}

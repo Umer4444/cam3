@@ -1,0 +1,50 @@
+<script type="text/javascript" src="//static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
+
+<div class="container-fluid">
+    <div class="row">
+        <br/>
+        <div class="col-md-8 col-md-offset-2"><img class="img-responsive img-thumbnail" src="<?=$this->user->getAvatar()?>"></div>
+        <div class="col-md-8 col-md-offset-2 text-center">
+            <br/>
+            <?php if (!$this->inCall) { ?>
+                <form method="post">
+                    <?php
+
+                        $element = ($this->zfcUserIdentity() && $this->zfcUserIdentity()->getPhone()) ?
+                            new \Zend\Form\Element\Hidden() :
+                            new \Zend\Form\Element\Text();
+
+                        $element->setName('phone')
+                                ->setAttributes(array("class" => "form-control", "placeholder" => "Enter your phone number"));
+
+                        echo $this->formText($element);
+
+                    ?>
+                    <p><?php echo $this->message ?></p>
+                    <input type="submit" class="btn btn-lg btn-block btn-success" value="Call <?=$this->user->getDisplayName()?>" name="callButton"/>
+                </form>
+
+            <?php } else { ?>
+                <div data-type="timer-flip" data-from="0" data-to="500"></div>
+                <div><img id="phone-icon" src="/assets/images/icons/phone-icon.png"></div>
+                Grab your phone, we are connecting you with <?=$this->user->getDisplayName()?>
+            <? } ?>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function flash() {
+        var rep = 500;
+        $("#phone-icon").animate({
+            opacity: 0.25
+        }, rep, function () {
+            $(this).animate({
+                opacity: 0.7
+            }, rep, function () {
+                flash();
+            });
+        });
+    }
+    flash();
+</script>

@@ -1,0 +1,72 @@
+    <script>
+        $(function() {$( "#tabs" ).tabs();});
+
+        $(document).ready(function(){
+                $("#review_button").click(function(){
+                        $("#add_review").toggle();
+                });
+        });
+        </script>
+
+        <script>
+        // review forms
+        function editReview(type, id){
+              $.ajax({
+                  type: "POST",
+                  url: "/process",
+                  data: {
+                     action: "editReview", 
+                     type: type,
+                     id: id,
+                     review: $('#review_'+id+' textarea').val(),             
+                     // may be some other params
+                  },
+                  success: function(){
+                      switch (type) {
+                          case 'edit' :
+                                editForm("edit", id, "removeform");                        
+                                $("#review_"+id).removeClass("inactive");
+                                alert("Review saved");
+                          break;
+                          case "delete" :                        
+                                $("#review_"+id).remove();
+                                alert("Review deleted");
+                          break;
+                      }              
+                  },
+                  error: function (){
+                      alert("Review not saved. There was an error, try again later");
+                  }
+              }).done(function( msg ) {
+                  // update your status
+              });
+        }
+
+        function editForm(type, id, action){
+            
+            switch (type) {
+                case "delete":
+                    editReview(type, id);
+                break;
+                
+                case "edit": 
+                    if(action == "makeform"){
+                        var reviewText = $("#review_"+id+" .review").text();
+                        
+                        var textarea = '<textarea name="editreview">'+reviewText+'</textarea> <input type="submit" value="Save" class="button-round-small green" onclick="javascript:editReview(\'edit\', '+id+')" name="edit_review">';
+                        $("#review_"+id+" .edit").attr("onclick", "editForm('edit', "+id+", 'removeform'); return false;").text("cancel edit");                
+                        //<a href="" onClick="editForm(\'edit\', '+id+', \'deleteform\'); return false;">cancel edit</a>
+                        $("#review_"+id+" .review").html("");                
+                        $("#review_"+id+" .review").html(textarea);                
+                    } 
+                    if(action == "removeform"){
+                        var text = $("#review_"+id+" .review textarea").val();
+                        $("#review_"+id+" .review").html("");                
+                        $("#review_"+id+" .review").html(text);
+                        $("#review_"+id+" .edit").attr("onclick", "editForm('edit', "+id+", 'makeform'); return false;").text("edit");  
+                    }
+                break; 
+            }
+        }
+
+</script>

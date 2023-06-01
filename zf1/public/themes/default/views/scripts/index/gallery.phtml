@@ -1,0 +1,354 @@
+<?php echo $this->partial('partials/fancy-box.phtml', array("element" => null)); ?>
+
+<? $this->headTitle($this->album->name . ' by ' . $this->model->screen_name);
+
+$model_info = array();
+foreach ($this->info_fields as $item) {
+    $model_info[$item->field] = $item->value;
+}
+
+
+?>
+<div id="pagetitle" class="content col-sm-12">
+    <span class="modname-title"><?= $this->model->screen_name ?></span>
+    | <?= $this->model->birthday ? date('Y', time()) - substr($this->model->birthday, 0, 4) . 'yrs' : '' ?> -
+    <span class="kind-user">Performer</span>
+
+</div>
+
+<aside class="sidebar col-sm-4">
+    <? echo $this->partial('partials/model-profile-left.phtml', array('model' => $this->model, 'info_fields' => $this->info_fields, 'country' => $this->country, 'model_info' => $model_info, 'rates_fields' => $this->rates_fields, "favorite" => $this->favorite)); ?>
+</aside>
+
+<div class="content col-sm-8">
+
+    <h2 class="page_title">
+        <?= $this->album->name ?> <span class="small_title_text">
+                updated about <?= getTimeDifferenceInWords($this->album->updated) ?>
+            </span>
+
+        <? if (Auth::isModel() && $_SESSION['user']['id'] == $this->album->model_id) { ?>
+            <a onclick='return confirm("Are you sure you want to delete this album?")'
+               href="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name, "action_type" => "delete"), "model-profile-gallery2") ?>">
+                <span style="float:right;font-size:12px;color:blue;padding-top:15px;">delete</span>
+            </a>
+        <? } ?>
+    </h2>
+    <?php if ($this->previous) { ?>
+        <a href="<?= $this->previous ?>" class="button-round-small blue left">Back</a>
+        <div class="clear"></div>
+    <?php } ?>
+
+    <span class="album-description"><?= $this->album->description ?></span>
+    <? //moderation bar
+
+    if (Auth::isModerator() && (user()->id == $this->album->id_moderator || user()->id == 0) && $this->album->active != 1)
+        echo $this->partial("partials/moderation-bar.phtml", array("type" => "gallery"));
+    ?>
+
+    <?
+    if ((Auth::isModel() && $this->album->model_id == $_SESSION['user']['id']) || (Auth::isModerator() && (user()->id == 0 || user()->id == $this->_data["album"]->id_moderator))) {
+
+        $this->album->password = null; ?>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+
+                $('#photo').sortable({
+
+                    update: function (event, ui) {
+                        var position = ui.item.index();
+                        var id = $(ui.item).attr('id').split('_')[1];
+                        var json = '{"position":' + position + ', "id":' + id + '}';
+                        var jsonForm = [];
+                        array_push = {"position": position, "id": id};
+                        jsonForm.push(array_push);
+//                            console.log(json);
+
+
+                        $.ajax({
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            url: "/api/photos",
+                            method: 'PATCH',
+                            type: 'PATCH',
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            data: JSON.stringify(jsonForm),
+                            success: function () {
+
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+
+                            }
+                        });
+                    }
+                });
+
+            });
+
+        </script>
+
+    <?php
+
+
+    }
+
+    if (!is_null($this->album->password) && (!$this->user_access && !in_array($this->album->id, $_SESSION['user_access']['album']))) {
+        ?>
+        <div class="join-box">
+
+
+            <p>To view this gallery is required to type the password.<br><br></p>
+
+            <form
+                action="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name, "action_type" => "pass_req"), "model-profile-gallery2") ?>"
+                method="post">
+                <div class="join-box-fields">
+                    <div class="field">
+                        <label for="gallery_password">Gallery password</label>
+
+                        <div class="field_wrapper">
+                            <input type="password" id="gallery_password" name="gallery_password" tabindex="11">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clear"></div>
+                <div class="join-button">
+                    <br>
+                    <input type="submit" name="submit" value="submit" id="submit" class="btn btn-success">
+                </div>
+            </form>
+        </div>
+
+    <?
+    } else {
+        ?>
+        <? if (count($this->subalbums)) {
+
+            foreach ($this->subalbums as $this->album) {
+                echo $this->partial('partials/album-item.phtml', $this);
+            }
+            echo '<div class="clear"></div>';
+        }
+        ?>
+        <div id="photo">
+            <?  if (!count($this->photos)) {
+                echo '<br><br><br><br><center>There are no photos available at this time. Please check back later. </center><br><br><br><br><br>';
+            } else {
+                foreach ($this->photos as $this->photo) {
+                    echo $this->partial('partials/photo-item.phtml', $this);
+                }
+            }
+
+            ?>
+
+        </div>
+        <div class="clear"></div>
+
+        <hr/>
+
+        <br/>
+
+
+
+        <div id="stars_big" style="float:right;" data-id="<?= $this->album->id ?>"
+             data-average="<?= $this->album->rating ?>" data-extra="image"></div>
+        <? echo $this->partial('partials/rating-script.phtml', array('size' => "big", "div" => "#stars_big")); ?>
+
+        <div style="float:left; position: relative">
+            <? echo $this->partial('partials/like-html.phtml', array("id" => $this->album->id, "type" => "gallery")); ?>
+            <? echo $this->partial('partials/like-script.phtml', array()); ?>
+        </div>
+        <div class="clear"></div>
+
+        <br>
+        <div id="tabs">
+            <ul>
+                <li><a href="#disqus_thread">Comments</a></li>
+                <li><a href="#reviews"><?= $this->album->total_active_reviews ?> Reviews</a></li>
+            </ul>
+            <div id="reviews">
+
+                <?= $this->notice ?>
+
+                <? if (Auth::isLogged()) {
+                    echo $this->partial('partials/review-add.phtml', array("id" => $this->album->id, "type" => "album"));
+                } ?>
+                <div class="reviews-items">
+
+                    <? if ($this->reviews_pending) { ?>
+
+                        <? foreach ($this->reviews_pending as $this->review) {
+
+                            echo $this->partial('partials/review-item.phtml', array
+                                (
+                                    'review' => $this->review,
+                                    'pending' => 'pending',
+                                    'users' => $this->users,
+                                    'model' => $this->model)
+                            );
+                        }
+                    }
+                    ?>
+                    <? if ($this->reviews) { ?>
+                        <? foreach ($this->reviews as $this->review) {
+                            echo $this->partial('partials/review-item.phtml', $this);
+                        } ?>
+                    <? } else { ?>
+                        <p> No reviews. Write the first review</p>
+                    <? } ?>
+                </div>
+            </div>
+            <div id="disqus_thread">
+                <?=Zend_Registry::get('service_manager')->get('ViewHelperManager')->get('commentCustom')->__invoke()?>
+            </div>
+        </div>
+
+
+        <!--            --><? // echo $this->partial('partials/disqus.phtml', array("title" => $this->album->name, "identifier" => 'gallery' . $this->album->id)); ?>
+
+
+
+    <? } //end if else password gallery ?>
+
+
+</div>
+<div class="clear"></div>
+</div>
+<script>
+    $(function () {
+        $("#tabs").tabs();
+    });
+
+    $(document).ready(function () {
+        $("#review_button").click(function () {
+            $("#add_review").toggle();
+        });
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    //rating stars
+    $(document).ready(function () {
+        $(".stars").each(function () {
+            if ($(this).hasClass("disableRate")) {
+                disabled = true;
+            } else {
+                disabled = false;
+            }
+            $(this).jRating({
+                phpPath: '/process',
+                action: 'rating',
+                isDisabled: disabled,
+                bigStarsPath: '/scripts/jrating/icons/stars.png', // path of the icon stars.png
+                smallStarsPath: '/scripts/jrating/icons/small.png', // path of the icon small.png
+                type: 'small', // type of the rate.. can be set to 'small' or 'big'
+                length: 5, // nb of stars
+                decimalLength: 0, // number of decimal in the rate
+                step: true, //fil stats full
+                rateMax: 5
+            });
+        });
+    });
+</script>
+
+
+<script>
+    // review forms
+    function editReview(type, id, active) {
+        console.log(active);
+        if (active == 1) {
+
+            var review = $('#review_' + id + ' textarea').val();
+        } else {
+
+            var review = $('#review_' + id + ' textarea').val().replace(' --- pending for moderation', '');
+
+        }
+        $.ajax({
+            type: "POST",
+            url: "/process",
+            data: {
+                action: "editReview",
+                type: type,
+                id: id,
+                active: active,
+                review: review
+                // maybe some other params
+            },
+            success: function () {
+                switch (type) {
+                    case 'edit' :
+                        editForm("edit", id, "removeform", active);
+                        $("#review_" + id).removeClass("inactive");
+                        alert("Review saved");
+                        break;
+                    case "delete" :
+                        $("#review_" + id).remove();
+                        alert("Review deleted");
+                        break;
+                }
+            },
+            error: function () {
+                alert("Review not saved. There was an error, try again later");
+            }
+        }).done(function (msg) {
+            // update your status
+        });
+    }
+
+    function editForm(type, id, action, active) {
+
+        switch (type) {
+            case "delete":
+                editReview(type, id, active);
+                break;
+
+            case "edit":
+                console.log(active);
+                if (action == "makeform") {
+                    if (active == 1) {
+
+                        var reviewText = $("#review_" + id + " .review").text();
+
+                    } else {
+
+                        var reviewText = $("#review_" + id + " .review").text().replace(' --- pending for moderation', '');
+                    }
+
+
+                    var textarea = '<textarea name="editreview">' + reviewText + '</textarea> <input type="submit" value="Save" class="button-round-small green" onclick="javascript:editReview(\'edit\', ' + id + ',' + active + ')" name="edit_review">';
+                    $("#review_" + id + " .edit").attr("onclick", "editForm('edit', " + id + ", 'removeform' ," + active + "); return false;").text("cancel edit");
+                    //<a href="" onClick="editForm(\'edit\', '+id+', \'deleteform\'); return false;">cancel edit</a>
+                    $("#review_" + id + " .review").html("");
+                    $("#review_" + id + " .review").html(textarea);
+                }
+                if (action == "removeform") {
+                    if (active == 1) {
+
+                        var text = $("#review_" + id + " .review textarea").val();
+
+                    } else {
+
+                        var text = $("#review_" + id + " .review textarea").val() + ' --- pending for moderation';
+
+
+                    }
+
+
+                    $("#review_" + id + " .review").html("");
+                    $("#review_" + id + " .review").html(text);
+                    $("#review_" + id + " .edit").attr("onclick", "editForm('edit', " + id + ", 'makeform', " + active + "); return false;").text("edit");
+                }
+                break;
+        }
+    }
+
+
+</script>

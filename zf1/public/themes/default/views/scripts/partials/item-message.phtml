@@ -1,0 +1,68 @@
+<? $cycle = $this->cycle(array("dark", "light"))->next();
+
+
+$user = $this->users[$this->row->user_type][$this->row->user_id];
+
+if ($this->row->user_type == "user") {
+    if ($user) {
+        $profile_url = $this->url(array("message_action" => "profile", "id" => $this->row['id'], "name" => $user['name']), "messages");
+    } else {
+
+        $profile_url = '#';
+
+    }
+}
+
+if ($this->row->user_type == "model") {
+    if ($user) {
+        $profile_url = $this->url(array("id_model" => $this->row['id'], "name" => $user['name'], "profile_type" => "profile"), "model-profile");
+    } else {
+
+        $profile_url = '#';
+
+    }
+}
+
+if ($this->row->user_type == "moderator") {
+    $profile_url = "#";
+}
+
+if ($_SESSION["group"] == "user")
+    $reply_url = $this->url(array("message_action" => "compose"), "messages");
+if ($_SESSION["group"] == "model")
+    $reply_url = $this->url(array("message_action" => "compose"), "messages-model");
+if ($_SESSION["group"] == "moderator")
+    $reply_url = $this->url(array("message_action" => "compose"), "messages-moderator");
+
+$chips = 'chips_color';
+?>
+<tr class="<?= $this->row->user_type ?>_message <?= checkChipsMessage($this->row['subject'], strip_tags($this->row["message"])) ?>">
+    <td class="center" width="50"><?= $this->formCheckbox(null, $this->row['mes_id'], array("class" => "case")) ?></td>
+    <td class="center" width="250"><img class="left" width="48" src="<?= $user["picture"] ?>"
+                                        alt="<?= $user["name"] ?> cover picture">
+
+        <div class="message_info">
+            <a target="_blank" href="<?= $profile_url ?>"><?= ucfirst($user["name"]) ?></a>
+
+            <div class="timestamp"><?= date('F d,Y', $this->row['send_date']) ?></div>
+    </td>
+    <td class="<?= ($this->row['read'] == 1 ? 'read' : '') ?>">
+        <div class="subject"><a href="#"><?= $this->row['subject'] ?></a></div><?= strip_tags($this->row["message"]) ?>
+    </td>
+    <td class="center" title="tip" width="35">
+        <?= $this->row['tip'] ?>
+    </td>
+    <td class="center" width="50">
+        <form method="post" action="<?= $reply_url ?>">
+            <?
+            if ($this->message_action == "inbox") {
+                ?>
+                <input type="submit" class="button2 small gray" name="reply" value="Reply"/>
+            <? } ?>
+            <input type="hidden" value="<?= $user["name"] ?>" name="username"/>
+            <input type="hidden" value="<?= $this->row->user_id ?>" name="userid"/>
+            <input type="hidden" value="<?= $this->row->user_type ?>" name="usertype"/>
+        </form>
+    </td>
+
+</tr>

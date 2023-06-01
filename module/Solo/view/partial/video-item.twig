@@ -1,0 +1,15 @@
+<div class="col-md-4">
+    <div class="margin-10 generic-border padding-10">
+        <h1 class="no-margin padding-10 generic-border pink-background">{{ video.getTitle() }}</h1>
+        {% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+        {% set url = url('videos/video', {(constant('Application\\Mapper\\Injector::VIDEO')) : video.getId(), 'slug' : slug}) %}
+        <a href="{{ url }}">
+            <img src="{{ video.getCover() }}" style="width:100%"/>
+        </a>
+        <div class="stats center pure-white margin-top-10 padding-10 generic-border pink-background">
+           Play Time : {% set difference = date('NOW').diff(date(date('NOW').getTimestamp() + video.getDuration())) %}
+                <span class="time">{{ difference.format('%H:%M:%S') }}</span> |
+            Views : {{ video.interaction.views }}
+        </div>
+    </div>
+</div>

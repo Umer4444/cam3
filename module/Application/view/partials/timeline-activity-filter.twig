@@ -1,0 +1,10 @@
+{% set url = url('activity') %}
+{% if route() == 'performer/profile' %}
+    {% set url = user(result.getUser()).url('performer/profile', {'action':'timeline'})  %}
+{% endif %}
+
+<a class="btn btn-default" href="{{ url }}" role="button">All</a>
+<a class="btn btn-default" href="{{ url }}/Blogs" role="button">Blog</a>
+<a class="btn btn-default" href="{{ url }}/Transfers" role="button">Contributor</a>
+<a class="btn btn-default" href="{{ url }}/SentTransfers" role="button">Contribution</a>
+

@@ -1,0 +1,57 @@
+<?
+if ($this->last > 1) {
+    echo '<div class="pagination">';
+    echo 'Pages: ';
+    if ($this->current > 1 && $this->firstPageInRange > 1) {
+        echo '<input type="button" value="First" onclick="javascript: goToPage' . $this->pagination_type . '(\'1\');">';
+    }
+    if ($this->current > 5) {
+        echo '<input type="button" value="<<" onclick="javascript: goToPage' . $this->pagination_type . '(\'' . (($this->current) - 5) . '\');">';
+    }
+    if (isset($this->previous)) {
+        echo '<input type="button" value="<" onclick="javascript: goToPage' . $this->pagination_type . '(\'' . (($this->current) - 1) . '\');">';
+    }
+    foreach ($this->pagesInRange as $page) {
+
+        echo '<input ' . ($page == $this->current ? 'style="font-weight: bold;"' : "") . ' type="button" value="' . $page . '" ' . ($page != $this->current ? 'onclick="javascript: goToPage' . $this->pagination_type . '(\'' . $page . '\');"' : "") . ' >';
+
+    }
+    if (isset($this->next)) {
+        echo '<input type="button" value=">" onclick="javascript: goToPage' . $this->pagination_type . '(\'' . (($this->current) + 1) . '\');">';
+    }
+    if ($this->current < $this->last - 5) {
+        echo '<input type="button" value=">>" onclick="javascript: goToPage' . $this->pagination_type . '(\'' . (($this->current) + 5) . '\');">';
+    }
+    if ($this->current != $this->last && $this->last > $this->lastPageInRange) {
+        echo '<input type="button" value="Last" onclick="javascript: goToPage' . $this->pagination_type . '(\'' . ($this->last) . '\');">';
+    }
+    echo '</div>';
+}
+
+?>
+
+<script type="text/javascript">
+
+    function goToPage<?=$this->pagination_type?>(page) {
+
+        link = window.location.href;
+        link = link.replace(/page\/([0-9]*)/i, 'page/' + page);
+
+        <?
+        if($this->pagination_type){
+            echo "link = link.replace(/videos\/([0-9])/i, 'videos/".$this->pagination_type."/$1');";
+        }
+        ?>
+        if (link.indexOf("page") == -1) {
+            if (link[link.length - 1] == "/") {
+                link = link + "page/" + page;
+            } else {
+                link = link + "/page/" + page;
+            }
+        }
+
+        window.location.href = link;
+
+    }
+
+</script>

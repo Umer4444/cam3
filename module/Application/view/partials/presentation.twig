@@ -1,0 +1,81 @@
+{% for video in rows %}
+{% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+{% set url = url('presentations/presentation', {(constant('Application\\Mapper\\Injector::VIDEO')) : video.getId(), 'slug' : slug}) %}
+<div class="col-lg-3 col-sm-3 col-xs-12">
+    <div class="prod_block">
+        <div class="pro_img form-group">
+            <img src="{{ video.getCover() }}" alt="product" class="img-responsive">
+            <div id="pro-slide" class="carousel slide pro-performer" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#pro-slide" data-slide-to="0" class=""></li>
+                    <li class="" data-target="#pro-slide" data-slide-to="1"></li>
+                    <li class="active" data-target="#pro-slide" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner" role="listbox">
+                    <div class="item">
+                        <img data-holder-rendered="true" src="{{ video.getCover() }}" data-src="" alt="slide">
+                    </div>
+                    <div class="item active left">
+                        <img data-holder-rendered="true" src="{{ video.getCover() }}" data-src="" alt="slide">
+                    </div>
+                    <div class="item next left">
+                        <img data-holder-rendered="true" src="{{ video.getCover() }}" data-src="" alt="slide">
+                    </div>
+                </div>
+                <a class="left carousel-control" href="#pro-slide" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#pro-slide" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                <div class="trailar">
+                    <a href="{{ url }}" class="pre-btn">
+                        <i class="fa fa-film theme-color"></i>
+                        View Trailer
+                    </a>
+                </div>
+            </div>
+        </div>
+        <p><strong>{{ video.getTitle()| slice(0,30) }}</strong></p>
+            <div class="theme-color">
+                <a href="{{ user(video.getUser()).url('performer/profile') }}"/>
+                    {{ video.getUser().getScreenName() }}
+                </a>
+            </div>
+        <small class="text-muted pull-left">{{ video.getUploadedOn().format('M d Y') }}</small>
+        <a href="{{ url }}" data-toggle="tooltip" data-placement="left" class="pull-right" title="" data-original-title="Views">
+            <small class="text-muted ">
+                <i class="fa fa-eye theme-color"></i>
+                <a href="{{ user(video.getUser()).url('performer/profile') }}"/>
+                {{ video.getUser().getScreenName() }}
+        </a>
+            </small>
+        </a>
+        <br>
+        {#<small class="text-muted ">#}
+            {#Director's:#}
+            {#<span class="theme-color">John Riverdale D</span>#}
+        {#</small>#}
+        <br>
+        <div class="pull-left">
+            <a href="{{ url }}" class="pre-btn" data-toggle="tooltip" data-placement="left" title="" data-original-title="Comments">
+                <i class="fa fa-comment theme-color"></i>
+                {#{{ interaction(video.getUser()).likes()|raw }}#}
+            </a>
+            <a href="{{ url }}" class="pre-btn" data-toggle="tooltip" data-placement="left" title="" data-original-title="Like">
+                <i class="fa fa-thumbs-up theme-color"></i>
+                {#{{ interaction(video.getUser()).likes()|raw }}#}
+            </a>
+            <a href="{{ url }}" class="pre-btn" data-toggle="tooltip" data-placement="left" title="" data-original-title="Dislike">
+                <i class="fa fa-thumbs-down theme-color"></i>
+                {#{{ interaction(video.getUser()).likes()|raw }}#}
+            </a>
+        </div>
+        <div class="pull-right">
+            <a href="{{ url }}" class="btn-pre-view">View details</a>
+        </div>
+    </div>
+</div>
+{% endfor %}

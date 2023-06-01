@@ -1,0 +1,18 @@
+
+{% set whereNotRead = newInstance('Doctrine\\Common\\Collections\\Criteria').expr().eq('read', 0) %}
+{% set whereNotArchive = newInstance('Doctrine\\Common\\Collections\\Criteria').expr().eq('type', 'inbox') %}
+
+{% set criteria = newInstance('Doctrine\\Common\\Collections\\Criteria').create() %}
+{% set unread = user.getReceivedMessages().matching(criteria.where(whereNotRead).andWhere(whereNotArchive)) |length %}
+
+<div class="tabs_messages">
+    <a class="{% if action == 'messages' %} active {% endif %}"
+       href="{{ user().url('messages', { 'type' : 'inbox' } ) }}">Inbox
+        {% if unread > 0 %}({{ unread }}){% endif %}</a> |
+    <a class=""
+       href="{{ user().url('messages', {'type': 'sent'} ) }}">Sent Messages</a> |
+    <a class=""
+       href="{{ user().url('messages', {'type': 'archive'} ) }}">Archive Messages</a> |
+    <a class="{% if action == 'compose' %} active {% endif %}"
+       href="{{ user().url('messages/compose') }}">Compose Message</a>
+</div>

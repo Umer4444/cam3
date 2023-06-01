@@ -1,0 +1,18 @@
+<?
+$title = 'Manage pledges';
+$this->headTitle($title);
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "model",
+        "acl" => $this->acl,
+        "user" => $this->model));
+
+
+?>
+
+<?= $this->notice ?>
+<div class="page-content round-corners">
+    <?= $this->partial("pledge/pledge-list.phtml", $this); ?>
+
+</div>

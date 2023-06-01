@@ -1,0 +1,79 @@
+<?
+$this->headTitle('Email templates');
+if ($this->templates) $this->templates = $this->templates->toArray();
+else $this->templates = array();
+
+$pages = array();
+foreach ($this->templates as $tmpl) {
+    $templates[$tmpl['name']] = ucwords(str_replace("_", " ", $tmpl['name']));
+}
+$url = $this->url(array(), 'email-templates');
+
+echo $this->partial('partials/editor.phtml');
+?>
+
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title">Email templates</h1>
+
+    <form action="" method="post" id="">
+        <div class="join-box-fields">
+            <div class="field">
+                <label for="page">Select Page</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('name', ($this->template ? $this->template->name : $this->templates[0]['name']), null, $templates) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="title">Subject</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('title', ($this->template ? $this->template->title : $this->templates[0]['title'])) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="content">Content</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formTextarea('content', ($this->template ? $this->template->content : $this->templates[0]['content']), array('class' => "content", 'cols' => 30, 'rows' => 40)) ?>
+                </div>
+            </div>
+            <div class="field">
+                <label for="page">Legend</label>
+
+                <div class="field_wrapper">
+                    Use:
+                    <ul>
+                        <li>{name} username/model screen name</li>
+                        <li>{url} for plain url</li>
+                        <li>{link} for "click here" link</li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+
+        <br>
+
+        <div class="join-button">
+            <input type="submit" name="save" value="Save" class="btn btn-success">
+        </div>
+    </form>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#name").change(function () {
+                window.location = "<?=$url?>/" + $('#name').val() + "";
+            });
+        });
+
+    </script>
+</div>
+<br>
+

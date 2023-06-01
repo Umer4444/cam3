@@ -1,0 +1,32 @@
+{% for performer in rows %}
+    <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12 ">
+        <div class="col-sm-12 wishlist_box">
+            <div class="col-lg-4 col-sm-4 col-xs-12 no-padding wish_img">
+                <img src="/assets/images/wish_img.jpg" class="img-responsive">
+                <div class="wishimg_det">
+                    <strong>Added: </strong>Aug 15-2015
+                </div>
+                <div class="wishimg_det">
+                    <strong>Offered by: </strong>Amazon</div>
+            </div>
+            <div class="col-lg-8 col-sm-8 col-xs-12 padd_large">
+                <div class="row">
+                    <div class="wish_title">
+                        <h4 class="theme-color">
+                            <strong>{{ performer.getUsername() }}</strong>
+                        </h4>
+                        <p class="wish_des">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+                        <a href="#" class="read_more">Read More</a>
+                        <div class="text-right cart_detail">
+                            <a href="#" class="cart-btn">Add to Cart</a>
+                            <h4 class="theme-color">$384.00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

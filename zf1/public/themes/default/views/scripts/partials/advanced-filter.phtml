@@ -1,0 +1,395 @@
+<?
+
+$languages = explode(',', $this->info["spoken_languages"]);
+$eye_color = explode(',', $this->info["eye_color"]);
+$hair_type = explode(',', config()->model_hair_type);
+$orientation = explode(',', config()->model_orientation);
+$gender = array("f" => "female", "m" => "male");
+
+$route = Zend_Controller_Front::getInstance()->getRouter()->getCurrentRoute()->getMatchedPath();
+
+if (strpos($route, "models/filter", 0) !== false || strpos($route, "models/page", 0) !== false) $to_ = "models";
+if (strpos($route, "live/filter", 0) !== false || strpos($route, "live/page", 0) !== false) $to_ = "live";
+if (strpos($route, "pledges/filter", 0) !== false || strpos($route, "pledges/page", 0) !== false) $to_ = "pledges";
+
+?>
+
+<div class="field">
+    <div id="ui_element" class="sb_wrapper" method="post">
+        <? if ($to_ == "models" || $to_ == "live" || $route == "models" || $route == "live"){ ?>
+        <p>
+            <p class="box-title">
+                <span class="sb_up">&nbsp;&nbsp;&nbsp;</span>
+                Filters
+            </p>
+        </p>
+        <div class="sb_dropdown" style="display: block;">
+            <ul class="categories">
+
+                <li><strong>Categories</strong></label></li>
+                <? $count_cat = count($this->categories);
+                $cc = 0;?>
+                <? foreach ($this->categories as $k => $v) {
+                    $v_ = str_replace(" ", "_", trim($v));
+
+                    if ($cc == (int)($count_cat / 2)) echo '</ul><ul class="categories"><li></li>';
+                    $cc++;
+                    ?>
+                    <li>
+                        <input type="checkbox" class="case" value="<?= $v_ ?>"
+                               id="cat_<?= $v_ ?>" <?= (isset($this->filter) ? (in_array($k, $this->filter["categories_id"]) ? " checked" : "") : "") ?> >
+                        <label for="cat_<?= $v_ ?>"><?= $v ?></label>
+                    </li>
+                <? } ?>
+            </ul>
+
+            <ul class="hair_type" style="display: block;">
+                <li><strong>Hair Color</strong></label></li>
+                <? foreach ($hair_type as $v) {
+                    $v_ = str_replace(" ", "_", trim($v)); ?>
+                    <li>
+                        <input type="checkbox" class="case" value="<?= $v_ ?>"
+                               id="hair_<?= $v_ ?>" <?= (isset($this->filter) ? (in_array($v_, $this->filter["hair_type_id"]) ? " checked" : "") : "") ?> >
+                        <label for="hair_<?= $v_ ?>"><?= $v ?></label>
+                    </li>
+                <? } ?>
+            </ul>
+
+            <ul class="languages" style="display: block;">
+                <li><strong>Languages</strong></label></li>
+                <? foreach ($languages as $v) {
+                    $v_ = str_replace(" ", "_", trim($v)); ?>
+                    <li>
+                        <input type="checkbox" class="case" value="<?= $v_ ?>"
+                               id="lang_<?= $v_ ?>" <?= (isset($this->filter) ? (in_array($v_, $this->filter["languages_id"]) ? " checked" : "") : "") ?> >
+                        <label for="lang_<?= $v_ ?>"><?= $v ?></label>
+                    </li>
+                <? } ?>
+            </ul>
+            <ul class="orientation" style="display: block;">
+                <li><strong>Orientation</strong></label></li>
+                <? foreach ($orientation as $v) {
+                    $v_ = str_replace(" ", "_", trim($v)); ?>
+                    <li>
+                        <input type="checkbox" class="case" value="<?= $v_ ?>"
+                               id="o_<?= $v_ ?>" <?= (isset($this->filter) ? (in_array($v_, $this->filter["orientation_id"]) ? " checked" : "") : "") ?> >
+                        <label for="o_<?= $v_ ?>"><?= $v ?></label>
+                    </li>
+                <? } ?>
+            </ul>
+            <ul class="gender" style="display: block;">
+                <li><strong>Gender</strong></label></li>
+                <? foreach ($gender as $k => $v) {
+                    $v_ = str_replace(" ", "_", trim($v)); ?>
+                    <li>
+                        <input type="checkbox" class="case" value="<?= str_replace(" ", "_", $k) ?>"
+                               id="g_<?= $v_ ?>" <?= (isset($this->filter) ? (in_array($k, $this->filter["gender_id"]) ? " checked" : "") : "") ?> >
+                        <label for="g_<?= $v_ ?>"><?= $v ?></label>
+                    </li>
+                <? } ?>
+            </ul>
+
+            <ul class="eye_color" style="display: block;">
+                <li><strong>Eye Color</strong></label></li>
+                <? foreach ($eye_color as $v) {
+                    $v_ = str_replace(" ", "_", trim($v)); ?>
+                    <li>
+                        <input type="checkbox" class="case" value="<?= $v_ ?>"
+                               id="eye_<?= $v_ ?>" <?= (isset($this->filter) ? (in_array($v_, $this->filter["eye_color_id"]) ? " checked" : "") : "") ?> >
+                        <label for="eye_<?= $v_ ?>"><?= $v ?></label>
+                    </li>
+                <? } ?>
+            </ul>
+
+            <ul class="sliders">
+                <li>
+                    <p>Age:</p>
+
+                    <div id="slider-age"></div>
+                    <span id="age-min" class="min"></span>
+                    <span id="age-max" class="max"></span>
+                </li>
+                <li>
+                    <p>Weight:</p>
+
+                    <div id="slider-weight"></div>
+                    <span id="weight-min" class="min"></span>
+                    <span id="weight-max" class="max"></span>
+                </li>
+
+                <? /*    <li>
+                                    <p>Height:</p>
+                                    <div id="slider-height"></div>
+                                    <span id="height-min" class="min"></span>
+                                    <span id="height-max" class="max"></span>
+                                </li>*/
+                ?>
+            </ul>
+            <ul class="hidden-models">
+
+                <li>
+                    <label for="hidden-models">Show hidden models</label>
+                    <input type="checkbox" value="hidden"
+                           id="hidden-models" <?php if ($this->filter["hidden"]) {
+                        echo "checked";
+                    } ?> >
+
+                </li>
+
+            </ul>
+
+            <? } ?>
+
+            <div class="clear"></div>
+            <div class="filter-buttons">
+                <div class="sb_filter fbutton"
+                     onclick="window.location = '/<?= ($this->return_to ? $this->return_to : $to_) ?>/'"
+                     id="cancel-filter">Cancel filters
+                </div>
+                <div class="sb_filter fbutton" id="apply-filter">Apply filters</div>
+            </div>
+
+        </div>
+        <input type="hidden" id="on_action" name="on_action" value="<?= $this->return_to ?>"/>
+        <input type="hidden" id="multi_select" name="multi_select"/>
+        <input type="hidden" id="multi_hair_type" name="multi_hair_type"
+               value="<?= (isset($this->filter["hair_type"]) ? $this->filter["hair_type"] : "") ?>"/>
+        <input type="hidden" id="multi_categories" name="multi_categories"
+               value="<?= (isset($this->filter["categories"]) ? $this->filter["categories"] : "") ?>"/>
+        <input type="hidden" id="multi_languages" name="multi_languages"
+               value="<?= (isset($this->filter["languages"]) ? $this->filter["languages"] : "") ?>"/>
+        <input type="hidden" id="multi_orientation" name="multi_orientation"
+               value="<?= (isset($this->filter["orientation"]) ? str_replace(" ", "_", $this->filter["orientation"]) : "") ?>"/>
+        <input type="hidden" id="multi_gender" name="multi_gender"
+               value="<?= (isset($this->filter["gender"]) ? $this->filter["gender"] : "") ?>"/>
+        <input type="hidden" id="multi_eye_color" name="multi_eye_color"
+               value="<?= (isset($this->filter["eye_color"]) ? $this->filter["eye_color"] : "") ?>"/>
+        <input type="hidden" id="multi_age" name="multi_age"
+               value="<?= (isset($this->filter["age"]) ? $this->filter["age"] : "") ?>"/>
+        <input type="hidden" id="multi_weight" name="multi_weight"
+               value="<?= (isset($this->filter["weight"]) ? $this->filter["weight"] : "") ?>"/>
+        <input type="hidden" id="multi_height" name="multi_height"
+               value="<?= (isset($this->filter["height"]) ? $this->filter["height"] : "") ?>"/>
+        <input type="hidden" id="multi_sorting" name="multi_sorting"
+               value="<?= (isset($this->filter["sorting"]) ? $this->filter["sorting"] : "") ?>"/>
+
+        <input type="hidden" id="show_hidden" name="show_hidden"
+               value="<?= (isset($this->filter["hidden"]) ? $this->filter["hidden"] : "") ?>"/>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#apply-filter").click(function () {
+            id = $("#multi_select").val();
+            categories = $("#multi_categories").val();
+            hair_type = $("#multi_hair_type").val();
+            languages = $("#multi_languages").val();
+            orientation = $("#multi_orientation").val();
+            gender = $("#multi_gender").val();
+            eye_color = $("#multi_eye_color").val();
+            age = $("#multi_age").val();
+            weight = $("#multi_weight").val();
+            sorting = $("#multi_sorting").val();
+            if ($('#hidden-models').is(':checked')) {
+
+                var hidden = $('#hidden-models').val();
+            }
+
+
+            // if(id.length > 0)
+            //    window.location = "/models/filter/"+id ;
+            // else
+            ///  window.location = "/models";
+            url = "/<?=($this->return_to ? $this->return_to : $to_)?>/filter";
+            if (categories.length > 0)
+                url = url + "/categories/" + categories;
+            if (hair_type.length > 0)
+                url = url + "/hair_type/" + hair_type;
+            if (languages.length > 0)
+                url = url + "/languages/" + languages;
+            if (orientation.length > 0)
+                url = url + "/orientation/" + orientation;
+            if (gender.length > 0)
+                url = url + "/gender/" + gender;
+            if (eye_color.length > 0)
+                url = url + "/eye_color/" + eye_color;
+            if (age.length > 0)
+                url = url + "/age/" + age;
+            if (weight.length > 0)
+                url = url + "/weight/" + weight;
+            if (sorting.length > 0)
+                url = url + "/sort/" + sorting;
+            if (hidden) {
+
+                url = url + "/" + hidden + "/true";
+            }
+
+            window.location = url;
+        });
+
+    });
+
+    /* multiple selection */
+    function check(ul_name) {
+        var ids = '';
+        $("." + ul_name + " .case:checkbox:checked").each(function () {
+            if (typeof $(this).val() != 'undefined') {
+                ids += $(this).val() + ',';
+            }
+        });
+        $('#multi_' + ul_name).val(ids);
+    }
+
+    $(function () {
+
+        $(".case").click(function () {
+            ul_name = $(this).parent().parent().attr("class");
+            check(ul_name);
+            // alert(this);
+            if ($(".case").length == $(".case:checked").length) {
+                $("#selectall").attr("checked", "checked");
+            } else {
+                $("#selectall").removeAttr("checked");
+            }
+
+        });
+
+        /* make checkbox act like radio */
+        $(".checkradio").each(function () {
+            $(this).change(function () {
+                $(".checkradio").attr('checked', false);
+                $(this).attr('checked', true);
+            });
+        });
+    });
+
+    $(function () {
+        /**
+         * the element
+         */
+        var $ui = $('#ui_element');
+        /* hide on load */
+        $ui.find('.sb_up')
+            .addClass('sb_down')
+            .removeClass('sb_up')
+            .andSelf()
+            .find('.sb_dropdown')
+            .hide();
+
+        /**
+         * on focus and on click display the dropdown,
+         * and change the arrow image
+         */
+        $ui.find('.box-title').bind('focus click', function () {
+            $ui.find('.sb_down')
+                .addClass('sb_up')
+                .removeClass('sb_down')
+                .andSelf()
+                .find('.sb_dropdown')
+                .show();
+        });
+
+        /**
+         * on mouse leave hide the dropdown,
+         * and change the arrow image
+         */
+        $ui.bind('mouseleave', function () {
+            $ui.find('.sb_up')
+                .addClass('sb_down')
+                .removeClass('sb_up')
+                .andSelf()
+                .find('.sb_dropdown')
+                .hide();
+        });
+
+        /**
+         * selecting all checkboxes
+         */
+        //$ui.find('.sb_dropdown').find('label[for="all"]').prev().bind('click',function(){
+        //    $(this).parent().siblings().find(':checkbox').attr('checked',this.checked).attr('disabled',this.checked);
+        //});
+    });
+
+    $(function () {
+        $("#slider-age").slider({
+            range: true,
+            min: <?=($this->maxValues["min_age"] ? $this->maxValues["min_age"] : "18")?>,
+            max: <?=($this->maxValues["max_age"] ? $this->maxValues["max_age"] : "80")?>,
+            values: [
+                <?=(isset($this->filter["age_id"][0]) ? $this->filter["age_id"][0] : ($this->maxValues["min_age"]))?>,
+                <?=(isset($this->filter["age_id"][1]) ? $this->filter["age_id"][1] : ($this->maxValues["max_age"]))?>
+            ],
+            slide: function (event, ui) {
+                /*$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );*/
+
+                $('#age-min').html(ui.values[0]);
+                $('#age-max').html(ui.values[1]);
+                $('#multi_age').val(ui.values[0] + "," + ui.values[1]);
+
+            },
+            create: function (event, ui) {
+                $('#age-min').appendTo($('#slider-age a').get(0));
+                $('#age-max').appendTo($('#slider-age a').get(1));
+
+                $('#age-min').html($(this).slider("values", 0));
+                $('#age-max').html($(this).slider("values", 1));
+            }
+        });
+
+        /* weight */
+        $("#slider-weight").slider({
+            range: true,
+            min: <?=($this->maxValues["min_weight"] ? (int)$this->maxValues["min_weight"] : "30")?>,
+            max: <?=($this->maxValues["max_weight"] ? (int)$this->maxValues["max_weight"] : "120")?>,
+            values: [
+                <?=(isset($this->filter["weight_id"][0]) ? (int)$this->filter["weight_id"][0] :  (int)($this->maxValues["min_weight"]))?>,
+                <?=(isset($this->filter["weight_id"][1]) ? (int)$this->filter["weight_id"][1] :  (int)($this->maxValues["max_weight"]))?>
+            ],
+            slide: function (event, ui) {
+                /*$( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );*/
+
+                $('#weight-min').html(ui.values[0]);
+                $('#weight-max').html(ui.values[1]);
+                $('#multi_weight').val(ui.values[0] + "," + ui.values[1]);
+
+            },
+            create: function (event, ui) {
+                $('#weight-min').appendTo($('#slider-weight a').get(0));
+                $('#weight-max').appendTo($('#slider-weight a').get(1));
+
+                $('#weight-min').html($(this).slider("values", 0));
+                $('#weight-max').html($(this).slider("values", 1));
+            }
+        });
+
+        /* height */
+        <? /* $( "#slider-height" ).slider({
+           range: true,
+           min: <?=($this->maxValues["min_height"] ? $this->maxValues["min_height"] : "30")?>,
+           max: <?=($this->maxValues["max_height"] ? $this->maxValues["max_height"] : "120")?>,
+           values: [ 20,  45 ],
+           slide: function( event, ui ) {
+
+
+             $('#height-min').html( ui.values[ 0 ]);
+             $('#height-max').html( ui.values[ 1 ]);
+             $('#multi_height').val( ui.values[ 0 ]+","+ ui.values[ 1 ]);
+
+           },
+           create: function(event, ui){
+             $('#height-min').appendTo($('#slider-height a').get(0));
+             $('#height-max').appendTo($('#slider-height a').get(1));
+
+             $('#height-min').html( $(this).slider("values",0));
+             $('#height-max').html( $(this).slider("values",1));
+           }
+         }); */ ?>
+
+        /*    $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+         " - $" + $( "#slider-range" ).slider( "values", 1 ) );  */
+    });
+</script>
+
+

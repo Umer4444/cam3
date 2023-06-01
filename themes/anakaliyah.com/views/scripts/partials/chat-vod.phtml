@@ -1,0 +1,11 @@
+<h4 class="title">Other Clips With Me</h4>
+
+
+<?
+if ($this->videos_for_sale) {
+    foreach ($this->videos_for_sale as $video) echo $this->partial('partials/items/video-small.phtml', array('item' => $video));
+} else {
+    echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';
+}
+?>
+        

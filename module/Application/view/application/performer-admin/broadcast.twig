@@ -1,0 +1,191 @@
+{% extends 'layout/backend' %}
+
+{% set content %}
+
+    {% if user().getUser().getTermsAgreed() %}
+
+        <div class="row">
+
+            <form class="form-inline" method="post">
+                <div class="col-md-4">
+                    <div class="form-group" style="width: 70%">
+                            <label for="status">Room Status</label>
+                            <input type="text" name="status" title="Write status" autocomplete="off"
+                                   class="form-control" value="{{ user().getUser().getCurrentChatSession().getRoomStatus() }}"
+                                   style="width: 70%" >
+                    </div>
+                    {% if user().getUser().isBroadcasting() %}
+                        <button type="submit" class="btn btn-danger" name="stopBroadcast" value="stop">Stop Broadcast</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success" name="startBroadcast">Start Broadcast</button>
+                    {% endif %}
+                </div>
+                <div class="col-md-3">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-info active">
+                            <input type="radio" autocomplete="off" name="broadcastType" value="duplex" id="duplex"
+                                   checked> All Types
+                        </label>
+                        <label class="btn btn-info">
+                            <input type="radio" autocomplete="off" name="broadcastType" value="video" id="video">
+                            Video / Text
+                        </label>
+                        <label class="btn btn-info">
+                            <input type="radio" autocomplete="off" name="broadcastType" value="audio" id="audio">
+                            Audio / Text
+                        </label>
+                        <label class="btn btn-info">
+                            <input type="radio" autocomplete="off" name="broadcastType" value="text" id="text"> Text
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-info active">
+                            <input type="radio" autocomplete="off" name="broadcastMode" value="group" id="group"
+                                   checked> Group
+                        </label>
+                        <label class="btn btn-info">
+                            <input type="radio" autocomplete="off" name="broadcastMode" value="show" id="show">
+                            Show
+                        </label>
+                        {% if user().getUser().getBroadcastMode() == 'private' %}
+                            <label class="btn btn-info">
+                                <input type="radio" autocomplete="off" name="broadcastMode" value="show" id="private">
+                                Private
+                            </label>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <select id="cameras" name="cameras" class="hidden">
+                        <option value="1">1 Camera</option>
+                    </select>
+                </div>
+            </form>
+            <div class="col-md-2">
+
+                <div class="form-group">
+                    {% if user().getUser().isBroadcasting() and user().getUser().getBroadcastMode() == 'group' %}
+                        <div class='input-group date' id='fake' style="width: 51%; float: left" data-type="datetimepicker"
+                        data-toggle="tooltip" data-placement="top" title="Choose private count down">
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    {% endif %}
+                    <a href="#" class="btn btn-warning pull-right" role="button" data-toggle="modal"
+                        data-target="#embedCodeModal">Embed Code</a>
+                </div>
+
+            </div>
+
+            {% if user().getUser().isBroadcasting() %}
+
+                {% if user().getUser().getBroadcastType() in ['duplex', 'video', 'audio'] %}
+                    <div class="col-md-6">
+                        {{ stream(user()).getBroadcast(constant('Application\\View\\Helper\\Stream::BROADCAST_FULL')) }}
+                    </div>
+                {% endif %}
+
+                <div class="col-md-6">
+                    {{ chat(user()) }}
+                </div>
+
+                {% if user().getUser().getNumberOfCameras() > 1 %}
+                    {% for i in 2 .. user().getUser().getNumberOfCameras()  %}
+                        <div class="col-md-4">
+                            {{ stream(user()).getBroadcast(constant('Application\\View\\Helper\\Stream::BROADCAST_SMALL'), i) }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+            {% endif %}
+
+            <div id="numberOfCameras"></div>
+            <script type="application/javascript">
+
+                $('#fake').datetimepicker({
+                    format: 'H:m',
+                    defaultDate:  moment([2008, 6, 1, 0, 30])
+                }).on('dp.hide', function(){
+                    $(this).data("DateTimePicker").format(
+                            ($('#fake').data("DateTimePicker").date().format('H') == 0 ? '' :'H:')+'m:ss'
+                    ).disable();
+                    document.fakeTimer = setInterval(function(){
+
+                        var date = $('#fake').data("DateTimePicker").date();
+                        $('#fake').data("DateTimePicker").date(date.subtract(1, 'seconds'));
+
+                        if (!((date.format('mm') * 60 + date.format('ss')) % 10)) {
+                            socket.emit("update", '<div class="alert alert-info" role="alert">The performer is going ' + 'into private in '+date.format('mm:ss')+'</div>');
+                        }
+
+                        if ((date.format('m') + date.format('ss') + date.format('H')) == 0) {
+                            location.href = '/admin/broadcast/private/' + Math.floor((Math.random() * 1000000000000) + 1);
+                            clearInterval(document.fakeTimer);
+                        }
+                    }, 1000)
+                });
+
+                $('#{{ user().getUser().getBroadcastType() }}').closest('.btn').button('toggle');
+                $('#{{ user().getUser().getBroadcastMode() }}').closest('.btn').button('toggle');
+
+                $("#numberOfCameras").webcam({
+                    swffile: "/assets/vendor/javascript/webcam/jscam_canvas_only.swf",
+                    width: 1,
+                    height: 1,
+                    onLoad: function() {
+
+                        var cams = webcam.getCameraList();
+
+                        if (cams.length > 1) {
+                            for(i = 2; i < cams.length+1; i++) {
+                                $("#cameras").append('<option value="'+i+'">'+i+' Cameras</option>');
+                            }
+                            $('#cameras').multiselect('deselect', 1)
+                                         .multiselect('select', {{ user().getUser().getNumberOfCameras() + 0 }});
+                        }
+                        else {
+                            $('#cameras').remove();
+                        }
+
+                        $('#numberOfCameras').remove()
+
+                        {% if user().getUser().isBroadcasting() %}
+                            $('#cameras').multiselect('disable');
+                            $('.btn-group .btn').attr('disabled', 'disabled');
+                            $(document).off('.button.data-api');
+                        {% endif %}
+
+                    }
+                });
+
+            </script>
+
+        </div>
+
+        <div class="modal fade" id="embedCodeModal" tabindex="-1" role="dialog" aria-hidden="true" style="top: 15%">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">Embed code</h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="embedCode" readonly style="width: 100%;resize: none;" rows="3">{{ stream(user()).getIframe() }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            You must agree with Model Form Release and Model Employment Form to brodcast
+        </div>
+    {% endif %}
+
+{% endset %}

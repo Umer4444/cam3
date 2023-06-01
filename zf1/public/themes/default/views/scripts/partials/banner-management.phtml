@@ -1,0 +1,138 @@
+<script src="/scripts/jquery.multiselect.js"></script>
+<?= $this->notice ?>
+<div class="page-content round-corners">
+    <h1 class="page-title">Add new banner</h1>
+
+    <form autocomplete="off" action="" method="post" id="">
+        <div class="join-box-fields">
+
+            <div class="field">
+                <label for="size">Size</label>
+
+                <div class="field_wrapper">
+                    <select name="banner_zone[]" multiple="multiple" size="5">
+                        <?php foreach ($this->banner_zone as $size => $zone) { ?>
+                            <optgroup label="Banner Size <?= $size ?>">
+                                <?php foreach ($zone as $key => $val) { ?>
+                                    <option value="<?= $val . "-" . $size ?>"><?= $val ?></option>
+                                <?php } ?>
+                            </optgroup>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label for="start_date">From</label>
+
+                <div class="field_wrapper">
+                    <input name="start_date" id="start_date" placeholder="start date"/>
+                </div>
+            </div>
+            <div class="field">
+                <label for="end_date">To</label>
+
+                <div class="field_wrapper">
+                    <input name="end_date" id="end_date" placeholder="end date"/>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="content">Content</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formTextarea('content', null, array("class" => "content", "style" => "width: 400px;")) ?>
+
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="join-button">
+            <input type="submit" value="Save" name="save" class="btn btn-success">
+        </div>
+    </form>
+
+    <?= $this->partial("/partials/editor.phtml", array()); ?>
+    <br/>
+
+    <h1 class="page-title">Banners preview</h1>
+    <?
+    if (count($this->banners)) {
+        ?>
+        <ul id="mycarousel" class="jcarousel-skin-tango">
+            <? foreach ($this->banners as $this->banner) { ?>
+                <li>
+                    <?= $this->banner->content ?>
+
+                    <div>
+                        <hr/>
+                        <span><small><b>From:</b> <?= date("m/d/Y", $this->banner->start_date) ?>   </small></span>
+                        <span><small><b>To:</b> <?= date("m/d/Y", $this->banner->end_date) ?>   </small></span>
+                        <br/>
+                        <span><small>
+                                <b>Status:</b> <?= ($this->banner->status == 0 ? "pending" : ($this->banner->status == 1 ? " active" : "denied")) ?>
+                            </small></span>
+                        <hr/>
+                <span>
+                    <form method="post">
+                        <input type="hidden" name="id_banner" value="<?= $this->banner->id ?>">
+                        <button type="submit" name="delete_banner">delete</button>
+                        <? if (Auth::isModerator()) { ?>
+                            <? if ($this->banner->status != 2) { ?>
+                                <button type="submit" name="deny_banner">deny</button>
+                            <? } ?>
+                            <? if ($this->banner->status != 1) { ?>
+                                <button type="submit" name="approve_banner">approve</button>
+                            <? } ?>
+                        <? } ?>
+
+                    </form>
+                </span>
+                    </div>
+                </li>
+            <? } ?>
+        </ul>
+        <br>
+        <br>
+        <link rel="stylesheet" type="text/css" href="/scripts/jcarousel/skins/anakaliyah/skin.css"/>
+        <script src="/scripts/jcarousel/lib/jquery.jcarousel.min.js"></script>
+        <script type="text/javascript">
+            $('#mycarousel').jcarousel({
+                wrap: 'circular',
+                visible: 1,
+                auto: 5,
+                wrap: 'last'
+
+            });
+            $("select").multiselect({
+                selectedList: 4 // 0-based index
+            });
+            $("select").multiselect({
+                selectedText: function (numChecked, numTotal, checkedItems) {
+                    return numChecked + ' of ' + numTotal + ' checked';
+                }
+            });
+        </script>
+        <style>
+            #mycarousel img {
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                vertical-align: middle;
+                border: 0;
+                -ms-interpolation-mode: bicubic;
+            }
+        </style>
+    <? } ?>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#start_date").datepicker();
+            $("#end_date").datepicker();
+        });
+
+    </script>
+
+</div>

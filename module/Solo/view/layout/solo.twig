@@ -1,0 +1,169 @@
+{% extends 'layout/layout_base' %}
+
+{% block title %}
+    {{ headTitle().prepend("Solo - Xexposed.com").setSeparator(' - ') | raw }}
+{% endblock title %}
+
+{% block stylesheets %}
+    {{ headLink().appendStylesheet('/assets/head_solo_css.css')| raw }}
+{% endblock %}
+
+{% block header %}
+
+    <section>
+        <nav class="navbar navbar-inverse navbar-fixed-top scrolled">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#solo-navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <img src="/assets/images/logo.png" alt="Solo" class="logo">
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="solo-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li {% if route() == 'solo/home' %} class="active" {% else %}{% endif %}>
+                        <a href="/">Home</a>
+                    </li>
+                    <li {% if route() == 'performer' %} class="active" {% else %}{% endif %}>
+                        <a href="{{ url('performer') }}">About me</a>
+                    </li>
+                    <li {% if route() == 'social' %} class="active" {% else %}{% endif %}>
+                        <a href="/social">Social</a>
+                    </li>
+                    <li {% if route() == 'images/recent' %} class="active" {% else %}{% endif %}>
+                        <a href="{{ url('images/recent') }}">Photos</a>
+                    </li>
+                    <li {% if route() == 'videos' %} class="active" {% else %}{% endif %}>
+                        <a href="{{ url('videos') }}">Videos</a>
+                    </li>
+                    <li {% if route() == 'blog' %} class="active" {% else %}{% endif %}>
+                        <a href="{{ url('blog') }}">Blog</a>
+                    </li>
+                    <li {% if route() == 'store' %} class="active" {% else %}{% endif %}>
+                        <a href="/store" title="Store">Store</a>
+                    </li>
+                    <li {% if route() == 'play' %} class="active" {% else %}{% endif %}>
+                        <a href="/play">Play</a>
+                    </li>
+                    <li {% if route() == 'pledges' %} class="active" {% else %}{% endif %}>
+                        <a href="/pledges">Pledge</a>
+                    </li>
+                    <li {% if route() == 'solo/live' %} class="active" {% else %}{% endif %}>
+                        <a href="{{ url('solo/live') }}">Live</a>
+                    </li>
+                    {% if user().getUser().getGuestbook() == 0 %}
+                    {% else %}
+                        {% if zfcUserIdentity() %}
+                            <li {% if route() == 'solo/guestbook' %} class="active" {% else %}{% endif %}>
+                                <a href="{{ url('solo/guestbook') }}" title="Guest book">Guest book</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                {% if zfcUserIdentity() %}
+                    <ul class="nav navbar-nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                Account <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+
+                                {% if zfcUserIdentity().isPerformer() %}
+                                    <li><a href="{{ url('zfcadmin') }}" class="">Dashboard</a></li>
+                                {% endif %}
+
+                                {% if zfcUserIdentity().hasUserRole() %}
+                                    <li>
+                                        <a href="/gateway" class="">Chips</a>
+                                    </li>
+                                    <li>
+                                        <a href="/account/information" class="">Account Info</a>
+                                    </li>
+                                    <li>
+                                        <a href="/account/config" class="">Account Config</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="/account/logout">Logout</a>
+                                </li>
+                                <? } ?>
+                            </ul>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav pull-right">
+                        <li {% if route() == 'zfcuser/login' %} class="active" {% else %}{% endif %}>
+                            <a href="{{ url('zfcuser/login') }}">Login</a>
+                        </li>
+                        <li {% if route() == 'zfcuser/register' %} class="active" {% else %}{% endif %}>
+                            <a href="{{ url('zfcuser/register') }}">Join Us!</a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    </section>
+    {% block banner %}
+        <div class="top-banner">
+            <img src="/assets/themes/anakaliyah.com/assets/images/welcome.jpg" class="top-banner-image" id="image" height="auto" width="100%">
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block container %}
+    <div class="container">
+        <div class="row row-no-margin container-fluid-fix generic-border-container">
+            <div class="col-md-12">
+                {% block content %}
+                    {{ content | raw }}
+                {% endblock content %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+
+    <footer id="soloFooter" class="navbar navbar-fixed-bottom">
+        <section id="Members">
+            <div class="row row-no-margin">
+
+                <a href="#">
+                    <div class="col-lg-4 col-lg-offset-1 min-height-100 free">
+                        <h1 class="text-center no-background-color">
+                            <span class="pink">FREE</span> MEMBERSHIP
+                        </h1>
+                    </div>
+                </a>
+
+                <a href="#">
+                    <div class="col-lg-4 col-lg-offset-2 min-height-100 free">
+                        <h1 class="text-center no-background-color">
+                            become a <span class="pink">V.I.P</span> member
+                            <p class="pink font-13">6$ a month - 30 minute free show every month + more</p>
+                        </h1>
+                    </div>
+                </a>
+
+                <p class="col-sm-12 margin-top-20">18 U.S.C. &amp; 2257
+                    <a href="#" class="pink">Record-Keeping Requirement Compliance Statement</a> |
+                    <a href="#" class="pink">Support</a> |
+                    <a href="#" class="pink">Privacy</a>
+                    <br>
+                    Content copyright 2012. Anakaliyah.com. All rights reserved.
+                </p>
+            </div>
+        </section>
+    </footer>
+
+{% endblock %}
+
+{% block im %}{% endblock %}

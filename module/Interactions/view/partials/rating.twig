@@ -1,0 +1,10 @@
+<div class="{{ zfcUserIdentity().getId() ?: 'disableRate' }}"
+     data-type="rating"
+     data-size="big"
+     data-average="{{
+     object.getInteraction().getVotes() ?
+        (object.getInteraction().getRating() / object.getInteraction().getVotes())|number_format :
+        0
+     }}"
+     data-rating="{{ object.getInteraction().getRating() }}"
+     data-url="{{ url('api.rest.doctrine.interactions', {id : object.getInteraction().getId()}) }}"></div>

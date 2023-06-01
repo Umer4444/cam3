@@ -1,0 +1,247 @@
+{% extends 'layout/user-profile' %}
+
+{% block banner %}{% endblock %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <div class="profile_cover" id="solo-profile-cover">
+                <div class="cover-fix-size">
+                    <img src="{{ photos(user.getId(), 'BigCover') }}" alt="profile_pic" class="img-responsive">
+                </div>
+            </div>
+            <div id="pagetitle" class="profile-tab">
+                <div class="profile-tabs" role="tabpanel" data-example-id="togglable-tabs">
+                    <div class="nav nav-tabs tab_prof" id="myTab">
+                        <div class="profile-pic">
+                            <img {{ user().getContextInnerTag() }}
+                                    src="{{ user.getAvatar() }}" width="220" height="190">
+                        </div>
+                        <div class="profile_name" style="">
+                            <h3>{{ user.getDisplayName() }}</h3>
+                            <small>
+                                | {{ user.getAge() }}yrs
+                                <span class="theme-color"></span>
+                            </small>
+                        </div>
+                        {% block profileNavigation %}{% endblock profileNavigation %}
+                    </div>
+                </div>
+            </div>
+            <aside class="sidebar col-sm-4 top-fix-margin">
+                {% include 'performer/profile/left' %}
+            </aside>
+            <div class="content col-sm-8">
+                <div class="profile-main-content full-width">
+                    {% block content %}
+
+                        <div class="row row-no-margin padding-10">
+
+                            {% set topPayersHelper = topPayers(user.getId()) %}
+
+                            <div class="row row-no-margin">
+                                <div class="col-md-12">
+                                    {% include 'performer/profile/blocks' with {user: user} %}
+                                </div>
+                            </div>
+
+                            <div class="row row-no-margin">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">Interest and Hobbies</div>
+                                        <div class="panel-body">
+                                            {% include 'interests' with {user:user} %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row row-no-margin">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">Reviews</div>
+                                        <div class="panel-body">
+                                            {% if(zfcUserIdentity()) %}
+                                                <a id="review_button" class="btn btn-default right"
+                                                   style="color:black;">Add review</a>
+                                                <div class="clear"></div>
+                                                <br/>
+                                                <div id="add_review" style="display:none;">
+
+                                                    {% set form = form.prepare().setAttribute('class', 'form-horizontal').setAttribute('action', '') %}
+                                                    {% do form.get('submit').setAttributes({'class' : 'btn brn-default'}).setAttributes({'id' : 'submit'}) %}
+                                                    {% do form.get('review').setAttributes({'id' : 'new_review'}) %}
+
+                                                    {% for element in form %}
+
+                                                        {% if element.getAttributes()['type'] == 'Submit' %}
+                                                            <section>
+                                                                <div class="control-group"
+                                                                     id="control-group-passwordVerify">
+                                                                    <button type="submit" name="submit"
+                                                                            class="btn btn-info" value="">Save
+                                                                    </button>
+                                                                </div>
+                                                            </section>
+                                                        {% elseif element.getAttributes()['type'] == 'textarea' %}
+                                                            <section>
+                                                                <div class="control-group"
+                                                                     id="control-group-passwordVerify">
+                                                                    <textarea type="hidden" class="form-username form-control"
+                                                                              name='{{ element.getName() }}'
+                                                                              id='{{ element.getName() }}'
+                                                                              autofocus="autofocus"
+                                                                              placeholder="{{ element.getLabel() }}"
+                                                                              value="user"
+                                                                              autocomplete="off">
+
+                                                                    </textarea>
+                                                                </div>
+                                                            </section>
+                                                        {% else %}
+                                                            <section>
+                                                                <div class="control-group"
+                                                                     id="control-group-passwordVerify">
+                                                                    <label class="control-label"
+                                                                           for="form-username">{{ element.getLabel() }}</label>
+                                                                    <div class="controls" id="controls-passwordVerify">
+                                                                        <input type="{{ element.getType() }}"
+                                                                               class="form-username form-control"
+                                                                               name='{{ element.getName() }}'
+                                                                               id='{{ element.getName() }}'
+                                                                               autofocus="autofocus"
+                                                                               placeholder="{{ element.getLabel() }}"
+                                                                               value="{{ element.getValue() }}"
+                                                                               autocomplete="off">
+                                                                    </div>
+                                                                </div>
+                                                                <ul class="help-inline">
+                                                                    <li>{{ formElementErrors(element) }}</li>
+                                                                </ul>
+                                                            </section>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                </div>
+
+                                                <script>
+                                                    $('.form-horizontal').submit(function (e) {
+                                                        $('#submit').attr('disabled', true);
+                                                        e.preventDefault();
+
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: "{{ url('process-ajax') }}",
+                                                            data: {
+                                                                'action': 'review',
+                                                                'item_type': 'image',
+                                                                'item': '{{ image.getId() }}',
+                                                                'review': $('#new_review').val()
+                                                            },
+                                                            dataType: 'json',
+                                                            //"option=" + option + "&item=" + item + "&item_type=" + item_type,
+
+                                                            success: function (json_data) {
+                                                                var reviewj = json_data.review;
+
+                                                                var string = '<table class="review_table active" id="review_ajax">';
+                                                                string += '<tr>';
+                                                                string += '<td>';
+                                                                string += reviewj.user;
+                                                                string += '</td>';
+                                                                string += '<td>';
+                                                                string += '<a id="date">';
+                                                                string += ' A few moments ago..';
+                                                                string += '</a>';
+                                                                string += '</td></tr>';
+                                                                string += '<tr>';
+                                                                string += '<td align="top"><a href="#">';
+                                                                string += '<img width="40" height="40" src="' + reviewj.avatar + '"/>';
+                                                                string += '</a>';
+                                                                string += '</td>';
+                                                                string += '<td class="review">' + reviewj.review + ' --- pending for moderation</td>';
+                                                                string += '</tr></table>';
+
+                                                                $('.review_table').first().before(string);
+                                                                $('#add_review').val('').hide();
+                                                                $('#review_button').hide();
+                                                            }
+                                                        });
+                                                    });
+                                                </script>
+
+                                            {% endif %}
+                                            {% for review in reviewsPending %}
+                                                {% set name = review.getUser().getUsername() %}
+                                                {% set avatar = review.getUser().getAvatar() %}
+                                                <table class="review_table  active"
+                                                       id="review_{{ review.getId() }}">
+
+                                                    <tr>
+                                                        <td>{% if review.getUser().getUsername() %}{{ review.getUser().getUsername() }}  {% else %} Anonymous {% endif %}</td>
+                                                        <td>
+                                                            <a name="review_{{ review.getId() }}"> {{ review.getDate()|date('l, F j Y') }}
+                                                                at {{ review.getDate()|date('H:i') }}</a></td>
+                                                    </tr>
+
+
+                                                    <tr>
+                                                        <td valign="top"><a href=" "><img width="40" height="40"
+                                                                                          src="{{ avatar }}"
+                                                                                          title="{{ review.getUser().getUsername() }}"></a>
+                                                        </td>
+                                                        <td class="review">{{ review.getReview() }} --- pending for
+                                                            moderation
+                                                        </td>
+                                                    </tr>
+
+                                                </table>
+
+                                            {% endfor %}
+                                            {% for review in reviews %}
+                                                {% set name = review.getUser().getUsername() %}
+                                                {% set avatar = review.getUser().getAvatar() %}
+
+                                                <table class="review_table  active"
+                                                       id="review_{{ review.getId() }}">
+
+                                                    <tr>
+                                                        <td>{% if review.getUser().getUsername() %}{{ review.getUser().getUsername() }}  {% else %} Anonymous {% endif %}</td>
+                                                        <td>
+                                                            <a name="review_{{ review.getId() }}"> {{ review.getDate()|date('l, F j Y') }}
+                                                                at {{ review.getDate()|date('H:i') }}</a></td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td valign="top">
+                                                            <a href=" ">
+                                                                <img width="40" height="40"
+                                                                     src="{{ avatar }}"
+                                                                     title="{{ review.getUser().getUsername() }}">
+                                                            </a>
+                                                        </td>
+                                                        <td class="review">{{ review.getReview() }}</td>
+                                                    </tr>
+
+                                                </table>
+
+                                            {% endfor %}
+
+                                            {% if(zfcUserIdentity()) %}
+                                            {% else %}
+                                                Please <a href="{{ url('zfcuser/login') }}"
+                                                          class="">login</a> to write a review
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock container %}

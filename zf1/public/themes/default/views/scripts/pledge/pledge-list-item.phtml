@@ -1,0 +1,92 @@
+<?
+
+if ($this->pledge->start_date < time() && $this->pledge->end_date >= time() && $this->pledge->status == 1)
+    $this->pledge_status = true;
+else
+    $this->pledge_status = false;
+
+if ($this->pledge->funding_type == fixed && $this->pledge->contributed_amount >= $this->pledge->goal_amount) $this->pledge_status = false;
+
+$pledge_view_url = $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-view-frontend");
+
+?>
+<? if (isset($_SESSION["likes"]["pledge"]) && is_array($_SESSION["likes"]["pledge"]) && in_array($this->pledge->id, $_SESSION["likes"]["pledge"])) $voted = true; else $voted = false; ?>
+<div class="col-lg-4 col-sm-6 col-md-4 col-xs-12 ">
+    <div class="col-sm-12 pledge-box">
+        <div class="box-main">
+            <div class="col-lg-4 col-sm-4 col-xs-12 no-padding pledge-img">
+                <img src="<?= $this->pledge->photo_cover ?>" class="img-responsive" alt="<?= $this->pledge->title ?>">
+            </div>
+            <div class="col-lg-8 col-sm-8 col-xs-12 padd_large padd-xs">
+                <div class="row">
+                    <div class="">
+                        <span><small class="text-muted">Created by: </small>
+                            <small class="text-decoration-underline">
+                                <a title="<?= $this->pledge->model_screen_name ?>"
+                                   href="<?= $this->url(array("id_model" => $this->pledge->id_model, "name" => $this->pledge->model_screen_name, "profile_type" => "profile"), "model-profile"); ?>">
+                                    <?= $this->pledge->model_screen_name ?>
+                                </a>
+                            </small>
+                        </span>
+                        <div class="effect pledge-performer-name ">
+                            <?= $this->pledge->model_screen_name ?>
+                        </div>
+                        <div class="pledge-detail-box">
+                            <p class="text-muted">
+                                <span class="theme-color">
+                                    Wanted for :
+                                </span>
+                            <?= short_description($this->pledge->content) ?>
+                            </p>
+                            <p class="text-muted"><span class="theme-color">Refer Percentage: </span>15</p>
+                            <p class="text-muted"><span class="theme-color">Known where aboutus: <br>
+                          </span>
+                            <a title="<?= $this->pledge->model_screen_name ?>"
+                               href="<?= $this->url(array("id_model" => $this->pledge->id_model, "name" => $this->pledge->model_screen_name, "profile_type" => "profile"), "model-profile"); ?>">
+                                <?= $_SERVER['HTTP_HOST']."/".$this->url(array("id_model" => $this->pledge->id_model, "name" => $this->pledge->model_screen_name, "profile_type" => "profile"), "model-profile"); ?>
+                            </a>
+                        </div>
+                        <a href="<?= $pledge_view_url ?>">
+                            <div class="effect pledge-performer-btn "><small class="half small-txt">Bounty Currently @</small>
+                                <h4 class="white half big-txt">$<?= number_format($this->pledge->goal_amount, 0) ?><small class="white"></small></h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="pull-left">
+                <span class="theme-color">
+                    Bounty Issued:
+                </span>
+                <span class="text-muted">
+                    <? if ($this->pledge->start_date < time() && $this->pledge->end_date > time()) { ?>
+
+                        <? if (($this->pledge->end_date - time()) < (24 * 3600)) { ?>
+                            <span class="countdown pink"
+                                  data-time="<?= ($this->pledge->end_date * 1000) ?>">0</span> <span class="">Hours left</span>
+                        <? } else { ?>
+                            <span class="countdowndays pink"
+                                  data-time="<?= ($this->pledge->end_date * 1000) ?>">0</span> <span class="">Days left</span>
+                        <? } ?>
+                    <? } else if ($this->pledge->start_date > time()) { ?>
+                        <span class=""><?= date("M j H:i", $this->pledge->start_date) ?></span>
+                        <span class="pink">Start</span>
+                    <? } else if ($this->pledge->end_date < time()) { ?>
+                        <span class=""><?= date("M j H:i", $this->pledge->end_date) ?></span>
+                        <span class="pink">Ended</span>
+                    <? } ?>
+                </span>
+            </div>
+            <div class="pull-right">
+                <div class="profile-like-un">
+                    <a href="<?= $pledge_view_url ?>"><img src="/assets/images/like.jpg" height="20" width="20"></a>
+                    42
+                    <a href="<?= $pledge_view_url ?>"><img src="/assets/images/unlike.jpg" height="20" width="20"></a>
+                    52
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

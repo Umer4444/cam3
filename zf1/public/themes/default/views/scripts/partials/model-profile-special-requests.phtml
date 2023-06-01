@@ -1,0 +1,154 @@
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#want_date").datepicker({
+            minDate: 0,
+            maxDate: "+3M"
+        });
+    });
+</script>
+<?
+$minutes = array('' => 'min');
+for ($i = 0; $i < 60; $i++) $minutes[$i] = $i;
+
+$seconds = array('' => 'sec');
+for ($i = 0; $i < 60; $i++) $seconds[$i] = $i;
+
+?>
+<div class="row">
+    <div class="col-xs-12">
+        <?= $this->notice ?>
+        <h3 class="sub_header">Make a special request for <?= $this->model->screen_name ?></h3>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="col-xs-12">
+
+        <form action="" method="post" id="form_special_request" class="form form-horizontal" role="form">
+
+
+                <div class="form-group">
+                    <label for="item">Type</label>
+                    <div class="clearFix"></div>
+                    <div class="col-xs-12">
+                        <?= $this->formSelect('item', $_SESSION['form_special_request']['item'], null, $this->special_items) ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Duration</label>
+                    <div class="clearFix"></div>
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <?= $this->formSelect('duration_h', $_SESSION['form_special_request']['duration_h'], null, array("" => "hour", "0" => "0", "1" => "1", "2" => "2", "3" => "3")) ?>
+                            </div>
+                            <div class="col-xs-4">
+                                <?= $this->formSelect('duration_m', $_SESSION['form_special_request']['duration_m'], null, $minutes) ?>
+                            </div>
+                            <div class="col-xs-4">
+                                <?= $this->formSelect('duration_s', $_SESSION['form_special_request']['duration_s'], null, $seconds) ?>
+                            </div>
+                        </div>
+
+
+                        <span class="field_notice">*Video only (min 60 sec, max 3 hour) </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="offer">Offer</label>
+
+                    <div class="col-xs-12">
+                        <?= $this->formText('offer', $_SESSION['form_special_request']['offer'], array("class" => "small_tform-group")) ?>
+                        <span class="form-group_notice">*How much are you willing to pay</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="deposit">Deposit</label>
+
+                    <div class="col-xs-12">
+                        <?= $this->formText('deposit', $_SESSION['form_special_request']['deposit'], array("class" => "small_tform-group")) ?>
+                        <span class="form-group_notice">*Must have to be taken seriously</span>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+
+                    <div class="col-xs-12">
+                        <?= $this->formTextarea('description', $_SESSION['form_special_request']['description'], array('cols' => 30, 'rows' => 3)) ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="terms">Terms</label>
+
+                    <div class="col-xs-12">
+                        <?= $this->formTextarea('terms', $_SESSION['form_special_request']['terms'], array('cols' => 30, 'rows' => 3)) ?>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="want_date">Want it by</label>
+                    <div class="clearFix"></div>
+                    <div class="col-xs-3">
+                        <? $want_date_field_value = $_SESSION['form_special_request']['want_date'] ? $_SESSION['form_special_request']['want_date'] : date('m/d/Y', time() + 60 * 60 * 24 * 3) ?>
+                        <?= $this->formText('want_date', $want_date_field_value, array()) ?>
+
+                    </div>
+                </div>
+
+
+
+
+            <div class="form-group text-center">
+                <input type="submit" name="send" value="Send Request" class="btn btn-success btn-lg">
+                <input type="hidden" name="send" value="Send Request">
+            </div>
+
+        </form>
+
+        <div class="break-line"></div>
+
+        <h3 class="sub_header">Special requests history <?= $this->model->screen_name ?></h3>
+
+        <table class="listing_items table table-striped" cellpadding="5" cellspacing="1">
+            <tr class="table_header">
+                <th>Item</th>
+                <th>Added</th>
+                <th class="center">Offer</th>
+                <th class="center">Counter<br>Offer</th>
+                <th>Terms</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <? if (!count($this->paginator)) echo '<td colspan="100" class="center"><br>You do not have any special request for <b>' . $this->model->screen_name . '</b>.</td>'; ?>
+
+                <?foreach ($this->paginator as $row) {
+
+                    $cycle = $this->cycle(array("dark", "light"))->next();
+
+                    echo '<tr class="' . $cycle . '">';
+                    echo '<td><a href="' . $this->url(array("profile_type" => "special-request", "id_special_request" => $row['id'], "id_model" => $this->model->id, "name" => $this->model->screen_name), "model-profile2") . '">' . ucfirst($row['item']) . '</a></td>';
+                    echo '<td>' . date('d-m-Y', $row['added']) . '</td>';
+                    echo '<td class="center">' . $row['offer'] . '</td>';
+                    echo '<td class="center ' . ($row['counter_offer'] > 0 ? 'counter_offer' : '') . '">' . $row['counter_offer'] . '</td>';
+                    echo '<td class="terms">' . $row['terms'] . '</td>';
+                    echo '<td class="center">' . $row['status'] . '</td>';
+                    echo '</tr>';
+                }
+                ?>
+            </tr>
+        </table>
+
+        <?
+        echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+
+        unset($_SESSION['form_special_request'])
+        ?>
+    </div>
+</div>

@@ -1,0 +1,830 @@
+<?
+switch ($this->params['type']) {
+    case 'list':
+        $this->headTitle('Privacy Settings - Users List');
+        break;
+
+    case 'user':
+        $this->headTitle('Privacy Settings - User Settings');
+        break;
+
+    case 'global':
+        $this->headTitle('Privacy Settings - Global Settings List');
+        break;
+
+    default:
+        $this->headTitle('Privacy Settings');
+        break;
+
+}
+
+$countries = array();
+$countries['none'] = "";
+foreach ($this->countries as $c) {
+    $countries[$c->code] = substr($c['name'], 0, 35);
+}
+?>
+
+<div class="model_content">
+<?
+echo $this->partial('partials/model-submenu.phtml', array("type" => "privacy", "sub_menu_type" => $this->params['type'], "params" => $this->params));
+
+if (!$this->params['type'] || $this->params['type'] == 'general') {
+
+    ?>
+
+    <div class="page-content round-corners privacy_general">
+    <?= $this->notice ?>
+
+    <h1 class="page-title">Global Settings</h1>
+    <br>
+
+    <p>You can block visitors matching the following criteria you select</p>
+
+    <h3><?= (!$this->params['type'] ? "Add Rule:" : "Edit Rule:") ?></h3>
+    <table>
+    <tr>
+    <td>
+    <form action="" method="post" id="form_privacy_settings">
+    <script type="text/javascript">
+        function getRules(options) {
+            $.ajax({
+                url: "/process/",
+                type: "POST",
+                cache: false,
+                dataType: "json",
+                data: options,
+                success: function (data) {
+
+                    //replace table
+                    jspAPI_list.getContentPane().html(data.content);
+                    //reinit jscrollpane
+                    jspAPI_list.reinitialise();
+
+                }
+            });
+        }
+        ;
+        var firstTime = <?=($this->params['type'] == 'general' ? 'true' : 'true')?>;
+
+    </script>
+    <?
+    if ($this->params['type'] == 'general') {
+        echo '<input type="hidden" name="id" value="' . $this->params['id'] . '">';
+    }
+    ?>
+    <div class="join-box-fields">
+
+        <div class="field">
+            <label for="id_country">Block country</label>
+
+            <div class="field_wrapper">
+                <?
+                $options = array();
+                echo $this->formSelect('id_country', ($this->current_rule ? $this->current_rule->code : null), $options, $countries);
+                ?>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $("#id_country").change(function () {
+                    if (firstTime) {
+                        if ($("#id_country").val() != "<?=$this->current_rule->code?>") {
+                            firstTime = false;
+                        }
+                    }
+
+                    options = {action: "getBlockRules"};
+                    if ($("#id_country").val() != "none")  options.id_country = $("#id_country").val();
+
+                    if (!firstTime) {
+                        getRules(options);
+                    }
+
+                    if ($("#id_country").val() != 'none') {
+
+                        $("#state").autocomplete({
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: "http://ws.geonames.org/searchJSON",
+                                    dataType: "jsonp",
+                                    data: {
+                                        featureClass: "A",
+                                        featureCode: "ADM1",
+                                        style: "full",
+                                        country: $("#id_country").val(),
+                                        maxRows: 12,
+                                        lang: 'en',
+                                        name_startsWith: request.term
+                                    },
+                                    success: function (data) {
+                                        response($.map(data.geonames, function (item) {
+                                            return {
+                                                label: item.name + ", " + item.countryName,
+                                                value: item.name
+                                            }
+                                        }));
+                                    }
+                                });
+                            },
+                            minLength: 1,
+                            select: function (event, ui) {
+                                initCity();
+                                $("#city").val("");
+                                if (firstTime) {
+                                    if ($("#state").val() != "<?=$this->current_rule->state?>") {
+                                        firstTime = false;
+                                    }
+                                }
+
+                                options = {
+                                    action: "getBlockRules",
+                                    id_country: $("#id_country").val()
+                                };
+                                if ($("#state").val() != "")  options.state = ui.item.value
+
+                                if (!firstTime) {
+                                    getRules(options);
+                                }
+
+                            }
+
+                        });
+                    }
+
+                    if (!firstTime) {
+                        $("#state").val("");
+                        $("#city").val("");
+                    }
+
+                });
+
+                <?=($this->params['id'] ? '$("#id_country").change();' : '')?>
+
+            });
+        </script>
+
+        <div class="field">
+            <label for="state">Block state/province</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText('state', ($this->current_rule ? $this->current_rule->state : null), null) ?>
+            </div>
+        </div>
+        <script>
+            function initCity() {
+
+                if ($("#state").val() != '') {
+                    $("#city").autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "http://ws.geonames.org/searchJSON",
+                                dataType: "jsonp",
+                                data: {
+                                    featureClass: "P",
+                                    style: "full",
+                                    lang: 'en',
+                                    country: $("#id_country").val(),
+                                    q: $("#state").val(),
+                                    maxRows: 12,
+                                    name_startsWith: request.term
+                                },
+                                success: function (data) {
+                                    response($.map(data.geonames, function (item) {
+
+                                        return {
+                                            label: item.name + (item.adminName1 ? ", " + item.adminName1 : "") + ", " + item.countryName,
+                                            value: item.name
+                                        }
+                                    }));
+
+
+                                }
+                            });
+                        },
+                        minLength: 1,
+                        select: function (event, ui) {
+
+                            if (firstTime) {
+                                if ($("#city").val() != "<?=$this->current_rule->city?>") {
+                                    firstTime = false;
+                                }
+                            }
+
+                            options = {
+                                action: "getBlockRules",
+                                id_country: $("#id_country").val(),
+                                state: $("#state").val()
+                            };
+                            if ($("#city").val() != "")  options.city = ui.item.value;
+
+                            if (!firstTime) {
+                                getRules(options);
+                            }
+
+                        }
+
+                    });
+                } else {
+                    if (!firstTime) {
+                        $("#city").val("");
+                    }
+                }
+
+
+            }
+
+            if (firstTime) {
+                $(document).ready(function () {
+                    initCity();
+                });
+            }
+
+        </script>
+        <div class="field">
+            <label for="city">Block city</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText('city', ($this->current_rule ? $this->current_rule->city : null), null) ?>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="zip">Block zip codes</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText('zip', ($this->current_rule ? $this->current_rule->zip : null), null) ?>
+            </div>
+        </div>
+
+        <div class="field">
+            <table>
+                <tr>
+                    <td>
+                        <label for="ip">Block ip address</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('ip', ($this->current_rule ? $this->current_rule->ip : null), null) ?>
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="reason">Note to self</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('reason', ($this->current_rule ? $this->current_rule->reason : null), null) ?>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <? if ($this->acl->isAllowed($_SESSION['group'], "model-privacy-settings", "edit")) { ?>
+        <div class="join-button">
+            <input type="submit" name="<?= ($this->params['type'] == 'general' ? 'edit' : 'save') ?>"
+                   value="<?= ($this->params['type'] == 'general' ? 'Save' : 'Add') ?>" class="btn btn-success">
+            <input type="hidden" name="<?= ($this->params['type'] == 'general' ? 'edit' : 'save') ?>"
+                   value="<?= ($this->params['type'] == 'general' ? 'Save' : 'Add') ?>">
+        </div>
+    <? } ?>
+    </form>
+    </td>
+    <td>
+        <b>Current Rules:</b><br><br>
+        <table cellpadding="2" cellspacing="1" class="rules_list list_header">
+            <tr class="table_header">
+                <th>Country</th>
+                <th>State</th>
+                <th>City</th>
+                <th>Reason</th>
+                <th class="action"
+                    style="max-width: 65px !important; min-width: 65px !important; width: 65px !important;">Action
+                </th>
+                <th style="max-width: 13px !important; min-width: 13px !important;"></th>
+            </tr>
+        </table>
+        <div class="scrollpane">
+            <table cellpadding="2" cellspacing="1" class="rules_list">
+                <?
+                if (count($this->block_rules) > 0) {
+                    foreach ($this->block_rules as $rule) {
+                        $cycle = $this->cycle(array("light", "dark"))->next();
+                        echo '<tr class="' . $cycle . '">';
+                        foreach ($this->countries as $c) {
+                            if ($c->id == $rule->id_country) {
+                                echo '<td>' . $c['name'] . "</td>";
+                                break;
+                            }
+
+                        }
+                        echo '<td>' . $rule->state . "</td>";
+                        echo '<td>' . $rule->city . "</td>";
+                        echo '<td>' . $rule->reason . "</td>";
+                        echo '<td class="action">
+                                                <a href="' . $this->url(array("type" => 'general', "id" => $rule->id, "manage" => 'edit'), 'model-privacy-settings-manage') . '" title="Edit rule">
+                                                    <img border="0" title="Edit rule" alt="Edit" src="/images/icons/edit_account.png">
+                                                </a>
+                                                <a href="' . $this->url(array("type" => 'general', "id" => $rule->id, "manage" => 'delete'), 'model-privacy-settings-manage') . '" title="Delete rule" onclick="return confirm(\'Delete rule?\')">
+                                                    <img border="0" title="Delete rule" alt="Delete" src="/images/icons/delete.png">
+                                                </a>
+
+                                              </td>';
+                        echo '</tr>';
+                    }
+                }
+                ?>
+            </table>
+        </div>
+    </td>
+    </tr>
+    </table>
+    <script src="/scripts/jScrollPane/jquery.mousewheel.js"></script>
+    <script src="/scripts/jScrollPane/jquery.jscrollpane.min.js"></script>
+    <script type="text/javascript">
+        jspAPI_list = $('.scrollpane').jScrollPane({
+            verticalDragMinHeight: 12,
+            verticalDragMaxHeight: 12,
+            contentWidth: '0px'
+        }).data('jsp');
+
+        jspAPI_list.reinitialise();
+    </script>
+
+    </div>
+
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Camera Settings</h1>
+        <br>
+
+        <p>Who's allowed to view your cam</p>
+
+        <form action="" method="post" id="form_privacy_settings_global" class="privacy_camera">
+            <table>
+                <tr>
+                    <td>
+
+                        <div class="join-box-fields">
+                            <?
+
+                            $limit = floor(count($this->webcam_rules) / 3);
+                            $i = $j = 0;
+                            foreach ($this->webcam_rules as $field) {
+                                $i++;
+                                if (($i == $limit + (count($this->webcam_rules) % 3 > 0 ? 2 : 1)) || ($i == $limit * 2 + (count($this->webcam_rules) % 3 > 0 ? (count($this->webcam_rules) % 3 > 1 ? 3 : 2) : 1))) {
+
+                                    echo '</td>
+                                                <td>
+                                            <div class="join-box-fields">';
+                                }
+                                $field_name = ucfirst(str_replace(array('allow_', '_'), array('', ' '), $field['type']));
+
+                                ?>
+                                <div class="field">
+                                    <label for="<?= $field['type'] ?>"><?= $field_name ?></label>
+
+                                    <div class="field_wrapper">
+                                        <?
+                                        $options = array();
+                                        if ($this->model_webcam_rules[$field['type']] == 1) $options['checked'] = 'checked';
+                                        echo $this->formCheckbox($field['type'], null, $options);
+                                        ?>
+                                    </div>
+                                </div>
+                            <?
+                            }
+
+                            ?>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+
+            <br>
+
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-privacy-settings", "edit")) { ?>
+                <div class="join-button">
+                    <input type="submit" name="save_webcam" value="Save" class="btn btn-success">
+                    <input type="hidden" name="save_webcam" value="Save">
+                </div>
+            <? } ?>
+        </form>
+
+
+    </div>
+
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">GuestBook Privacy Settings</h1>
+        <br>
+
+        <p>Who's allowed to post in guestbook:</p>
+
+        <form action="" method="post" name="guestbook" id="form_privacy_settings_guestbook" class="privacy_camera">
+            <table>
+                <tr>
+                    <td>
+
+                        <div class="join-box-fields">
+
+
+                            <div class="field">
+
+                                <div class="field_wrapper">
+                                    <?php
+                                    echo $this->formRadio('guestbook', $this->model->guestbook, array(1, 0), array('Everyone', 'Members Only'), '&nbsp;');
+                                    ?>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+
+            <br>
+
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-privacy-settings", "edit")) { ?>
+                <div class="join-button">
+                    <input type="submit" name="save_webcam" value="Save" class="btn btn-success">
+                    <input type="hidden" name="save_webcam" value="Save">
+                </div>
+            <? } ?>
+        </form>
+
+
+    </div>
+
+<?
+}
+
+if ($this->params['type'] == 'user') {
+    ?>
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+        <h1 class="page-title">User Settings</h1>
+
+        <form action="" method="post" id="form_privacy_settings_block">
+            <div class="join-box-fields ">
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            <div class="join-box-fields privacy_big">
+                                <div class="field">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label for="block_name">Name</label>
+
+                                                <div class="field_wrapper">
+                                                    <?= $this->formText('block_name', null, null) ?>
+                                                    <input type="hidden" name="user_id" id="user_id"/>
+                                                    <script>
+                                                        $("#block_name").tokenInput("/autocomplete/username", {
+                                                            method: "POST",
+                                                            tokenLimit: "1",
+                                                            resultsLimit: "1",
+                                                            hintText: "Type username",
+                                                            onAdd: function (item) {
+                                                                $('#block_name').val(item.id);
+                                                            },
+                                                            onDelete: function (item) {
+                                                                $('#block_name').val('');
+                                                            },
+                                                            prePopulate: []
+                                                        });
+                                                    </script>
+                                                </div>
+
+                                            </td>
+                                            <td>
+                                                <? if ($this->params['type'] == 'user') { ?>
+                                                    <label for="link"></label>
+                                                    <div class="field_wrapper">
+                                                        <a id='link'
+                                                           href='<?= $this->url(array("type" => "list"), "model-privacy-settings-lists") ?>'>View
+                                                            list</a>
+                                                    </div>
+                                                <? } ?>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+
+                                <div class="field">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label for="block_reason">Reason</label>
+
+                                                <div class="field_wrapper">
+                                                    <?= $this->formSelect('block_reason', null, null, array("1" => "unpolite", "2" => "pervert")); ?>
+                                                </div>
+
+                                            </td>
+                                            <td>
+                                                <label for="block_reason_new">Other reason</label>
+
+                                                <div class="field_wrapper small_field">
+                                                    <?= $this->formText('block_reason_new', null, null) ?>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                                <div class="field">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label for="block_until">Until</label>
+
+                                                <div class="field_wrapper">
+                                                    <?= $this->formSelect('block_reason', $this->model->gender, null, array("d" => "day", "w" => "week", "m" => "month")) ?>
+                                                </div>
+
+                                            </td>
+                                            <td>
+                                                <label for="block_date">Enter own date</label>
+
+                                                <div class="field_wrapper small_field">
+                                                    <?= $this->formText('block_date', null, null) ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                                <div class="field">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label for="allow_reason">Allow Reason</label>
+
+                                                <div class="field_wrapper">
+                                                    <?= $this->formSelect('allow_reason', null, null) ?>
+                                                </div>
+
+                                            </td>
+                                            <td>
+                                                <label for="allow_reason_new">Other reason</label>
+
+                                                <div class="field_wrapper small_field">
+                                                    <?= $this->formText('allow_reason_new', null, null) ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                                <div class="field">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label for="allow_until">Allow Until</label>
+
+                                                <div class="field_wrapper">
+                                                    <?= $this->formSelect('allow_until', $this->model->gender, null, array("d" => "day", "w" => "week", "m" => "month")) ?>
+                                                </div>
+
+                                            </td>
+                                            <td>
+                                                <label for="allow_date">Enter own date</label>
+
+                                                <div class="field_wrapper small_field">
+                                                    <?= $this->formText('allow_date', null, null) ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+
+                            <p>Actions <b>block</b> / <b>allow</b> :</p>
+
+                            <div class="join-box-fields privacy">
+                                <div class="field">
+                                    <label for="block_everything">everything</label>
+
+                                    <div class="field_wrapper small_field">
+                                        <?= $this->formCheckbox('block_everything', null, null) ?> /
+                                        <?= $this->formCheckbox('allow_everything', null, null) ?>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="block_message">sending messages</label>
+
+                                    <div class="field_wrapper small_field">
+                                        <?= $this->formCheckbox('block_message', null, null) ?> /
+                                        <?= $this->formCheckbox('allow_message', null, null) ?>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="block_post">posting on the wall</label>
+
+                                    <div class="field_wrapper small_field">
+                                        <?= $this->formCheckbox('block_post', null, null) ?> /
+                                        <?= $this->formCheckbox('allow_post', null, null) ?>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="block_comments">commenting</label>
+
+                                    <div class="field_wrapper small_field">
+                                        <?= $this->formCheckbox('block_comments', null, null) ?> /
+                                        <?= $this->formCheckbox('allow_comments', null, null) ?>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="block_webcam">accessing my webcam</label>
+
+                                    <div class="field_wrapper small_field">
+                                        <?= $this->formCheckbox('block_webcam', null, null) ?> /
+                                        <?= $this->formCheckbox('allow_webcam', null, null) ?>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <br>
+
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-privacy-settings", "edit") || Auth::isModel()) { ?>
+                <div class="join-button">
+                    <input type="submit" name="save_user" value="Save" class="btn btn-success">
+                    <input type="hidden" name="save_user" value="Save">
+                </div>
+            <? } ?>
+        </form>
+
+
+    </div>
+
+
+    <div class="page-content round-corners privacy_users">
+        <h1 class="page-title">User Access List</h1>
+
+        <br>
+        <br>
+
+        <table cellpadding="2" cellspacing="1" class="rules_list">
+            <tr class="table_header">
+                <th>User</th>
+                <th>Action</th>
+                <th>Setting</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason</th>
+                <th class="action">Action</th>
+            </tr>
+            <?
+            if (count($this->user_access) > 0) {
+                foreach ($this->user_access as $rule) {
+                    $cycle = $this->cycle(array("light", "dark"))->next();
+                    echo '<tr class="' . $cycle . '">';
+                    echo '<td>' . $rule->username . "</td>";
+                    echo '<td>' . $rule->type . "</td>";
+                    echo '<td>' . ($rule->setting == 1 ? "Allow" : "Block") . "</td>";
+                    echo '<td>' . date("Y-m-d H:i:s", $rule->from) . "</td>";
+                    echo '<td>' . date("Y-m-d H:i:s", $rule->to) . "</td>";
+
+                    echo '<td>' . $rule->reason . "</td>";
+                    echo '<td class="action">
+                                    <a href="javascript:;" title="Edit user rule">
+                                        <img border="0" title="Edit user rule" alt="Edit" src="/images/icons/edit_account.png">
+                                    </a>
+                                    <a href="javascript:;" title="Delete user rule" onclick="return confirm(\'Delete user rule?\')">
+                                        <img border="0" title="Delete user rule" alt="Delete" src="/images/icons/delete.png">
+                                    </a>
+                                  </td>';
+                    echo '</tr>';
+                }
+            }
+            ?>
+        </table>
+
+    </div>
+
+<?
+
+}
+
+if ($this->params['type'] == 'list') {
+    ?>
+    <div class="page-content round-corners privacy_users">
+        <?= $this->notice ?>
+        <h1 class="page-title">Users List</h1>
+
+        <br>
+        <br>
+        <table cellpadding="2" cellspacing="1" class="rules_list">
+            <tr class="table_header">
+                <th>User</th>
+                <th>Action</th>
+                <th>Setting</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Reason</th>
+                <th class="action">Action</th>
+            </tr>
+            <?
+            if (count($this->paginator) > 0) {
+                foreach ($this->paginator as $rule) {
+                    $cycle = $this->cycle(array("light", "dark"))->next();
+                    echo '<tr class="' . $cycle . '">';
+                    echo '<td>' . $rule->username . "</td>";
+                    echo '<td>' . $rule->type . "</td>";
+                    echo '<td>' . ($rule->setting == 1 ? "Allow" : "Block") . "</td>";
+                    echo '<td>' . date("Y-m-d H:i:s", $rule->from) . "</td>";
+                    echo '<td>' . date("Y-m-d H:i:s", $rule->to) . "</td>";
+
+                    echo '<td>' . $rule->reason . "</td>";
+                    echo '<td class="action">
+                                <a href="javascript:;" title="Edit user rule">
+                                    <img border="0" title="Edit user rule" alt="Edit" src="/images/icons/edit_account.png">
+                                </a>
+                                <a href="javascript:;" title="Delete user rule" onclick="return confirm(\'Delete user rule?\')">
+                                    <img border="0" title="Delete user rule" alt="Delete" src="/images/icons/delete.png">
+                                </a>
+                              </td>';
+                    echo '</tr>';
+                }
+            }
+            ?>
+        </table>
+        <? echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml'); ?>
+
+    </div>
+
+<?
+
+}
+
+if ($this->params['type'] == 'global'){
+?>
+<div class="page-content round-corners privacy_global">
+    <?= $this->notice ?>
+    <h1 class="page-title">Global Settings List</h1>
+    <br>
+    <br>
+    <table cellpadding="2" cellspacing="1" class="rules_list">
+        <tr class="table_header">
+            <th>Country</th>
+            <th>State</th>
+            <th>City</th>
+            <th>Reason</th>
+            <th class="action">Action</th>
+        </tr>
+        <?
+        if (count($this->paginator) > 0) {
+            foreach ($this->paginator as $rule) {
+                $cycle = $this->cycle(array("light", "dark"))->next();
+                echo '<tr class="' . $cycle . '">';
+                foreach ($this->countries as $c) {
+                    if ($c->id == $rule->id_country) {
+                        echo '<td>' . $c['name'] . "</td>";
+                        break;
+                    }
+
+                }
+                echo '<td>' . $rule->state . "</td>";
+                echo '<td>' . $rule->city . "</td>";
+                echo '<td>' . $rule->reason . "</td>";
+                echo '<td class="action">
+                                <a href="' . $this->url(array("type" => 'general', "id" => $rule->id, "manage" => 'edit'), 'model-privacy-settings-manage') . '" title="Edit rule">
+                                    <img border="0" title="Edit rule" alt="Edit" src="/images/icons/edit_account.png">
+                                </a>
+                                <a href="' . $this->url(array("type" => 'general', "id" => $rule->id, "manage" => 'delete'), 'model-privacy-settings-manage') . '" title="Delete rule" onclick="return confirm(\'Delete rule?\')">
+                                    <img border="0" title="Delete rule" alt="Delete" src="/images/icons/delete.png">
+                                </a>
+                              </td>';
+                echo '</tr>';
+            }
+        }
+        ?>
+    </table>
+    <? echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml'); ?>
+</div>
+
+</div>
+
+<?
+
+}
+
+?>
+
+</div>

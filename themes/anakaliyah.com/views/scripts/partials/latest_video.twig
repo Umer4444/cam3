@@ -1,0 +1,17 @@
+<div class="my_video">
+
+    <h2>My <span class="highcolor">Latest Video</span></h2>
+    {% if video == '' %} No videos uploaded yet! {% else %}
+        <div class="side-video">
+            <div class="side-video">
+                {% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+                <a href="{{ url('solo/videos', {'videoSlug' : slug}) }}"
+                   title="{{ video.getTitle() }}">
+                    <span class="col-lg-3 play_button"></span>
+                    <img src="{{ video.getCover() }}" style="height: 200px;"/>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+</div>

@@ -1,0 +1,32 @@
+<? $this->headTitle('User Notes'); ?>
+<div class="model_content">
+
+    <div class="page-content round-corners">
+
+        <?= $this->notice ?>
+        <h1 class="page-title">User Notes</h1>
+
+        <?
+        foreach ($this->paginator as $note) {
+            $id = 'user_' . $note['id_user'];
+            echo '<form class="form_notes" action="" method="post" id="form_' . $id . '" >
+                <div class="join-box-fields">
+                <div class="field">
+                <a onclick="App.notes.editNotes(\'' . $id . '\')" href="javascript:;" class="savelink_notes ' . $id . '">Save</a>
+                <label for="' . $id . '">Notes for:<br>' . $note['nickname'] . '</label>
+                <div class="field_wrapper">';
+            echo $this->formTextarea($id, $note['notes'], array('cols' => 30, 'rows' => 5));
+            echo '</div>
+                </div>
+                    <label>Last edit:</label> <div id="last_edit_' . $id . '" style="padding:10px;">' . formatTime($this->notes["added"], 1) . '</div>
+                </div>
+                </form>';
+
+        }
+
+        echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+        ?>
+
+    </div>
+
+</div>

@@ -1,0 +1,35 @@
+<div class="rate-session">
+    <div class="rate-separator">
+        <label for="room-rate">Surroundings (room)</label>
+
+        <div class="stars-model<?=(isset($_SESSION["rating"][$history->getId()]['surround']) ? ' disableRate' : '')?>"
+             style="float: right;"
+             data-id="<?=$this->params["model"]?>"
+             data-average="<?=$history->getRatingSurround()?>" data-extra="chat_session_surround"></div>
+    </div>
+<div class="rate-separator">
+        <label for="room-rate">Appearance (hair,nails,make up)</label>
+
+    <div class="stars-model<?= (isset($_SESSION["rating"][$history->getId()]['appearance']) ? ' disableRate' : '') ?>"
+         style="float: right;"
+         data-id="<?=$this->params["model"]?>"
+         data-average="<?= $history->getRatingAppearance() ?>" data-extra="chat_session_appearance"></div>
+    </div>
+<div class="rate-separator">
+        <label for="room-rate">Sound</label>
+
+    <div class="stars-model<?= (isset($_SESSION["rating"][$history->getId()]['sound']) ? ' disableRate' : '') ?>"
+         style="float: right;"
+         data-id="<?=$this->params["model"]?>"
+         data-average="<?= $history->getRatingSound() ?>" data-extra="chat_session_sound"></div>
+    </div>
+</div>
+<div class="rate-separator">
+        <label for="room-rate">Lighting</label>
+
+    <div class="stars-model<?= (isset($_SESSION["rating"][$history->getId()]['light']) ? ' disableRate' : '') ?>"
+         style="float: right;"
+         data-id="<?=$this->params["model"]?>"
+         data-average="<?= $history->getRatingLight() ?>" data-extra="chat_session_light"></div>
+    </div>
+</div>

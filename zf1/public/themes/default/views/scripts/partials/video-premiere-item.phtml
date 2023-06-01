@@ -1,0 +1,189 @@
+<div class="premiere_item">
+
+    <div class="premiere_promo">
+        <?= "<div class='promo_title'>" . $this->show->screen_name . "</div>";
+        ?>
+
+        <div class="teaser" id="player_<?= $this->show->id_show ?>"></div>
+        <?php if ($this->promo) { ?>
+            <script language="JavaScript">
+                flashembed("player_<?=$this->show->id_show?>", "/scripts/player/flowplayer-3.2.7.swf", {
+                    config: {
+                        plugins: {
+                            controls: null
+                        },
+                        playlist: [
+                            <?if($this->promo->getCover()){?>
+                            // show album cover
+                            {
+                                url: '<?=$this->promo->getCover()?>',
+                                scaling: 'scale'
+                            },
+                            <?}?>
+
+                            {
+                                url: '<?=$this->promo->getVideoFile()?>',
+                                autoPlay: false,
+                                autoBuffering: false
+                            }
+
+                        ]
+                    }
+                });
+            </script>
+        <? } ?>
+    </div>
+
+    <div class="premiere_photos">
+        <?
+            $i = 0;
+            if ($this->photos) {
+
+                foreach ($this->photos as $photo) {
+                    $i++;
+                    echo '<div class="photo">';
+                    switch ($i) {
+                        case 1:
+                            echo '<img class="zoom" src="/uploads/photos/' . $photo->filename . '">';
+                            break;
+                        case 2:
+                            echo '<img class="zoom" style="float: right;" src="/uploads/photos/' . $photo->filename . '">';
+                            break;
+                        case 3:
+                            echo '<img class="zoom" src="/uploads/photos/' . $photo->filename . '">';
+                            break;
+                        case 4:
+                            echo '<img class="zoom" src="/uploads/photos/' . $photo->filename . '">';
+                            break;
+                    }
+                    echo '</div>';
+                }
+            }
+        ?>
+    </div>
+
+    <div class="premiere_info">
+        <?
+        echo "<div class='premiere_title'>" . strtoupper($this->show->title) . "</div>";
+        echo "<div class='premiere_text'>STARRING</div>";
+        echo "<div class='premiere_model'>" . strtoupper($this->show->screen_name) . "</div>";
+        echo "<div class='premiere_chips'>" . $this->show->chips_cost . " CHIPS</div>";
+        echo "<div class='premiere_description'>" . strtoupper($this->show->description) . "</div>";
+        $time = $this->show->date;
+        $time_end = $this->show->to_date;
+        $now = time();
+        $date = strtoupper(date("j F", $time));
+        $start = date("g:i A", $time);
+        $end = date("g:i A", $time_end);
+        $timezone = date('T', $time);
+        echo "<div class='premiere_date'>" . $date . "</div>";
+        echo "<div class='premiere_date_time'>" . $start . " - " . $end . " (" . $timezone . ")</div>";
+
+        $date1 = new DateTime(date("Y-m-d H:i:s", $time));
+        $date2 = new DateTime(date("Y-m-d H:i:s", $now));
+        $interval = $date2->diff($date1);
+
+        echo "<div id='" . $this->show->id_show . "_counter' class='premiere_counter'>
+                  <div class='counter_time'>";
+        if ($time > $now) {
+            echo "<div id='" . $this->show->id_show . "_d' class='text'>" . str_pad($interval->d, 2, "0", STR_PAD_LEFT) . "</div>
+                        <div class='text separator'>:</div>
+                        <div id='" . $this->show->id_show . "_h' class='text'>" . str_pad($interval->h, 2, "0", STR_PAD_LEFT) . "</div>
+                        <div class='text separator'>:</div>
+                        <div id='" . $this->show->id_show . "_m' class='text'>" . str_pad($interval->i, 2, "0", STR_PAD_LEFT) . "</div>
+                        <div class='text separator'>:</div>
+                        <div id='" . $this->show->id_show . "_s' class='text'>" . str_pad($interval->s, 2, "0", STR_PAD_LEFT) . "</div>";
+        } else {
+            if ($time_end > $now) {
+                if (Auth::isUser()) {
+                    echo '<span style="font-size: 32px;position: relative; top: -7px;"><a href="javascript:;">Watch</a></span>';
+                } else {
+                    echo '<span style="font-size: 32px;position: relative; top: -7px;">Show started</span>';
+                }
+            } else {
+                echo '<span style="font-size: 32px;position: relative; top: -7px;">Show ended</span>';
+            }
+        }
+        echo "</div>";
+        echo "<div class='counter_label'>
+                      <span>DAYS</span>
+                      <span>HOURS</span>
+                      <span>MINUTES</span>
+                      <span>SECONDS</span>
+                  </div>
+                    
+        </div>";
+        ?>
+    </div>
+
+    <div class="premiere_buttons">
+
+        <?
+        echo "<div id='" . $this->show->id_show . "_left' class='div_left ' " . ($interval->invert == 1 ? 'style="visibility: hidden;"' : "") . "><a href='javascript:;'>reserve spot</a></div>";
+        echo "<div id='" . $this->show->id_show . "_right' class='div_right' " . ($interval->invert == 1 ? 'style="visibility: hidden;"' : "") . "><a href='javascript:;'>notify me</a></div>";
+        echo "<div class='div_center' " . ($this->past ? 'style="visibility: hidden;"' : "") . " ><center><a href='" . $this->url(array("id" => $this->show->id_model, "name" => $this->model->screen_name, "date" => date('Y-m-d', time())), 'premieres-past') . "'>past shows</a></center></div>";
+        ?>
+    </div>
+    <? if ($time_end > $now) { ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                function setCounter<?=$this->show->id_show?>(callback) {
+                    time_<?=$this->show->id_show?> = new Date();
+                    year_<?=$this->show->id_show?> = <?=date("Y", $time)?>;
+                    month_<?=$this->show->id_show?> = <?=(date("m", $time)-1)?>;
+                    days_<?=$this->show->id_show?> = <?=date("d", $time)?>;
+                    hours_<?=$this->show->id_show?> = <?=date("H", $time)?>;
+                    minutes_<?=$this->show->id_show?> = <?=date("i", $time)?>;
+                    seconds_<?=$this->show->id_show?> = <?=date("s", $time)?>;
+                    show_<?=$this->show->id_show?>_start = new Date(year_<?=$this->show->id_show?>, month_<?=$this->show->id_show?>, days_<?=$this->show->id_show?>, hours_<?=$this->show->id_show?>, minutes_<?=$this->show->id_show?>, seconds_<?=$this->show->id_show?>, 0);
+                    difference_<?=$this->show->id_show?> = show_<?=$this->show->id_show?>_start.getTime() - time_<?=$this->show->id_show?>.getTime();
+
+                    time_<?=$this->show->id_show?>_end = new Date();
+                    year_<?=$this->show->id_show?>_end = <?=date("Y", $time_end)?>;
+                    month_<?=$this->show->id_show?>_end = <?=(date("m", $time_end)-1)?>;
+                    days_<?=$this->show->id_show?>_end = <?=date("d", $time_end)?>;
+                    hours_<?=$this->show->id_show?>_end = <?=date("H", $time_end)?>;
+                    minutes_<?=$this->show->id_show?>_end = <?=date("i", $time_end)?>;
+                    seconds_<?=$this->show->id_show?>_end = <?=date("s", $time_end)?>;
+                    show_<?=$this->show->id_show?>_end = new Date(year_<?=$this->show->id_show?>_end, month_<?=$this->show->id_show?>_end, days_<?=$this->show->id_show?>_end, hours_<?=$this->show->id_show?>_end, minutes_<?=$this->show->id_show?>_end, seconds_<?=$this->show->id_show?>_end, 0);
+                    difference_end_<?=$this->show->id_show?> = show_<?=$this->show->id_show?>_end.getTime() - time_<?=$this->show->id_show?>_end.getTime();
+
+                    daysRemaining_<?=$this->show->id_show?> = Math.floor(difference_<?=$this->show->id_show?> / 1000 / 60 / 60 / 24);
+                    hoursRemaining_<?=$this->show->id_show?> = Math.floor(difference_<?=$this->show->id_show?> / 1000 / 60 / 60 - (24 * daysRemaining_<?=$this->show->id_show?>));
+                    minutesRemaining_<?=$this->show->id_show?> = Math.floor(difference_<?=$this->show->id_show?> / 1000 / 60 - (24 * 60 * daysRemaining_<?=$this->show->id_show?>) - (60 * hoursRemaining_<?=$this->show->id_show?>));
+                    secondsRemaining_<?=$this->show->id_show?> = Math.floor(difference_<?=$this->show->id_show?> / 1000 - (24 * 60 * 60 * daysRemaining_<?=$this->show->id_show?>) - (60 * 60 * hoursRemaining_<?=$this->show->id_show?>) - (60 * minutesRemaining_<?=$this->show->id_show?>));
+
+
+                    if (!(daysRemaining_<?=$this->show->id_show?> == 0 && hoursRemaining_<?=$this->show->id_show?> == 0 && minutesRemaining_<?=$this->show->id_show?> == 0 && secondsRemaining_<?=$this->show->id_show?> == 0) && (difference_<?=$this->show->id_show?> / 1000) > 0) {
+                        $("#<?=$this->show->id_show?>_d").text(pad(daysRemaining_<?=$this->show->id_show?> + "", 2));
+                        $("#<?=$this->show->id_show?>_h").text(pad(hoursRemaining_<?=$this->show->id_show?> + "", 2));
+                        $("#<?=$this->show->id_show?>_m").text(pad(minutesRemaining_<?=$this->show->id_show?> + "", 2));
+                        $("#<?=$this->show->id_show?>_s").text(pad(secondsRemaining_<?=$this->show->id_show?> + "", 2));
+                        setTimeout(setCounter<?=$this->show->id_show?>, 1000);
+                        //replace
+                    } else {
+                        $("#<?=$this->show->id_show?>_counter .counter_time").empty();
+                        if (difference_end_<?=$this->show->id_show?> / 1000 > 0) {
+                            //show - ongoing
+                            <? if(Auth::isUser()){?>
+                            $("#<?=$this->show->id_show?>_counter .counter_time").html('<span style="font-size: 32px;position: relative; top: -7px;"><a href="javascript:;">Watch</a></span>');
+                            <?}else{?>
+                            $("#<?=$this->show->id_show?>_counter .counter_time").html('<span style="font-size: 32px;position: relative; top: -7px;">Show started</span>');
+                            <?}?>
+
+                            setTimeout(setCounter<?=$this->show->id_show?>, 60000);
+                        } else {
+                            //show - ended
+                            $("#<?=$this->show->id_show?>_counter .counter_time").html('<span style="font-size: 32px;position: relative; top: -7px;">Show ended</span>');
+                        }
+                        $("#<?=$this->show->id_show?>_left").css("visibility", "hidden");
+                        $("#<?=$this->show->id_show?>_right").css("visibility", "hidden");
+                    }
+                }
+
+                setCounter<?=$this->show->id_show?>();
+
+            });
+        </script>
+    <? } ?>
+</div>

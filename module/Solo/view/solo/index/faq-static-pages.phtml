@@ -1,0 +1,42 @@
+<div class="background-rounded">
+    <h2 class="title"><?= $page->getTitle() ?></h2>
+
+    <div id="accordion" style="text-align: justify;">
+        <?= $page->getContent(); ?>
+    </div>
+
+</div>
+<style>
+    #accordion h2 {
+        background: white;
+    }
+
+    .page p span {
+        color: white !important;
+    }
+    .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+
+        color:black!important;
+    }
+
+    .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+        color: black!important;
+    }
+
+    .ui-widget-content {
+        color: black;
+    }
+</style>
+<script type="text/javascript">
+
+    var options = {
+        header: 'h2',
+        autoHeight: false
+    };
+
+    $(document).ready(function () {
+        $("#accordion").accordion(options);
+
+    });
+
+</script>

@@ -1,0 +1,507 @@
+<? $this->headTitle($this->model->screen_name."'s Live Video Chat Page"); ?>
+<?$this->headTitle('Live Performers'); ?>
+
+<script>
+var models = {
+<?
+    $m =  'model_'.$this->model->id.': { "follow": ' . ((Auth::isLogged() && Auth::isUser()) ? ($this->model->id_model_followed ? 1 : 0) : 0);
+    $m .= ',"favorite": ' .((Auth::isLogged() && Auth::isUser()) ? ($this->model->id_model_favorite ? 1 : 0) : 0);
+    $m .= ',"message_link" : "'. $this->url(array("message_action"=>"compose"),"messages") . '#' . $this->model->screen_name .'" }';
+    echo $m;
+
+?>
+};
+
+$(document).ready(function(){
+    $("#openPopup").on("click", function(){
+        exp = new Date();
+        exp = new Date(exp.getTime() + 3102);
+        $.cookie("popup_<?=$this->model->id?>" , " ", {expires: exp, path: "/"});
+
+        popitup('<?=$this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name), "watch-popup")?>', <?=$this->model->id?>);
+
+        window.onbeforeunload = function (e) {
+            e.preventDefault();
+        };
+
+})
+</script>
+
+<style>
+#content{
+    width: inherit;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+#fontStyleContainer {
+    height: 110px;
+    top: 510px;
+    /*left: 750px;*/
+}
+<?
+if (Auth::isUser() && $this->model_status == 'online')
+    {
+        echo "
+        #chatLineHolder{
+            height: 360px;
+        }
+        #chatUsers{
+            height: 360px;
+        }
+        #emoticonsContainer{
+           /* top: 261px;  */
+        }
+        #vodContainer{
+            height: 492px;
+        }
+        ";
+
+    }
+if ($this->model_status == 'offline' || $this->model_status == 'banned' || ($this->model_status == 'online' && ($this->model->chat_type != 'normal' && !Auth::isUser()))){
+    echo "
+        .playerContainer_front {
+            float: left;
+            margin-top: 0px;
+        }
+
+        ";
+
+
+}
+?>
+</style>
+
+<?
+if($this->model_status == 'online'){
+
+    if((Auth::isUser() && ($this->model->chat_type == 'normal' || $_SESSION['user_chat'][$this->model->id]['chat_type'] == $this->model->chat_type || $this->model->chat_type == 'normal')) || $this->model->chat_type == 'normal'){
+
+        echo $this->partial('partials/chat.phtml', array("model" => $this->model, "model_status" => $this->model_status,));
+    }
+    else{
+        echo $this->partial('partials/chat-vod.phtml',
+                            array("videos_for_sale" => $this->videos_for_sale));
+    }
+}else{
+    echo $this->partial('partials/chat-vod.phtml',
+                        array("videos_for_sale" => $this->videos_for_sale));
+}
+
+?>
+
+
+ <?=$this->message?>
+ <?=$this->notice?>
+<div class="watchContent col-md-6">
+        <? if($this->model_status == 'online' && ($this->model->chat_type == 'normal' || Auth::isUser())){ ?>
+        <div class="status_front">
+                   <span class="icon-open-popup lonely tooltip" id="openPopup" title="Open chat in popup"></span>
+                   <span>Status:</span>
+                   <span id="status"><?=($this->model->status)?></span>
+                   <?
+                   if(Auth::isUser()){
+                       if($this->favorite){
+                           echo'<span id="favorites_label" class="remove">Remove from favorites!</span>
+                                <img id="favorites" class="remove" src="/images/remove_favorite.png" alt="Remove from favorites!" />';
+                       }else{
+                           echo '<span id="favorites_label" class="add">Add to favorites!</span>
+                                 <img id="favorites" class="add" src="/images/add_favorite.png" alt="Add to favorites!" />';
+                       }
+                   }
+
+                   ?>
+
+        </div>
+        <?}?>
+
+        <div class="playerContainer_front" id="playerContainer_front">
+
+            <?
+            echo $this->partial('partials/chat-player_multi.phtml',
+                array(
+                    "model" => $this->model,
+                    "stream" => $this->stream,
+                    "banned_message" => $this->banned_message,
+                    "model_status" => $this->model_status,
+                    "rtmp" => $this->rtmp,
+                    "show_rates" => $this->show_rates,
+                    "counter_chat_users" => $this->counter_chat_users,
+                    "max_group_users" => $this->max_group_users,
+                    "model_streams" => $this->model_streams,
+                    "model_rates" => $this->model_rates
+                ));
+
+            ?>
+
+
+            <? if($this->model_status == 'online') { /*?>
+               <div style="display: block; margin-top:10px; margin-left: 50px;">
+                    <a href="<?//=$this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name, "nav" => "previous", "position" => $this->model->display_order), "watch-nav")?>" class="button-view-small blue left">Previous model</a>
+                    <a href="<?=$this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name, "nav" => "next", "position" => $this->model->display_order), "watch-nav")?>" class="button-view-small blue">Next model</a>
+                </div>
+            <? */} ?>
+        </div>
+
+    </div>
+
+<audio id="sound_watch" src="/assets/sounds/click_1.wav" preload=auto hidden=true autobuffer></audio>
+
+<script>
+    $(document).ready(function(){
+
+        // Run the init method on document ready:
+        <?
+        if(($this->model->chat_type == 'normal' || (Auth::isUser() && $_SESSION['user_chat'][$this->model->id]['chat_type'] == $this->model->chat_type)) && $this->model_status == 'online') {
+            echo "init_request = ".($this->post_init ? $this->post_init : "{}").";";
+            echo 'App.chat.init('.$this->model->id.', "'.$this->model->chat_type.'", init_request);';
+            if(Auth::isUser()) echo 'App.chat.data.chips = parseInt('.$_SESSION['user']['chips'].');';
+            echo "App.user.private.init('".$this->model->id."', '".user()->id."');";
+            echo "App.user.vip.init('".$this->model->id."', '".user()->id."');";
+            echo "App.user.group.init('".$this->model->id."', '".user()->id."');";
+        }
+
+        echo 'App.user.status.init('.$this->model->id.');';
+
+        if (Auth::isUser())
+        {
+            echo "App.user.favorites.init('".$this->model->id."', '".user()->id."');";
+
+        }
+        if($this->model->chat_type == 'private' && (!$_SESSION['user_chat'][$this->model->id] || $_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy')){
+            echo "App.user.spy.init('".$this->model->id."', '".user()->id."');";
+            if($_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy') echo "App.chat.init(App.user.spy.data.id, 'spy', null);";
+        }
+
+        if (Auth::isUser() && ($this->model->chat_type == 'normal' || $_SESSION['user_chat'][$this->model->id]['chat_type'] == $this->model->chat_type) && $this->model_status == 'online')
+        {
+            $size = 23;
+            echo"if(!App.chat.data.name) {
+
+                    App.chat.login('".$_SESSION['user_chat'][$this->model->id]['name']."', '".'http://www.gravatar.com/avatar/'.$_SESSION['user_chat'][$this->model->id]['gravatar'].'?size='.$size.'&amp;default='.
+                urlencode('http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536?size='.$size)."', '".$this->model->id."', 'user_".user()->id."', '".$_SESSION['user_chat'][$this->model->id]['chat_type']."');
+                    //App.chat.initSounds('sound_watch', ".$this->sounds.");
+
+                }";
+        }
+        echo "if(typeof init_request !== 'undefined') if(init_request.getUsers) App.chat.processUsers(init_request);";
+        echo "if(typeof init_request !== 'undefined') if(init_request.getChats) App.chat.processChats(init_request);";
+        //make all link open in another tab/window if paid chat started
+        if($_SESSION['user_chat'][$this->model->id] && $_SESSION['user_chat'][$this->model->id]['chat_type'] != 'normal'){
+            echo "$('a').attr('target','_blank');";
+            echo "$('.header_controls a').removeAttr('target');";
+        }
+        if($_SESSION['user_chat'][$this->model->id]){
+            //echo "App.chat.initExit();";
+        }
+    ?>
+
+        count_time();
+
+    });
+
+    function fixwidth()
+         {
+          switch(parseInt($.browser.version)){
+              case 7:
+                $('#content').css('width', $('body').innerWidth()-20);
+                $('.status_front #favorites').css('top', '-4px');
+                $('#tip_value').css('top', '9px');
+              break;
+              case 8 :
+                $('#content').css('width', $('body').innerWidth()-37);
+                $('#tip_value').css('top', '5px');
+              break;
+              case 9 :
+                $('#tip_value').css('top', '5px');
+              break;
+          }
+         }
+
+    if ($.browser.msie){
+        fixwidth();
+
+        $(window).resize(fixwidth);
+    }
+
+    function transform_time(time){
+        var hrs = ~~ (time / 3600);
+        var mins = ~~ ((time % 3600) / 60);
+        var secs = time % 60;
+
+        var show_time = '';
+
+        if(hrs > 0)
+            show_time += hrs+':';
+
+        if(mins < 10)
+            mins = '0'+mins;
+
+        if(secs < 10)
+            secs = '0'+secs;
+
+        show_time += mins+':'+secs;
+
+        return show_time;
+    }
+
+    var time_server = <?=$this->timer?>;
+
+     function count_time1(){
+            time_server = time_server+1;
+            $('.timer').html(transform_time(time_server));
+            count_time();
+    }
+
+    function count_time(){
+        $('.timer').html(transform_time(time_server));
+        setTimeout(count_time1, 1000);
+    }
+
+
+</script>
+
+<div class="clear"></div>
+
+
+
+
+<?php //start user broadcast ?>
+<?php if(Auth::isUser() && ($this->model->chat_type == 'private' || $this->model->chat_type == 'vip') && $_SESSION["member_camera"]) { ?>
+
+<?
+    //if('private' == 'private')  $file_name = $this->user->getStream(user()->id);
+    //else $file_name = $this->user->getStream();
+    $file_name_user  = $_SESSION["streams"]["user"][0];
+
+    $rtmp = $this->rtmp;
+?>
+
+<div id="camera"></div>
+
+<script src="/scripts/jquery.webcam.js"></script>
+<script src="/scripts/swfobject.js"></script>
+
+
+<script>
+         function init_cams(){
+
+
+                          var type = null;
+
+                          if(!(type = swfobject.getQueryParamValue('type')))
+                          {
+                            //...defaults to rtmp
+                            type = 'rtmp';
+                          }
+
+                          type = 'camera';
+
+                          var flashvars =
+                          {
+                            'streamer':                     '<?=$rtmp?>',
+                          //...the camera will be recorded in the 'streams' directory
+                            'file':                         '<?=$file_name_user?>',
+                          //...simpleBroadcaster
+                            'type':                          type,
+                            'controlbar':                   'bottom',
+                            'stretching':                   'uniform',
+                            'frontcolor':                   '86C29D',  // text & icons                  (green)
+                            'backcolor':                    '849BC1',  // playlist background           (blue)
+                            'lightcolor':                   'C286BA',  // selected text/track highlight (pink)
+                            'screencolor':                  'FFFFFF',  // screen background             (black)
+                            'id':                           'playerID',
+                            'autostart':                    'true',
+                            'controlbar':                   'none',
+                            'icons':                        'false',
+                            'quality':                      'best',
+                            'wmode':                        'gpu',
+                            'scale' :                       'noborder'
+
+                          };
+
+                          var params =
+                          {
+                            'allowfullscreen':              'true',
+                            'allowscriptaccess':            'always',
+                            'bgcolor':                      '#FFFFFF',
+                            'quality':                      'best',
+                            'wmode':                        'gpu',
+                            'scale' :                       'noborder'
+                          };
+
+                          var attributes =
+                          {
+                            'id':                           'playerID',
+                            'name':                         'playerID',
+                            'class': 'player_content_small'
+                          };
+
+                          //...later v4.5.x players don't support type=camera
+                          swfobject.embedSWF('/scripts/jwplayer/player.swf', 'playercontainer', '100%', '180', '9.0.124', false, flashvars, params, attributes);
+
+
+
+
+            }
+
+            $("#camera").webcam({
+                    width: 0,
+                    height: 0,
+                    mode: "callback",
+                    swffile: "/scripts/jscam_canvas_only.swf",
+                    onTick: function() {},
+                    onSave: function() {},
+                    onCapture: function() {},
+                    debug: function() {},
+                    onLoad: function() {
+                       window.init_cams();
+                    }
+
+            });
+
+                function onBroadcasterReady(objid)
+                {
+                    var broadcaster = swfobject.getObjectById(objid);
+                    broadcaster.addNotificationListener("BROADCASTBEGIN","onBroadcastStarted");
+                    broadcaster.addNotificationListener("BROADCASTEND","onBroadcastClosed");
+                    broadcaster.addNotificationListener("CAMERAINITIALIZE","startBroadcast");
+
+                }
+
+                function onBroadcastStarted(objid,params)
+                {
+                    var test = 'test';
+                    //var streamname = eval(params)[0];
+                    //alert(streamname+ " started");
+                    $("#live").removeClass();
+                    $("#live").addClass("live");
+                }
+
+                function onBroadcastClosed(objid,params)
+                {
+                    var test = 'test';
+                    //var streamname = eval(params)[0];
+                    //alert(streamname+ " closed");
+                    $("#live").removeClass();
+                    $("#live").addClass("paused");
+                }
+
+                function startBroadcast(objid){
+                    swfobject.getObjectById(objid).startBroadcast();
+                }
+
+                function stopBroadcast(objid){
+                    swfobject.getObjectById(objid).stopBroadcast();
+                }
+
+                function onHTMLDOMReady()
+                {
+                    var flashvars={
+                        serviceLocation : '/wmle/flashservices'
+                        /*,
+                        themeColor: 'cccccc',
+                        chromeColor: '990000',
+                        contentBackgroundColor: '000000',
+                        textColor: 'ffffff'*/
+                    };
+
+                    var params={};
+                    params.base="/swf_small/";
+                    params.wmode="transparent";
+
+                    params.allowscriptaccess="always";
+                    var attributes={};
+                    attributes.id="playerID";
+                    attributes.name="playerID";
+
+                    swfobject.embedSWF("/swf_small/HDBroadcaster.swf","playerID","222","222","11.1.0","/swf_small/playerProductInstall.swf",flashvars,params,attributes);
+
+                }
+
+                swfobject.addLoadEvent(onHTMLDOMReady);
+
+            </script>
+            <div id="playerID" style="width:657px; height:485px;"></div>
+<?php } else { ?>
+
+<script src="/scripts/jquery.webcam.js"></script>
+<div id="camera2"></div>
+
+<script>
+
+function getCamNumber(){
+     window.nr_cams = 0;
+
+    $("#camera2").webcam({
+            width: 0,
+            height: 0,
+            mode: "callback",
+            swffile: "/scripts/jscam_canvas_only.swf",
+            onTick: function() {},
+            onSave: function() {},
+            onCapture: function() {},
+            debug: function() {},
+            onLoad: function() {
+                window.nr_cams = webcam.getCameraList().length;
+                if(parseInt(window.nr_cams) > 0) {
+                    $("#share_cam").html("<p>Camera found! Share your webcam with model?</p>");
+                    $("#share_cam").append('<button id="continue_camera" class="acceptButton">Yes</button>');
+                    $("#share_cam").append('<button id="continue_no_camera">No</button>');
+                }
+            }
+    });
+   if(parseInt(window.nr_cams) == 0)  {
+        $("#share_cam").html("<p>No camera found! Connect camera and refresh  or continue without camera</p>");
+        $("#share_cam").append('<button id="continue_no_camera">Continue</button>');
+        $("#share_cam").append('<button  id="refresh_camera" class="acceptButton">Refresh page</button>');
+
+        $('#refresh_camera').click(function(){
+           window.onbeforeunload = function(){};
+           $(window).unbind('unload');
+           location.reload();
+       });
+    }
+
+}
+$(document).ready(function(){
+   getCamNumber();
+
+});
+
+function setCookies(name, value, expires) {
+    var d = new Date();
+    d.setTime(d.getTime() + (expires * 24 * 60 * 60 * 1000));
+    var expire = d.toUTCString();
+    document.cookie = name + "=" + escape(value) +
+    ((expire) ? "; expires=" + expire : "") +
+    ("; path=/");
+}
+
+function getCookies(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+</script>
+
+<div id="share_cam" style="display:none"  title="Camera detection">
+<p></p>
+</div>
+<? } ?>
+
+
+<script>
+    $(document).ready(function () {
+        //init autocomplete names in chatroom
+        App.chat.atNamesChatRoom();
+    })
+</script>
+

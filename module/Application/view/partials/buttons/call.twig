@@ -1,0 +1,7 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Call{% endblock button_text %}
+{% block button_target %}_blank{% endblock button_target %}
+{% block button_href %}{{ user(user).url('performer/profile', {action: 'call'}) }}{% endblock button_href %}
+
+{% block button_javascript %}App.button.call('{{ block('button_id') }}'{{ isContext == false ? '' : ', key, options' }}){% endblock button_javascript %}

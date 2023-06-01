@@ -1,0 +1,22 @@
+{% extends('solo.twig') %}
+
+{% block title %}
+    {% do headTitle('Signup') %}
+{% endblock title %}
+
+{% block content %}
+    <div class="row row-no-margin">
+        <div class="col-md-4 col-md-offset-4 login forms">
+            <h2 class="margin-10 generic-h2 text-center">Login</h2>
+        </div>
+        <div class="col-md-4 col-md-offset-4 login forms">
+            <div class="margin-10 generic-border padding-10">
+                {% set form = loginForm.prepare().setAttribute('id', 'login-form').setAttribute('class', 'form-horizontal').setAttribute('action', url('zfcuser/login')) %}
+                {% do form.get('credential').setAttributes({'class' : 'form-control'}).setOptions({'skipLabel' : false}) %}
+                {% do form.get('identity').setAttributes({'class' : 'form-control'}).setOptions({'skipLabel' : false}) %}
+                {% do form.get('submit').setAttributes({'class' : 'btn btn-info'}).setOptions({'skipLabel' : true}) %}
+                {{ ztbForm(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

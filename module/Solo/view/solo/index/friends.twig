@@ -1,0 +1,49 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="solo-margin-15">My <span class="highcolor">Friends</span></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {% if friends %}
+            {% set counter = 0 %}
+                {% for friend in friends %}
+                {% set position = friend.getPosition() %}
+                {% set friend = friend.getUser() %}
+                {% if position >= 0 %}
+                    <div class="col-md-3 col-md-3-solo">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <span class="highcolor">{{ friend.getUsername()|slice(0, 10) }}</span>
+                            </div>
+                            <div class="modal-body">
+                                <a href="{{ url('solo/profile', {'username' : friend.getUsername()}) }}"
+                                   title="{{ friend.getUsername() }}">
+                                    {% if friend.getAvatar() is null %}
+                                        <img class="solo-friends-image"
+                                             src="/assets/themes/anakaliyah.com/assets/images/user_default.png"
+                                             title="{{ friend.getUsername() }}"/>
+                                    {% else %}
+                                        <img src="{{ friend.getAvatar() }}"
+                                             title="{{ friend.getUsername }}"/>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if counter == 0 %}
+                        No top friends are selected!
+                    {% endif %}
+                    {% set counter = counter + 1 %}
+                {% endif %}
+            {% endfor %}
+            {% else %}
+
+            No top friends are selected!
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

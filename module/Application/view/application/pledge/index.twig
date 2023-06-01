@@ -1,0 +1,40 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    <div class="content">
+        <div class="title-pledge">
+            <h2>BOUNTIES</h2>
+        </div>
+        <div class="row row-no-margin">
+            {{ related(newInstance('Application\\Entity\\Pledge'), 'pledge-item', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_BOUNTIES')) }}
+        </div>
+        <div class="title-pledge">
+            <h2>SUBSCRIPTION</h2>
+        </div>
+        <div class="row row-no-margin">
+            {{ related(newInstance('Application\\Entity\\Pledge'), 'pledge-subscription', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_SUBSCRIPTION')) }}
+        </div>
+        <div class="title-pledge">
+            <h2>FAN REQUEST</h2>
+        </div>
+        <div class="row row-no-margin">
+            {{ related(newInstance('Application\\Entity\\Pledge'), 'pledge-subscription', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_FUN_REQUEST')) }}
+        </div>
+        <div class="title-pledge">
+            <h2>PROJECTS</h2>
+        </div>
+        <div class="row row-no-margin">
+            {{ related(newInstance('Application\\Entity\\Pledge'), 'pledge-subscription', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_PROJECTS')) }}
+        </div>
+        <div class="title-pledge">
+            <h2>FUNDRAISER</h2>
+        </div>
+        <div class="row">
+            {{ related(newInstance('Application\\Entity\\Pledge'), 'pledge-subscription', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_PROJECTS')) }}
+        </div>
+        <div class="clearfix" style="position:relative;display:block;"> <img src="images/common-banner.jpg"                 id="image2" height="auto" width="100%">
+        </div>
+
+    </div>
+{% endblock content %}
+

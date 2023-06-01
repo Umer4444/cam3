@@ -1,0 +1,472 @@
+Application\Entity\CallLog:
+    log{1..10}:
+        accountSid: <uuid()>
+        callSid: <uuid()>
+        from: <phoneNumber()>
+        duration: <numberBetween(10, 500)>
+        status: 1
+        start: <dateTimeThisMonth()>
+        end: <dateTimeThisMonth()>
+
+Application\Entity\Newsletter:
+    newsletter{1..10}:
+        publishDate: <dateTimeThisMonth()>
+        tag: <word()>
+        subject: <sentence(3)>
+        content: <paragraph(10)>
+        status: <numberBetween(0, 1)>
+
+Application\Entity\ModelSchedule:
+    modelSchedule{1..20}:
+        user: '@performer*'
+        date: <dateTimeBetween('-1 month', '+1 month')>
+        toDate: <dateTimeBetween('+1 month', '+2 month')>
+        type: premiere
+        startHour: <numberBetween(0, 24)>
+        endHour: <numberBetween(0, 24)>
+        title: <sentence(20)>
+        description: <paragraph(1)>
+        status: 1
+
+#The begining
+
+Application\Entity\Categories:
+    category (template):
+        name: <word()>
+    category{1..20} (extends category):
+        parent: 2%? @category*
+
+Application\Entity\UserCategory:
+    onlyUserCategory{1..20} (extends category):
+        name: <word()>
+
+Videos\Entity\VodCategory:
+    vodcategory{1..20} (extends category):
+       user: '@performer*'
+       name: <words(2, true)>
+
+#       The End of the code
+
+Application\Entity\Filters:
+    filters{1..24}:
+        filterName: <word()>
+
+Application\Entity\Package:
+    package{4..7}:
+        amount: <randomFloat(2, 5, 5000)>
+        bonus: <numberBetween(2, 50)>
+        name: <words(2, 1)>
+
+Application\Entity\Reviews:
+    reviews{1..10}:
+        date: <dateTimeBetween()>
+        user: '@user*'
+        review: <paragraph(10)>
+        resourceType: <randomElement(['model', 'Videos\Entity\Video', 'pledge', 'blog', 'image'])>
+        resourceId: <numberBetween(1, 10)>
+        active: <numberBetween(0, 1)>
+
+Images\Entity\Photo:
+    photo (template):
+        caption: <words(2, true)>
+        status: <numberBetween(0, 2)>
+        filename: <imageUrl(400, 400)>
+    photo{1..40} (extends photo):
+        user: 20%? @performer*
+    vcover{1..20}(extends photo):
+#        cost: <numberBetween (0, 10)>
+
+Images\Entity\AlbumCoverImage:
+    aCover{1..31} (extends photo):
+        caption: <words(2, true)>
+        status: 1
+
+#modded blog workinprogress
+
+Images\Entity\UserImage:
+    uCover{1..10} (extends photo):
+        caption: <words(2, true)>
+        user: '@performer*'
+        status: 1
+#        type: <randomElement(['SmallCover' , 'BigCover'])>
+        entityReference: '@blogPosts*'
+
+Images\Entity\BlogImage:
+    bImage{1..90} (extends photo):
+        caption: <words(2, true)>
+        user: '@performer*'
+        status: 1
+        type: SmallCover
+        post: '@blogPosts<current()>'
+    sImage{1..90} (extends photo):
+        caption: <words(2, true)>
+        user: '@performer*'
+        status: 1
+        type: BigCover
+        post: '@blogPosts<current()>'
+
+Application\Entity\BlogPosts:
+    blogPosts{1..90}:
+        title: <sentence(2)>
+        category: '@category*'
+        content: <paragraph(10)>
+        tags: <words(5)>
+        status: <numberBetween(0, 5)>
+        featured: '10%? 1 : 0'
+        pinned: '10%? 1 : 0'
+        reposts: <numberBetween(0, 10)>
+        user: '@performer*'
+        createdBy: '@performer*'
+        repostDate: <dateTimeBetween()>
+        slug: <sentence(2)>
+        status: 1
+        images: <randomElement([@bImage* , @sImage*]>
+
+#Application\Entity\Announcements:
+#    news{1..30}:
+#        section: <randomElement(['ALL' , 'PERFORMER', 'ADMIN'])>
+#        text: <paragraph(10)>
+#        goLive: <dateTime()>
+#        active: 1
+#        user: '@performer*'
+
+Images\Entity\Albums:
+    album{1..30}:
+        name: <words(2, true)>
+        tags: <words(5)>
+        status: 1
+        cost: <numberBetween(0, 600)>
+        description: <sentence()>
+        category: 50%? @category*
+        password: 10%? @user1->password
+        photos: 3x @photo*
+        cover (unique): '@aCover*'
+        user: '@performer*'
+
+Application\Entity\User:
+    userTemplate (template):
+        password: $2y$14$hYQ.rKAwDMiFCJHxnvaSMO0PCq8Q8yinitrxPaLwb.aJ9IDQanOxi
+        firstName: <firstName()>
+        gender: <randomElement(['m','f'])>
+        username: <username()>
+        birthday: <dateTimeBetween('-40 years', '-22 years')>
+        avatar: http://flathash.com/<numberBetween(1, 100000)>.png
+        aboutMe: <text(200)>
+        joined: <dateTimeBetween('-5 years')>
+        active: 1
+        lastActivity: <dateTimeBetween('-2 years')>
+        status: 1
+        state: 1
+        termsAgreed: 1
+        termsSignature: 1
+        phone: <phoneNumber()>
+        online: <numberBetween(0, 1)>
+        credit: <numberBetween(0, 5000)>
+        ipAddress: <ipv4()>
+        lastLogin: <dateTimeBetween('-2 years')>
+        statusProfile: <randomElement(['banned','online','normal','online'])>
+        termsAgreed: <numberBetween(0, 1)>
+        termsSignature: <numberBetween(0, 1)>
+        albums: <numberBetween(0, 3)>x @album*
+        screenName: <text(10)>
+        region: <text(5)>
+        city: <text(15)>
+        zipCode: <text(10)>
+        address: <text(20)>
+        covers: 2x @uCover*
+        friends: <numberBetween(0, 5)>x @friend*
+
+    user{1..10} (extends userTemplate):
+        roles: ['@roleUser']
+        status: 50%? 1
+        displayName: user<current()>
+        email: user<current()>@test.com
+
+    super_admin{1..3} (extends userTemplate):
+        roles: ['@roleSuperAdmin']
+        displayName: super_admin<current()>
+        email: super_admin<current()>@test.com
+
+    admin{1..3} (extends userTemplate):
+        roles: ['@roleAdmin']
+        displayName: admin<current()>
+        email: admin<current()>@test.com
+
+    account_manager{1..3} (extends userTemplate):
+        roles: ['@roleAccountManager']
+        displayName: account_manager<current()>
+        email: account_manager<current()>@test.com
+
+    studio_manager{1..3} (extends userTemplate):
+        roles: ['@roleStudioManager']
+        displayName: studio_manager<current()>
+        email: studio_manager<current()>@test.com
+
+    studio{1..3} (extends userTemplate):
+        roles: ['@roleStudio']
+        displayName: studio<current()>
+        email: studio<current()>@test.com
+
+    moderator{1..3} (extends userTemplate):
+        roles: ['@roleModerator']
+        displayName: moderator<current()>
+        email: moderator<current()>@test.com
+
+    vip_user{1..3} (extends userTemplate):
+        roles: ['@roleVipUser']
+        displayName: vip_user<current()>
+        email: vip_user<current()>@test.com
+
+    performer{1..10} (extends userTemplate):
+        roles: ['@rolePerformer']
+        displayName: performer<current()>
+        email: performer<current()>@test.com
+        #categories: <numberBetween(0, 5)>x @category*
+        #category: '@onlyUserCategory*'
+
+    epoch (extends userTemplate):
+        phone: <phoneNumber()>
+        email: epoch@test.com
+        username: epoch
+        password: '@user1->password'
+        status: 1
+
+PerfectWeb\Core\Entity\Resource:
+
+    soloResource (template):
+        frontend: true
+        context: 'performer.cfg'
+        optionConfig: 'a:1:{s:10:"input_type";s:4:"text";}'
+
+    soloResourceDomain (extends soloResource):
+        group: 'domain'
+        label: 'domain'
+        name: 'domain'
+
+    soloPricePrivate (extends soloResource):
+        group: 'price'
+        label: 'Private chat'
+        name: 'private_chat'
+
+    soloPriceGroup (extends soloResource):
+        group: 'price'
+        label: 'Group chat'
+        name: 'group_chat'
+
+    soloPriceSpy (extends soloResource):
+        group: 'price'
+        label: 'Spy mode'
+        name: 'spy_mode'
+
+    soloPriceVip (extends soloResource):
+        group: 'price'
+        label: 'VIP mode'
+        name: 'vip_chat'
+
+    soloPriceShow (extends soloResource):
+        group: 'price'
+        label: 'Show mode'
+        name: 'show_mode'
+
+    soloPrice3D (extends soloResource):
+        group: 'price'
+        label: '3D chat'
+        name: '3d_chat'
+
+    soloConnectTwitter (extends soloResource):
+        group: 'connect'
+        label: 'Twitter'
+        name: 'twitter'
+
+    soloConnectFacebook (extends soloResource):
+        group: 'connect'
+        label: 'Facebook'
+        name: 'facebook'
+
+    soloConnectInstagram (extends soloResource):
+        group: 'connect'
+        label: 'Instagram'
+        name: 'instagram'
+
+    soloConnectInstagram (extends soloResource):
+        group: 'connect'
+        label: 'MySpace'
+        name: 'myspace'
+
+    soloConnectGoogle (extends soloResource):
+        group: 'connect'
+        label: 'Google'
+        name: 'google'
+
+    soloConnectXbiz (extends soloResource):
+        group: 'connect'
+        label: 'xBiz'
+        name: 'xbiz'
+
+    soloConnectFuBar (extends soloResource):
+        group: 'connect'
+        label: 'FuBar'
+        name: 'fubar'
+
+    soloConnectVine (extends soloResource):
+        group: 'connect'
+        label: 'Vine'
+        name: 'vine'
+
+    soloConnectKik (extends soloResource):
+        group: 'connect'
+        label: 'Kik'
+        name: 'kik'
+
+PerfectWeb\Core\Entity\ResourceValue:
+
+    soloDomainStaging:
+        value: 'solo.dev.xexposed.com'
+        user: '@performer1'
+        resource: '@soloResourceDomain'
+    soloDomainStagingPriceGroup:
+        value: <numberBetween(30, 300)>
+        user: '@performer1'
+        resource: '@soloPriceGroup'
+    soloDomainStagingPricePrivate:
+        value: <numberBetween(30, 300)>
+        user: '@performer1'
+        resource: '@soloPricePrivate'
+    soloDomainStagingPriceSpy:
+        value: <numberBetween(30, 300)>
+        user: '@performer1'
+        resource: '@soloPriceSpy'
+    soloDomainStagingPriceVip:
+        value: <numberBetween(30, 300)>
+        user: '@performer1'
+        resource: '@soloPriceVip'
+    soloDomainStagingPriceShow:
+        value: <numberBetween(30, 300)>
+        user: '@performer1'
+        resource: '@soloPriceShow'
+    soloDomainStagingPrice3D:
+        value: <numberBetween(30, 300)>
+        user: '@performer1'
+        resource: '@soloPrice3D'
+    soloDomainDev:
+        value: 'solo.camclients.com'
+        user: '@performer2'
+        resource: '@soloResourceDomain'
+
+    soloConnectTwitterValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectTwitter'
+
+    soloConnectFacebookValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectFacebook'
+
+    soloConnectInstagramValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectInstagram'
+
+    soloConnectInstagramValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectInstagram'
+
+    soloConnectGoogleValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectGoogle'
+
+    soloConnectXbizValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectXbiz'
+
+    soloConnectFuBarValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectFuBar'
+
+    soloConnectVineValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectVine'
+
+    soloConnectKikValues:
+        value: <numberBetween(30000, 300000)>
+        user: '@performer1'
+        resource: '@soloConnectKik'
+
+Application\Entity\Friends:
+    friend{1..20}:
+        friend: <randomElement([@user*, @performer*])>
+        user (unique): <randomElement([@user*, @performer*])>
+        status: <numberBetween(0, 1)>
+
+Application\Entity\BadWords:
+    badWords{1..20}:
+        word: <word()>
+        replacement: <word()> [replaced with]
+        user: '@performer*'
+
+Application\Entity\Autoresponders:
+    autoresponders{1..20}:
+        message: <sentence()>
+        type: <randomElement(['question', 'answer'])>
+        user: '@performer*'
+
+Application\Entity\Role:
+    roleUser:
+        roleId: user
+
+    roleModerator:
+        roleId: moderator
+        parent: '@roleUser'
+
+    rolePerformer:
+        roleId: performer
+        parent: '@roleUser'
+
+    roleAdmin:
+        roleId: admin
+        parent: '@roleModerator'
+
+    roleSuperAdmin:
+        roleId: super_admin
+        parent: '@roleAdmin'
+
+    roleAccountManager:
+        roleId: account_manager
+        parent: '@roleUser'
+
+    roleStudio:
+        roleId: studio
+        parent: '@roleUser'
+
+    roleStudioManager:
+        roleId: studio_manager
+        parent: '@roleUser'
+
+    roleVipUser:
+        roleId: vip_user
+        parent: '@roleUser'
+
+#new part
+
+Videos\Entity\Video:
+    video (template):
+        cost: <randomFloat(2, 0, 10)>
+        user:  '@performer*'
+        title: <sentence()>
+        category: '@vodcategory*'
+        cost: <numberBetween(0, 600)>
+        user: '@performer*'
+        status: 1
+        filename: <imageUrl(600, 600)>
+    vodvideo{1..20}(extends video):
+    showvideo{1..20}(extends video):
+    premierevideo{1..20}(extends video):
+    pledgevideo{1..20}(extends video):
+
+#end of the new part

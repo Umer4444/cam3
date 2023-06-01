@@ -1,0 +1,22 @@
+<div class="row row-no-margin">
+    <div class="tabnav account">
+        <ul class="tabnav-tabs">
+            <li>
+                <a class="tabnav-tab<?= ((($this->params()->fromRoute('controller') == 'user-account'
+                        || $this->params()->fromRoute('controller') == 'zfcuser'
+                    ) && $this->params()->fromRoute('action') == 'index') ? ' selected' : '') ?>"
+                   href="<?= $this->url('zfcuser') ?>">Account Information</a>
+            </li>
+            <li>
+                <a class="tabnav-tab<?= ($this->params()->fromRoute('action') == 'changeemail' ? ' selected' : '') ?>"
+                   href="<?= $this->url('zfcuser/changeemail') ?>">Change Email</a>
+            </li>
+            <li>
+                <a class="tabnav-tab<?= ($this->params()->fromRoute('action') == 'changepassword' ? ' selected' : '') ?>"
+                   href="<?= $this->url('zfcuser/changepassword') ?>">Change Password</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+

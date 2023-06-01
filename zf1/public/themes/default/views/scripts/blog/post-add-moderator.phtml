@@ -1,0 +1,52 @@
+<?
+$page_title = "Edit";
+
+$this->headTitle($page_title);
+
+$this->createdby = array("model_" . user()->id => user()->screen_name);
+if ($this->moderator)
+    $this->createdby["moderator_" . $this->model_moderator->id_moderator] = ($this->model_moderator->screen_name ? $this->model_moderator->screen_name : $this->model_moderator->username);
+
+$accessArr = array();
+
+if ($this->access) {
+    foreach ($this->access as $access) {
+        if ($access["date"] > 0)
+            $accessArr[$access["type"]]["date"] = date("d/m/Y H:i", $access["date"]);
+        else
+            $accessArr[$access["type"]]["date"] = "";
+
+        $accessArr[$access["type"]]["chips"] = $access["chips"];
+    }
+}
+$this->accessArr = $accessArr;
+//p($this->article->toArray(),1 );
+//p(array_key_exists("vip",$accessArr),1);
+
+?>
+
+
+<div class="model_content">
+    <?
+    echo $this->partial('partials/moderator-submenu.phtml',
+        array("params" => $this->theme()->view->params,
+            "type" => "model",
+            "acl" => $this->acl,
+            "user" => $this->model));
+
+    ?>
+    <?
+
+    if (($this->article->status == 2 || $this->article->status == -1) && ($this->article->id_moderator == user()->id || 0 == user()->id))
+        echo $this->partial("partials/moderation-bar.phtml", array("type" => "blog-article", "article" => $this->article));
+    ?>
+    <?= $this->notice; ?>
+    <div class="page-content round-corners">
+
+
+        <h1 class="page-title"><?= $page_title ?></h1>
+        <? echo $this->partial("blog/post-add-form.phtml", $this); ?>
+        <br/>
+
+    </div>
+</div>        

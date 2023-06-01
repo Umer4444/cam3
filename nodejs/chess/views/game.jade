@@ -1,0 +1,192 @@
+extends layout
+
+block content
+
+  div.container-fluid
+
+    #messages
+
+    #game
+
+      #title-bar
+        button#forfeit.btn.btn-sm.btn-default.pull-right Forfeit
+        span Game:&nbsp;
+        strong #{gameID}
+
+      .row
+        .col-md-2
+          #opponent.player-info
+            strong ...
+            span.pull-right (#{playerColor})
+            span.status.pull-right
+            ul.captured-pieces.list-inline
+            iframe(width="230", height="230", frameborder="0", scrolling="no", src="/stream/live/#{initiatorId}/230/230")
+
+        .col-md-8
+          table#board
+            tr
+              td.top-left-corner
+              td.top-edge
+              td.top-edge
+              td.top-edge
+              td.top-edge
+              td.top-edge
+              td.top-edge
+              td.top-edge
+              td.top-edge
+              td.top-right-corner
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.left-edge
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.square
+              td.right-edge
+            tr
+              td.bottom-left-corner
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-edge
+              td.bottom-right-corner
+
+        .col-md-2
+          #you.player-info
+            strong ...
+            span.status.pull-right
+            ul.captured-pieces.list-inline
+            iframe(width="230", height="230", frameborder="0",scrolling="no", src="/stream/broadcast/#{playerId}/230/230")
+
+    #game-over.modal.fade(role="dialog", onclick="window.close()")
+      .modal-dialog
+        .modal-content
+          .modal-body.text-center
+            h2.alert
+          .modal-footer
+            a.btn.btn-primary(href="/") Continue
+
+    #pawn-promotion.modal.fade(role="dialog")
+      .modal-dialog
+        .modal-content
+          .modal-body.text-center
+            form
+              h3 Promote Pawn
+              .btn-group(data-toggle="buttons")
+                label.btn.btn-default.knight
+                  input(type="radio", name="promotion", value="N")
+
+                label.btn.btn-default.bishop
+                  input(type="radio", name="promotion", value="B")
+
+                label.btn.btn-default.rook
+                  input(type="radio", name="promotion", value="R")
+
+                label.btn.btn-default.queen.active
+                  input(type="radio", name="promotion", value="Q", checked="checked")
+          .modal-footer
+            button.btn.btn-primary Promote
+
+    #forfeit-game.modal.fade(role="dialog")
+      .modal-dialog
+        .modal-content
+          .modal-body.text-center
+            h2 Forfeit Game?
+          .modal-footer
+            button#cancel-forfeit.btn.btn-default Cancel
+            button#confirm-forfeit.btn.btn-primary Forfeit
+
+  script(src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js")
+  script(src="/assets/play_chess_game_js.js")
+  script.
+    $(document).ready(function() {
+      window.Client({
+        gameID      : "#{gameID}",
+        playerColor : "#{playerColor}",
+        playerName  : "#{playerName}"
+      });
+    });

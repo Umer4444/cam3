@@ -1,0 +1,11 @@
+<div class="page-content round-corners">
+    <h1 class="page-title">Updates</h1>
+    <br/>
+    <? if ($this->updates) { ?>
+        <? foreach ($this->updates as $this->update)
+            echo $this->partial("partials/item-pledge-update.phtml", array("update" => $this->update, "pledge" => $this->pledge));
+        ?>
+    <? } else { ?>
+        No updates
+    <? } ?>
+</div>

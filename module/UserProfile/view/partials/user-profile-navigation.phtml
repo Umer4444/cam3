@@ -1,0 +1,15 @@
+<?php
+
+foreach ($this->container as $page) {
+
+// we need to pass the params from the matched route
+$page->setParams(
+array_merge(
+$page->getRouteMatch()->getParams(),
+$page->getParams()
+)
+);
+
+}
+
+echo  $this->navigation()->menu()->setUlClass('nav nav1 navbar-nav navbar-right padding-fix')->renderMenu($this->container);

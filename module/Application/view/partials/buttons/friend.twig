@@ -1,0 +1,27 @@
+{% extends 'buttons/default' %}
+
+{% block button_class %}btn btn-magenta btn-block friendRequest {{ block('button_id') }}{% endblock button_class %}
+
+{% if zfcUserIdentity() %}
+
+    {% set friend = serviceLocator().get('em').getRepository('Application\\Entity\\Friends').findOneBy({friend: user, user: zfcUserIdentity()}) %}
+
+    {% block button_data %}
+        {{ button_data|raw }}
+        data-friend="{{ user.getId() }}"
+        data-user="{{ zfcUserIdentity().getId() }}"
+    {% endblock button_data %}
+
+{% endif %}
+
+{% if friend and zfcUserIdentity().getFriends().contains(friend) %}
+    {% set button_data = 'data-action="removeFriend"' %}
+    {% set button_text = 'UnFriend' %}
+{% else %}
+    {% set button_data = 'data-action="addFriend"' %}
+    {% set button_text = 'Friend Req' %}
+{% endif %}
+
+{% block button_text %}{{ button_text|raw }}{% endblock button_text %}
+
+{% block button_javascript %}App.button.friend('{{ block('button_id') }}'{{ isContext == false ? '' : ', key, options' }}){% endblock button_javascript %}

@@ -1,0 +1,59 @@
+<?
+
+$paginator = Zend_Paginator::factory($this->loadModel("video")->getVideos($this->id_model, null, null, 'id desc', null, null, "premieres"));
+$paginator->setItemCountPerPage($this->nr);
+$paginator->setCurrentPageNumber($this->page);
+
+$this->videos_for_sale = $paginator;
+
+$paginator = Zend_Paginator::factory($this->video->getVideos($this->_data['model']->id, 'vod', null, 'id asc'));
+$paginator->setItemCountPerPage($this->nr);
+$paginator->setCurrentPageNumber($this->page);
+
+$this->videos_on_demand = $paginator;
+?>
+<h2 class="page_title">Videos</h2>
+
+<?
+if ($this->video_type == 'all' || $this->video_type == 'for_sale') {
+    ?>
+    <h3 class="group_title">Clips For Sale</h3>
+    <div class="clear"></div>
+    <?
+
+    if ($this->videos_for_sale) {
+        foreach ($this->videos_for_sale as $video) echo $this->partial('partials/video-small-item.phtml', array('video' => $video));
+    } else {
+        echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';
+    }
+    ?>
+    <div class="clear"></div>
+
+    <?
+    echo $this->paginationControl($this->videos_for_sale, 'Sliding', 'partials/pagination.phtml', array('pagination_type' => 'for_sale'));
+
+
+}
+
+if ($this->video_type == 'all' || $this->video_type == 'vod') {
+
+    ?>
+    <h3 class="group_title">Videos On Demand</h3>
+    <div class="clear"></div>
+    <?
+    if ($this->videos_on_demand) {
+        foreach ($this->videos_on_demand as $video) echo $this->partial('partials/video-small-item.phtml', array('video' => $video));
+    } else {
+        echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';
+    }
+    ?>
+    <div class="clear"></div>
+
+    <?
+    echo $this->paginationControl($this->videos_on_demand, 'Sliding', 'partials/pagination.phtml', array('pagination_type' => 'vod'));
+
+}
+?>
+
+
+

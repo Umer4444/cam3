@@ -1,0 +1,169 @@
+<?php
+/**
+ *
+ * @array $this->item
+ *  $this->item= array(
+ *   id , type, status, resource
+ * )
+ */
+?>
+<div class="item-status">
+    <?php
+
+    if ($this->item && is_array($this->item)) {
+
+        if (isset($this->item["resource"])
+            && $this->isAllowed($this->item["resource"], "edit")
+        ) {
+            ?>
+            <div class="btn-group moderate-items col-md-12  no-padding" id="id_<?= $this->item['id'] ?>" data-toggle="buttons">
+
+
+                <button
+                    type="button"
+                    class="btn btn-danger<?= ($this->item['status'] == -1 ? " status" : ''); ?>"
+                    data-id="<?= $this->item['id'] ?>"
+                    id="itemId_<?= $this->item['id'] ?>_1"
+                    name="itemId_<?= $this->item['id'] ?>"
+                    value="-1"
+                    >Deny</button>
+
+                <button
+                    type="button"
+                    class="btn btn-warning<?= ($this->item['status'] == 0 ? " status" : ''); ?>"
+                    data-id="<?= $this->item['id'] ?>"
+                    id="itemId_<?= $this->item['id'] ?>_2"
+                    name="itemId_<?= $this->item['id'] ?>"
+                    value="0"
+                    >Pending</button>
+
+                <button
+                    type="button"
+                    class="btn btn-success<?= ($this->item['status'] == 1 ? " status" : ''); ?>"
+                    data-id="<?= $this->item['id'] ?>"
+                    id="itemId_<?= $this->item['id'] ?>_3"
+                    name="itemId_<?= $this->item['id'] ?>"
+                    value="1"
+                    >Approve</button>
+
+              <!--  <div class="btn-group batradio" data-toggle="buttons-radio">
+                    <label class="btn btn-danger<?= ($this->item['status'] == -1 ? " status" : ''); ?>"
+                           for="itemId_<?= $this->item['id'] ?>_1">
+                        <input data-id="<?= $this->item['id'] ?>"
+                               id="itemId_<?= $this->item['id'] ?>_1"
+                               name="itemId_<?= $this->item['id'] ?>"
+                               type="radio"
+                               value="-1"
+                               />Deny
+                    </label>
+                    <label class="btn btn-warning<?= ($this->item['status'] == 0 ? " status" : ''); ?>"
+                           for="itemId_<?= $this->item['id'] ?>_2">
+                        <input data-id="<?= $this->item['id'] ?>" id="itemId_<?= $this->item['id'] ?>_2"
+                               name="itemId_<?= $this->item['id'] ?>"
+                               type="radio"
+                               value="0"
+                               />Pending
+                    </label>
+                    <label class="btn btn-success<?= ($this->item['status'] == 1 ? " status" : ''); ?>"
+                           for="itemId_<?= $this->item['id'] ?>_3">
+                        <input data-id="<?= $this->item['id'] ?>" id="itemId_<?= $this->item['id'] ?>_3"
+                               name="itemId_<?= $this->item['id'] ?>"
+                               type="radio"
+                               value="1"
+                               />Approve
+                    </label>
+                </div>
+-->
+
+
+            </div>
+
+        <?php
+        } else {
+            $status = ($this->item['status'] == "1" ? "status" : ($this->item['status'] == "0" ? "Pending" : "Denied"));
+            $class = ($this->item['status'] == "1" ? "success" : ($this->item['status'] == "0" ? "warning" : "important"));
+
+            ?>
+
+            <div class="label-holder">
+                <span class="label label-<?= $class ?>"><?= $status ?></span>
+                <?php
+
+                if (isset($this->item["type"])
+                    && $this->item["type"] == "video"
+                    && $this->isAllowed('set-video', 'edit')
+                ) {
+                    ?>
+                    <span class="item-options item-fix">
+                        <button type="button" class="btn btn-xs button-fix" data-id="<?= $this->item['id'] ?>">
+                            <i class="glyphicon glyphicon-cog"></i>
+                        </button>
+                        <ul style="display:none;" class="item-options-list">
+                            <?php if (
+                                isset($this->item['destination'])
+                                && $this->item['destination'] == 'profile'
+                            ) {
+                                ?>
+                                <li class="defaults" data-action="bio_video">
+                                   <span class="<?php
+                                   if ($this->item['defaults']['bio_video']['value'] != $this->item['id']) {
+                                       ?> hidden <?php } ?>  ">&bigstar;</span>
+                                    Set as default bio
+
+                                </li>
+                                <li class="defaults" data-action="turns_on_video">
+                                    <span
+                                        class=" <?php if ($this->item['defaults']['turns_on_video']['value'] != $this->item['id']) { ?>hidden<?php } ?>">&bigstar;</span>
+                                    Default what turns me on
+
+                                </li>
+                                <li class="defaults" data-action="turns_off_video">
+
+                                    <span
+                                        class="<?php if ($this->item['defaults']['turns_off_video']['value'] != $this->item['id']) { ?> hidden<?php } ?>">&bigstar;</span>
+                                    Default what turns me off
+
+                                </li>
+                                <li class="defaults" data-action="private_do_video">
+                                    <span
+                                        class=" <?php if ($this->item['defaults']['private_do_video']['value'] != $this->item['id']) { ?> hidden<?php } ?>">&bigstar;</span>
+                                    Set as default things i do
+
+                                </li>
+                                <li class="defaults" data-action="private_dont_video">
+                                    <span
+                                        class="<?php if ($this->item['defaults']['private_dont_video']['value'] != $this->item['id']) { ?> hidden <?php } ?>">&bigstar;</span>
+                                    Default things i don't do
+
+                                </li>
+                                <li class="defaults" data-action="interests_hobbies_video">
+                                    <span
+                                        class="<?php if ($this->item['defaults']['interests_hobbies_video']['value'] != $this->item['id']) { ?>hidden <?php } ?>">&bigstar;</span>
+                                    Set as default interests
+
+                                </li>
+                                <li class="defaults" data-action="room_rules_video">
+                                    <span
+                                        class="<?php if ($this->item['defaults']['room_rules_video']['value'] != $this->item['id']) { ?> hidden <?php } ?>">&bigstar;</span>
+                                    Set as default room rules
+
+                                </li>
+                                <li class="defaults" data-action="intro_video">
+                                    <span
+                                        class="<?php if ($this->item['defaults']['intro_video']['value'] != $this->item['id']) { ?> hidden <?php } ?>">&bigstar;</span>
+                                    Set default intro video
+
+                                </li>
+
+
+                            <?php } else { ?>
+                                <li>no options</li>
+                            <?php } ?>
+                        </ul>
+                    </span>
+                <?php } ?>
+
+            </div>
+        <?php } ?>
+    <?php } ?>
+</div>

@@ -1,0 +1,116 @@
+/* like / dislike buttons style */
+.like {
+    padding: 2px;
+    font-size: 12px;
+}
+
+.like .button-like {
+    border-radius: 3px 0px 0px 3px;
+    color: #000000;
+    cursor: pointer;
+    height: 40px;
+    font-size: 12px;
+    line-height: 2em;
+    float: left;
+}
+
+.like .button-unlike {
+    border-left: none;
+    border-radius: 0px 3px 3px 0px;
+    color: #000000;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    font-size: 12px;
+    line-height: 2em;
+    float: left;
+}
+
+.like .thumbs-up {
+    background: url("/images/icons/yt-icons.png") no-repeat scroll 2px -255px transparent;
+    position: relative;
+    height: 20px;
+    display: block;
+    width: 20px;
+    clear: right;
+    float: left;
+    content: ".";
+}
+
+.like .thumbs-down {
+    background: url("/images/icons/yt-icons.png") no-repeat scroll -63px -50px transparent;
+    position: relative;
+    height: 20px;
+    display: block;
+    width: 20px;
+    clear: right;
+    float: left;
+    margin-right: 4px;
+}
+
+.like .thumbs-up:hover {
+    background: url("/images/icons/yt-icons.png") no-repeat scroll -37px -138px transparent;
+}
+
+.like .thumbs-down:hover {
+    background: url("/images/icons/yt-icons.png") no-repeat scroll -36px -255px transparent;
+}
+
+.like .stats {
+    background: white;
+    border-radius: 5px;
+    border: 1px solid rgb(221, 221, 221);
+    clear: left;
+    margin-top: 12px;
+    display: none;
+    height: auto;
+    padding: 5px;
+    width: 350px;
+    position: absolute;
+    top: 32px;
+}
+
+.like .stat-details .close {
+    background: url("../images/icons/yt-icons.png") no-repeat scroll 0px -132px transparent;
+    float: right;
+    height: 17px;
+    width: 17px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.like .like .stat-details table {
+    font-size: 12px;
+}
+
+.like #small {
+    font-size: 10px;
+    color: #949494;
+}
+
+.like .bar {
+    height: 10px;
+    display: inline-block;
+}
+
+.like .green {
+    background: #64F141;
+    border: 1px solid #148507;
+}
+
+.like .red {
+    background: #FF4F4F;
+    border: 1px solid #D50202;
+}
+
+.like .stat-option {
+    display: block;
+    line-height: 20px;
+    margin-top: 5px;
+    padding-top: 3px;
+}
+
+.like .close {
+    cursor: pointer;
+}
+/* end like buttons */

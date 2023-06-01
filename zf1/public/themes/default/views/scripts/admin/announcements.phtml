@@ -1,0 +1,192 @@
+<? use Application\Entity\Role;
+
+$this->headTitle($this->page_title); ?>
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= $this->page_title ?></h1>
+
+    <?
+
+    if (Auth::isModel()) {
+        $site_sections =  [
+            strtoupper(Role::USER) => Role::USER,
+            strtoupper(Role::GUEST) => Role::GUEST
+        ];
+    }
+    elseif (Auth::isModerator()) {
+        $site_sections =  ['ALL' => 'all'] + \Application\Entity\Role::getAllRoles();
+    }
+
+    $view_mode = "listview";
+    if (isset($this->params["view_style"])) {
+        $view_mode = $this->params["view_style"];
+    }
+
+    switch ($this->type) {
+        case 'all':
+            echo '<a class="add_new_question_form" title="Add a new announcement " href="' . $this->url(array("type" => "add"), "mod-announcements") . '">Add New Announcement</a>';
+            echo '<div class="break_line_pink"></div>';
+            ?>
+            <form name="filters" method="get">
+                <b> Filter:</b>
+                <? /*if (Auth::isModerator())*/ { ?>
+                    <label for="group_type">Type</label>
+                    <?= $this->formSelect('group_type', $this->params["group_type"], null, $site_sections) ?>
+                <? } /*?>
+                <label for="sort">Sort</label>
+                <?= $this->formSelect('sort', $this->params["sort"], null, array("active" => "active", "draft" =>"draft", "pending" => "pending", "approved" => "approved")); */?>
+
+                <label for="start">From</label>
+                <input name="start" data-type="datetimepicker" placeholder="start date" value="<?=$this->params["start"] ?>"/>
+                <label for="end">To</label>
+                <input name="end" data-type="datetimepicker" placeholder="end date" value="<?=$this->params["end"] ?>"/>
+                <label for="view_style">View</label>
+                <?= $this->formSelect('view_style', $view_mode, null, array("listview" => "list view", "fullview" => "full view")); ?>
+
+                <input name="submit" class="button-gray" type="submit" value="Submit"/>
+            </form>
+            <?
+
+            if (!count($this->paginator)) {
+                echo 'There are no announcements';
+            }
+            else {
+                ?>
+
+                <div class="break_line_pink"></div>
+                <?
+
+                foreach ($this->paginator as $ann) {
+
+                    echo '<div class="model_ann">';
+                    if ($view_mode == "fullview") {
+                        echo $ann['text'];
+                    } else {
+                        echo short_description($ann['text'], 200);
+                    }
+                    echo '<br/><br/>';
+                    echo '<div>' . ($ann['go_live']) . ' &nbsp;&nbsp;&nbsp;  <b>show for user types:</b> ' .
+                        $ann['section'] . "</i>";
+
+                    if ($this->acl->isAllowed($_SESSION['group'], "add-announcements", "edit")) {
+                        echo '<div class="right">
+                                    <a href="' . $this->url(array("type" => "edit", "id" => $ann['id']), "mod-announcements-edit") . '" style="color: blue;">edit</a> &nbsp;
+
+                                    <a onclick=\'return confirm("Are you sure you want to delete?")\' href="' . $this->url(array("type" => "delete", "id" => $ann['id']), "mod-announcements-edit") . '" style="color: blue;">delete</a>
+                                    </div>';
+                    }
+                    echo '</div></div>';
+
+                    echo '<div class="break_line_pink"></div>';
+
+                }
+            }
+
+            echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+
+            break;
+
+        case 'edit':
+            ?>
+
+            <form action="" method="post" id="">
+                <div class="join-box-fields">
+                    <div class="field">
+                        <label for="text">Text</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formTextarea('text', $this->ann->text, array('cols' => 30, 'rows' => 20, 'class' => 'content')) ?>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="go_live">Publish</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('go_live', date('Y-m-d H:i:s', $this->ann->go_live), array("class" => "date
+                            small_field2")) ?>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="section">Limit to group</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formSelect('section', 'users', null, array("all" => "all", "users" => "users", "models" => "models", "moderators" => "moderators")) ?>
+                        </div>
+                    </div>
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "status-announcements", "edit")) { ?>
+                        <div class="field">
+                            <label for="section">Active</label>
+
+                            <div class="field_wrapper">
+                                <?= $this->formCheckbox('active', 1, ($this->ann->active > 0) ? array('checked' => 1) : nul); ?>
+                            </div>
+                        </div>
+                    <? } ?>
+                </div>
+
+                <br>
+
+                <div class="join-button">
+                    <input type="submit" name="save" value="Save" class="btn btn-success">
+                </div>
+            </form>
+            <?
+            break;
+
+        case 'add':
+            ?>
+            <form action="" method="post" id="">
+                <div class="join-box-fields">
+                    <div class="field">
+                        <label for="text">Text</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formTextarea('text', null, array('cols' => 30, 'rows' => 20, 'id' => 'content')
+                            ) ?>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="go_live">Publish</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('go_live', date('Y-m-d H:i:s'), array("data-type" => "datetimepicker")
+                            ) ?>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="section">Limit to group</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formSelect('section', null, null, $site_sections) ?>
+                        </div>
+                    </div>
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "status-announcements", "edit")) { ?>
+                        <div class="field">
+                            <label for="section">Active</label>
+
+                            <div class="field_wrapper">
+                                <?= $this->formCheckbox('active', 1, null); ?>
+                            </div>
+                        </div>
+                    <? } ?>
+                </div>
+                <br>
+
+                <div class="join-button">
+<!--                    <input type="submit" name="save_draft" value="Save as draft" class="btn btn-success">-->
+                    <input type="submit" name="save" value="Save" class="btn btn-success">
+                </div>
+            </form>
+            <?
+            break;
+    }
+    ?>
+</div>
+<br>
+<?=$this->partial('partials/editor.phtml')?>

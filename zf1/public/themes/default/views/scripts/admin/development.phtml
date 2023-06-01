@@ -1,0 +1,104 @@
+<?
+$this->headTitle('Development Pages');
+if (!$this->pages) $this->pages = array();
+
+$pages = array();
+$parents = array();
+$i = 0;
+foreach ($this->pages as $page) {
+    $i++;
+    if ($i > 1) $pages[$page['page']] = $page['title'];
+    $parents[$page['page']] = $page['title'];
+    foreach ($page['children'] as $pageLvl1) {
+        $pages[$pageLvl1['page']] = "-> " . $pageLvl1['title'];
+        $parents[$pageLvl1['page']] = "-> " . $pageLvl1['title'];
+        foreach ($pageLvl1['children'] as $pageLvl2) {
+            $pages[$pageLvl2['page']] = "--> " . $pageLvl2['title'];
+
+        }
+
+    }
+}
+
+$url = $this->url(array(), 'development-pages-edit');
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "development",
+        "acl" => $this->acl,
+        "page" => ($this->page ? $this->page->page : $this->pages[0]['page'])));
+?>
+
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title">Development Pages</h1>
+
+    <form action="" method="post" id="">
+        <div class="join-box-fields">
+            <? if (!$this->params['add']) { ?>
+                <div class="field">
+                    <label for="page">Select Page</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formSelect('page', ($this->page ? $this->page->page : $this->pages[0]['page']), null, $pages) ?>
+                    </div>
+                </div>
+            <? } ?>
+
+            <div class="field">
+                <label for="parent"><?= ($this->params['add'] == 'add' ? "Select " : "") ?>Parent</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('parent', ($this->page ? $this->page->parent : $this->pages[0]['parent']), null, $parents) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="title">Title</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('title', ($this->page ? $this->page->title : $this->pages[0]['title'])) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="content">Content</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formTextarea('content', ($this->page ? $this->page->content : $this->pages[0]['content']), array('cols' => 30, 'rows' => 40, 'class' => 'content')) ?>
+                </div>
+            </div>
+            <? if (!$this->params['add']) { ?>
+                <div class="field">
+                    <label for="status">Status</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formSelect('status', ($this->page ? $this->page->status : $this->pages[0]['status']), null, array('0' => 'Pending', '1' => 'Active')) ?>
+                    </div>
+                </div>
+            <? } ?>
+        </div>
+
+        <br>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "development-pages", "edit")) { ?>
+            <div class="join-button">
+                <input type="submit"
+                       name="<?= ($this->params['add'] && $this->params['add'] == 'add' ? "save_new" : "save") ?>"
+                       value="Save" class="btn btn-success">
+            </div>
+        <? } ?>
+    </form>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#page").change(function () {
+                window.location = "<?=$url?>/" + $('#page').val() + "";
+            });
+        });
+
+    </script>
+</div>
+<br>
+<?=$this->partial('partials/editor.phtml')?>

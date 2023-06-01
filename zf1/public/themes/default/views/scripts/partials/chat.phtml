@@ -1,0 +1,194 @@
+<?php if (Auth::isUser()) {
+    if (!isset($_COOKIE['unregistered'])) {
+
+        setcookie('unregistered', 'show', time() + 60 * 60 * 24 * 30, '/');
+        $_COOKIE['unregistered'] = 'show';
+
+    }?>
+
+
+    <select id="unregistered" onchange="setCookies('unregistered',$(this).val(),365)">
+        <option value="show" <?php if ($_COOKIE['unregistered'] == 'show') echo "selected='selected'" ?>>Show
+            unregistered users
+        </option>
+        <option value="hide" <?php if ($_COOKIE['unregistered'] == 'hide') echo "selected='selected'" ?>>Hide
+            unregistered users
+        </option>
+    </select>
+
+<?php } ?>
+
+
+<div id="chatContainer" class="col-md-6">
+
+
+    <div id="chatTopBar" class="rounded">
+        <span class="count" data-type="timer"></span>
+    </div>
+    <div id="chatLineHolder"></div>
+
+    <div id="chatUsers" class="rounded"></div>
+    <div id="chatBottomBar" class="rounded">
+        <div class="tip"></div>
+        <div id="tipEmoticons" class="tipEmoticons"></div>
+        <?
+        if (!Auth::isLogged() && !isset($_SESSION['user_chat'][$this->model->id]) && $this->model->chat_type == 'normal' && $this->model_status == 'online') {
+            echo '
+                <form id="loginForm" method="post" action="">
+                    <table style="width: 100%; table-layout: fixed;">
+                        <tr>
+                            <td>
+                                <input id="name" name="name" class="rounded" maxlength="16" />
+                            </td>
+                            <td>
+                                <input id="email" name="email" class="rounded" />
+                            </td>
+                            <td style="width: 95px;">
+                                <input type="hidden" name="model_id" value="' . $this->model->id . '">
+                                <input type="hidden" name="user_id" value="guest">
+                                <input type="submit" class="blueButton" value="Login" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            ';
+        }
+
+        ?>
+
+<? //~r($_SESSION); ?>
+        <form id="submitForm" method="post"
+              action="" <?= (((!Auth::isLogged() && isset($_SESSION['user_chat'][$this->model->id])) || isset($_SESSION['user_chat'][$this->model->id])) && $this->model_status == 'online' ? 'style="display: block;"' : 'style="display: none;"') ?>>
+            <table style="width: 100%; table-layout: fixed;">
+                <tr>
+                    <td>
+                        <!--<input id="chatText" name="chatText" class="rounded" maxlength="255"/>-->
+                        <textarea id="chatText" rows="1" name="chatText" class="rounded" maxlength="255"
+                                  data-id="<?= $this->model->id ?>" ></textarea>
+                    </td>
+                    <td style="width: 90px; text-align: center;">
+                        <input type="hidden" name="model_id" value="<?= $this->model->id ?>">
+                        <?
+                        if (Auth::isLogged()) echo '<input type="hidden" name="user_id" value="user_' . user()->id . '">';
+                        else echo '<input type="hidden" name="user_id" value="' . $_SESSION['user_chat'][$this->model->id]["id"] . '">';
+                        ?>
+
+                        <?php //if (Auth::isLogged() || (((!Auth::isUser() && isset($_SESSION['user_chat'][$this->model->id])) || isset($_SESSION['user_chat'][$this->model->id])) && $this->model_status == 'online')) { ?>
+                        <input type="button" class="fontButton" id="fontButton"/>
+                        <?php //} ?>
+                        <input type="button" class="smileyButton" id="smileyButton"/>
+                    </td>
+                    <td style="width: 95px;">
+                        <input type="submit" class="blueButton" value="Submit"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="emoticonsContainer" class="rounded balloon-pop">
+        <div class="smiley">
+            <img src='/images/emoticons/smile.png' id="smile" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/neutral.png' id="neutral" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/frown.png' id="frown" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/wink.png' id="wink" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/lol.png' id="lol" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/biggrin.png' id="grin" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/tongue.png' id="tongue" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/triste.png' id="sad" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/oh.png' id="surprised" class="insert_emoticon">
+        </div>
+        <div class="smiley">
+            <img src='/images/emoticons/confused.png' id="confused" class="insert_emoticon">
+        </div>
+    </div>
+
+    <?php
+    $user_chat_id = 'guest';
+
+    if (Auth::isLogged() || (((!Auth::isUser() && isset($_SESSION['user_chat'][$this->model->id])) || isset($_SESSION['user_chat'][$this->model->id])) && $this->model_status == 'online')) {
+        ?>
+        <?php
+        $styles = (array)json_decode((user()->chat_font ? user()->chat_font : ''));
+        $user_chat_id = (Auth::isUser() ? 'user_' : (Auth::isModel() ? 'model_' : '')) . (Auth::isLogged() ? user()->id : $_SESSION['user_chat'][$this->model->id]["id"]);
+        ?>
+    <?php } ?>
+    <div id="fontStyleContainer" class="rounded balloon-pop sb_wrapper">
+        <form id="fontStyleForm">
+            <div class="sb_dropdown">
+                <input type="hidden" name="user_name" value="<?= (Auth::isLogged() ? user()->username : "guest") ?>"/>
+                <input type="hidden" name="user_id" id="chat-user-id" value="<?= $user_chat_id ?>"/>
+                <ul class="font_name">
+                    <li><strong>Font</strong></li>
+                    <li>
+                        <input type="radio" name="font" class="case" value="comic"
+                               id="font_comic"<?= (isset($styles["fontName"]) && $styles["fontName"] = 'Comic Sans' ? ' checked' : '') ?>/>
+                        <label for="font_comic">Comic</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="font" class="case" value="courier"
+                               id="font_courier"<?= (isset($styles["fontName"]) && $styles["fontName"] = 'Courier New' ? ' checked' : '') ?>/>
+                        <label for="font_courier">Courier</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="font" class="case" value="arial"
+                               id="font_arial"<?= (isset($styles["fontName"]) && $styles["fontName"] = 'Arial' ? ' checked' : '') ?>/>
+                        <label for="font_arial">Arial</label>
+                    </li>
+                </ul>
+                <ul class="color">
+                    <li><strong>Color</strong></li>
+                    <li>
+                        <input type="color" name="color"
+                               value="<?= (isset($styles["color"]) ? trim($styles["color"]) : '#ff0000'); ?>"
+                               id="color">
+                    </li>
+                </ul>
+                <ul class="style">
+                    <li><strong>Style</strong></li>
+                    <li>
+                        <input type="checkbox" name="fontWeight" class="case" value="bold"
+                               id="bold" <?= (isset($styles["fontWeight"]) ? ' checked' : '') ?>>
+                        <label for="bold"><strong>B</strong></label>
+                    </li>
+                    <li>
+                        <input type="checkbox" name="fontItalic" class="case" value="italic"
+                               id="italic" <?= (isset($styles["fontItalic"]) ? ' checked' : '') ?>>
+                        <label for="italic"><i>I</i></label>
+                    </li>
+                </ul>
+
+
+                <ul class="save-btn">
+                    <li>&nbsp;</li>
+                    <li>
+
+                        <button type="button" class="button small btn btn-magenta" id="save-font-btn"
+                                onClick="App.chat.saveStyles()">Save
+                        </button>
+                    </li>
+                </ul>
+
+
+                <div class="clear"></div>
+
+            </div>
+        </form>
+    </div>
+
+</div>

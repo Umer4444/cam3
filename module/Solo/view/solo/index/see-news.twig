@@ -1,0 +1,36 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+
+    <div class="content_block">
+
+        <div class="row row-no-margin">
+            <div class="col-md-12">
+                <div class="background-rounded">
+                {% if news %}
+                    {{ news.getText()|raw }}
+                {% else %}
+                    Nothing to see here!
+                {% endif %}
+            </div>
+        </div>
+            <div class="span4">
+                {{ eventCalendar() }}
+                {{ modelNews() }}
+                {{ modelFriends() }}
+                {{ modelLatestVideo() }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        $(document).ajaxComplete(function () {
+
+            $('.eventsCalendar-loading.error').addClass('hidden');
+            //remove this when json works!
+        });
+
+    </script>
+{% endblock %}

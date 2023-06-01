@@ -1,0 +1,68 @@
+<?
+
+use PerfectWeb\Core\Utils\Status;
+
+$route_name = Zend_Controller_Front::getInstance()->getRouter()->getCurrentRouteName();
+
+
+$view_url=$this->url(array("id_post" => $this->article->id, "title" => slug($this->article->title)),
+                     "blog-post-performer-backend", true);
+
+?>
+
+<div class="post_container_small">
+    <div class="post_header post_row">
+        <div class="post_title">
+
+            <a class=""
+               href="<?= $view_url ?>">
+                <h2>
+                    <?= $this->article->title; ?>
+                </h2>
+            </a>
+
+
+        </div>
+        <div class="post_date">
+
+                <span style="color:<?= $color ?>"><?= Status::getFrom($this->article->status) ?></span>
+
+            <?//= date("Y/m/d H:i", $this->article->added) ?>
+        </div>
+        <div class="post_col1">
+
+            <div class="post_category">
+                <? if (Auth::isModerator() && (user()->id == 0 || user()->id == $this->article->id_moderator)) { ?>
+
+
+                <? } else { ?>
+                    <a href="#">
+                        <?= $this->article->category_title ?>
+                    </a>
+                <? } ?>
+            </div>
+        </div>
+        <div class="post_col2">
+
+            <div class="post_tags"><?= $this->article->tags ?></div>
+        </div>
+    </div>
+    <div class="post_cover post_row">
+        <img src="<?= $this->article->small_cover ?>">
+                <span class="post_caption">
+                    <p>
+                        <span><?= $this->article->reposts ?> reposts </span>
+
+                    </p>
+                </span>
+    </div>
+    <div class="post_excerpt post_row">
+        <?= short_description($this->article->content) ?>
+
+            <a class="btn-xs btn btn-magenta" href="<?=$this->url(array("id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-edit-performer-backend", true); ?>">Edit</a>
+
+
+    </div>
+    <hr/>
+    <div class="post_reshares post_row"></div>
+</div>

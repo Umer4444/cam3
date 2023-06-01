@@ -1,0 +1,17 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+
+    {% set useless = paginator(paginator) %}
+
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-xs-12" data-type="infinite">
+            {% for image in paginator.getPaginator().getCurrentItems() %}
+                {% include 'image/item' %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {{ paginationControl(paginator.getPaginator(), 'Sliding', 'slide-paginator') }}
+
+{% endblock %}

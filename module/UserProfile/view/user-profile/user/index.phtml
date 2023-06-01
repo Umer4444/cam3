@@ -1,0 +1,36 @@
+<?= $this->partial('application/dashboard/partial/tab-menu'); ?>
+<div class="span12">
+    <h2>Profile information</h2>
+</div>
+<div class="row-fluid">
+    <div class="span12">
+        <a href="<?= $this->url("user-profile/edit") ?>" class="btn btn-magenta">Edit profile</a>
+    </div>
+
+</div>
+<br/>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="well">
+            <dl>
+                <dt>Username</dt>
+                <dd><?= $this->user->getUsername() ?></dd>
+                <dt>Email</dt>
+                <dd><?= $this->user->getEmail() ?></dd>
+                <?php
+                if ($this->profileSettings) {
+                    foreach ($this->profileSettings as $setting) {
+                        if ($setting['entity'] && $setting['value']) {
+                            echo '<dt>' . $setting['label'] . '</dt>' . '<dd>' .
+                                $this->settingEntities[$setting['key']]->__toString() . '</dd>';
+                        } else {
+                            echo '<dt>' . $setting['label'] . '</dt>' . '<dd>' . $setting['value'] . '</dd>';
+                        }
+                    }
+                }
+                ?>
+
+            </dl>
+        </div>
+    </div>
+</div>

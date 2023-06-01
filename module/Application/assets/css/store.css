@@ -1,0 +1,7 @@
+.panel-body footer, .panel-body head, .panel-body .page-header-actions .admin-user{
+	display: none !important;
+}
+
+.panel-body a.logo img {
+	visibility: hidden;
+}

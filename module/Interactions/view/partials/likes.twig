@@ -1,0 +1,10 @@
+{% set url = not zfcUserIdentity() ? "href=" ~ url('zfcuser/login') ~ "" : "" %}
+<div class='like' data-url='{{ url('api.rest.doctrine.interactions', {id : object.getInteraction().getId()}) }}'>
+    <a class='btn btn-default button-like' {{ url|raw }} data-name='likes' data-value='+1'>
+        <span class='thumbs-up'></span>
+    </a>
+    <a class='btn btn-default button-unlike' {{ url|raw }} data-name='dislikes' data-value='+1'>
+        <span class='thumbs-down'></span>
+    </a>
+    <div class='stats'></div>
+</div>

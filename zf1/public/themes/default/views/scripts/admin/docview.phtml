@@ -1,0 +1,59 @@
+<?
+$status = array(
+    0 => "rejected",
+    1 => "active",
+    2 => "pending",
+);
+?>
+<style>
+    .page-title,
+    form {
+        display: inline;
+    }
+</style>
+<div class="page-content round-corners">
+    <div class="page-title">
+        Document type: <?= ucwords(str_replace("_", " ", $this->file["type"])) ?>
+        |
+        Status: <?= $status[$this->file["active"]] ?>
+        |
+        Modify status:
+        <form method="post" action="">
+            <? if ($this->file["active"] != 1) { ?>
+                <input type="submit" name="activate" value="Activate"/>
+            <? } ?>
+            <input type="submit" name="rejected" value="Reject"/>
+        </form>
+    </div>
+    <img src="/uploads/accounts/<?= $this->file["filename"] ?>" style="width:100%"/>
+
+</div><?
+$status = array(
+    0 => "rejected",
+    1 => "active",
+    2 => "pending",
+);
+?>
+<style>
+    .page-title,
+    form {
+        display: inline;
+    }
+</style>
+<div class="page-content round-corners">
+    <div class="page-title">
+        Document type: <?= ucwords(str_replace("_", " ", $this->file["type"])) ?>
+        |
+        Status: <?= $status[$this->file["active"]] ?>
+        |
+        Modify status:
+        <form method="post" action="">
+            <? if ($this->file["active"] != 1) { ?>
+                <input type="submit" name="activate" value="Activate"/>
+            <? } ?>
+            <input type="submit" name="rejected" value="Reject"/>
+        </form>
+    </div>
+    <img src="/uploads/accounts/<?= $this->file["filename"] ?>" style="width:100%"/>
+
+</div>

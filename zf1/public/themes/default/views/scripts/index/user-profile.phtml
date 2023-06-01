@@ -1,0 +1,62 @@
+<? $this->headTitle($this->page_title); ?>
+
+<div class="page-profile">
+
+    <div class="page-profile-top">
+        <h1><?= $this->user->username ?></h1>
+
+        <div class="clear"></div>
+    </div>
+
+    <div class="model-profile-left">
+        <? echo $this->partial('partials/user-profile-left.phtml',
+            array('user' => $this->user,
+                'country' => $this->country,
+                "active" => $this->profile_action,
+                "unread_count" => $this->unread_count,
+                "notification_count" => $this->notification_count,
+
+            ));
+        ?>
+    </div>
+
+    <div class="user-profile-content">
+        <?
+        switch ($this->profile_action) {
+            case "profile":
+                echo $this->partial('partials/user-profile-profile.phtml', $this);
+                break;
+
+            case "favorite":
+                echo $this->partial('partials/user-profile-favorite.phtml', $this);
+                break;
+
+            case "following":
+                echo $this->partial('partials/user-profile-following.phtml', $this);
+                break;
+
+            case "friends":
+                echo $this->partial('partials/user-profile-friends.phtml', $this);
+                break;
+
+            case "edit":
+                echo $this->partial('partials/user-profile-edit.phtml', $this);
+                break;
+
+            case "special-requests":
+                echo $this->partial('partials/user-profile-special-requests.phtml', $this);
+                break;
+
+            case "videos":
+                echo $this->partial('partials/user-profile-videos.phtml', $this);
+                break;
+
+            case "chips":
+                echo $this->partial('partials/user-profile-chips.phtml', $this);
+                break;
+        }
+        ?>
+    </div>
+    <div class="clear"></div>
+</div>
+

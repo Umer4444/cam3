@@ -1,0 +1,179 @@
+<?
+use PerfectWeb\Core\Utils\Status;
+?>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="join-box-fields">
+        <div class="field">
+            <label for="title">Post title</label>
+
+            <div class="field_wrapper">
+                <input type="text" name="title" id="title" maxlength="255" value="<?=$this->article->title ?>">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="full_image">Full article image</label>
+
+            <div class="field_wrapper">
+                <input type="file" name="full_image" id="full_image">
+            </div>
+            <? if ($this->article->full_cover) { ?>
+                <a href="<?=$this->article->full_cover?>" target="_blank"><img width="20px" id="full" title="Full cover" src="<?=
+                    $this->article->full_cover
+                    ?>"/></a>
+            <? } ?>
+        </div>
+
+
+        <div class="field">
+            <label for="cover_image">Cover/intro photo</label>
+
+            <div class="field_wrapper">
+                <input type="file" name="cover_image" id="cover_image">
+            </div>
+            <? if ($this->article->small_cover) { ?>
+                <a href="<?= $this->article->small_cover ?>" target="_blank"><img width="20px" id="small" title="Small cover"
+                     src="<?= $this->article->small_cover ?>"/></a>
+            <? } ?>
+
+        </div>
+
+        <div class="field">
+            <label for="category">Category</label>
+
+            <div class="field_wrapper">
+                <?= $this->formSelect("category", $this->article->category, null, $this->categories) ?>
+            </div>
+        </div>
+
+        <?php if (Auth::isModerator()) { ?>
+
+            <div class="field">
+                <label for="featured">Featured</label>
+
+                <div class="field_wrapper">
+                    <input type="radio" <?=$this->article->featured?'checked':''?> name="featured" value="1"> yes
+                    <input type="radio" <?=$this->article->featured?'':'checked'?> name="featured" value="0"> no
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="featured">Pinned</label>
+
+                <div class="field_wrapper">
+                    <input type="radio" <?=$this->article->pinned?'checked':''?> name="pinned" value="1"> yes
+                    <input type="radio" <?=$this->article->pinned?'':'checked'?> name="pinned" value="0"> no
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="featured">Status</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect("status", $this->article->status, null, Status::getStatusValues()) ?>
+                </div>
+            </div>
+        <?php } ?>
+
+
+        <div class="field">
+            <label for="tags">Tags</label>
+
+            <div class="field_wrapper">
+                <input type="text" name="tags" id="tags" value="<?= $this->article->tags ?>">
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="createdby">Created by</label>
+
+            <div class="field_wrapper">
+                <?= $this->formSelect("createdby", $this->article->user, null, $this->createdby) ?>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="tags">Content</label>
+
+            <div class="field_wrapper">
+                <textarea name="content" id="content" class="content" cols="30"
+                          rows="10"><?= $this->article->content ?></textarea>
+            </div>
+        </div>
+
+
+        <?= $this->partial("partials/editor.phtml") ?>
+        <hr/>
+        <!--<div class="multiple_field">
+            <label for="public_date">Public</label>
+            <input type="text" name="public_date" id="public_date" class="small_field2 date"
+                   value="<?/*= (array_key_exists("public", $this->accessArr) ? $this->accessArr["public"]["date"] : "") */?>">
+
+        </div>
+        <div class="multiple_field">
+            <label for="everyone_date">Everyone</label>
+            <input type="text" name="everyone_date" id="everyone_date" class="small_field2 date"
+                   value="<?/*= (array_key_exists("everyone", $this->accessArr) ? $this->accessArr["everyone"]["date"] : "") */?>">
+
+            <label for="everyone_date">Or pay</label>
+            <input type="text" name="everyone_chips" id="everyone_chips" class="small_field2"
+                   value="<?/*= (array_key_exists("everyone", $this->accessArr) ? $this->accessArr["everyone"]["chips"] : "") */?>">
+        </div>
+        <div class="multiple_field">
+            <label for="vip_date">VIP Members</label>
+            <input type="text" name="vip_date" id="vip_date" class="small_field2 date"
+                   value="<?/*= (array_key_exists("vip", $this->accessArr) ? $this->accessArr["vip"]["date"] : "") */?>">
+
+            <label for="vip_chips">Or pay</label>
+            <input type="text" name="vip_chips" id="vip_chips" class="small_field2"
+                   value="<?/*= (array_key_exists("vip", $this->accessArr) ? $this->accessArr["vip"]["chips"] : "") */?>">
+        </div>
+        <div class="multiple_field">
+            <label for="members_date">Members</label>
+            <input type="text" name="members_date" id="members_date" class="small_field2 date"
+                   value="<?/*= (array_key_exists("members", $this->accessArr) ? $this->accessArr["members"]["date"] : "") */?>">
+            <label for="members_chips">Or pay</label>
+            <input type="text" name="members_chips" id="members_chips" class="small_field2"
+                   value="<?/*= (array_key_exists("members", $this->accessArr) ? $this->accessArr["members"]["chips"] : "") */?>">
+        </div>
+        <div class="multiple_field">
+            <label for="fan_date">Fan club</label>
+            <input type="text" name="fan_date" id="fan_date" class="small_field2 date"
+                   value="<?/*= (array_key_exists("fan", $this->accessArr) ? $this->accessArr["fan"]["date"] : "") */?>">
+            <label for="fan_chips">Or pay</label>
+            <input type="text" name="fan_chips" id="fan_chips" class="small_field2"
+                   value="<?/*= (array_key_exists("fan", $this->accessArr) ? $this->accessArr["fan"]["chips"] : "") */?>">
+        </div>
+        <div class="multiple_field">
+            <label for="performers_date">Performers</label>
+            <input type="text" name="performers_date" id="performers_date" class="small_field2 date"
+                   value="<?/*= (array_key_exists("performers", $this->accessArr) ? $this->accessArr["performers"]["date"] : "") */?>">
+            <label for="performers_chips">Or pay</label>
+            <input type="text" name="performers_chips" id="performers_chips" class="small_field2"
+                   value="<?/*= (array_key_exists("performers", $this->accessArr) ? $this->accessArr["performers"]["chips"] : "") */?>">
+        </div>-->
+
+        <?php if ($this->params["controller"] == "admin" || Auth::isModerator()) { ?>
+            <input type="submit" name="save" value="Save" class="btn btn-success" style="display: inline;">
+        <?php } else { ?>
+            <input type="submit" name="save_unfinished" id="save_unfinished" value="Save unfinished"
+                   class="btn btn-success">
+            <input type="submit" name="save_moderation" id="save_moderation" value="Submit for moderation"
+                   class="btn btn-success">
+        <?php } ?>
+        <br>
+
+    </div>
+
+</form>
+
+<link rel="stylesheet" media="all" type="text/css" href="/scripts/Timepicker/jquery-ui-timepicker-addon.css"/>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-sliderAccess.js"></script>
+<script>
+    $(function () {
+        $(".date").datetimepicker({timeFormat: 'hh:mm tt'});
+    });
+</script>
+<br>

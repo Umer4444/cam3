@@ -1,0 +1,1095 @@
+<? $badWords = $this->loadModel("bad_words")->getAllArray(); ?>
+<script>
+    var badWords = new Array(<?=$badWords["words_js"]?>);
+    var badReplacements = new Array(<?=$badWords["replacements_js"]?>);
+    $(function () {
+        $("input[type=text]").on("change", function () {
+            // $(this).val(preg_replace(badWords, badReplacements, $(this).val()));
+        });
+        $("textarea").on("change", function () {
+            //   $(this).val(preg_replace(badWords, badReplacements, $(this).val()));
+        });
+    });
+</script>
+
+<div class="page-content round-corners">
+
+<?
+
+$years = array('' => 'year');
+for ($i = date('Y') - 18; $i >= 1950; $i--) $years[$i] = $i;
+$months = array('' => 'month');
+for ($i = 1; $i <= 12; $i++) {
+    $months[$i] = date("F", mktime(0, 0, 0, $i, 10));
+}
+
+$days = array('' => 'day');
+for ($i = 1; $i <= 31; $i++) $days[$i] = str_pad((int)$i, 2, "0", STR_PAD_LEFT);
+
+$birthday = explode('-', $this->model->birthday_real);
+
+$timezones = array();
+foreach ($this->timezones as $t) {
+    $timezones[$t->id] = substr($t['name'], 0, 35);
+}
+
+
+?>
+
+<?= $this->notice ?>
+<? if ($this->model) { ?>
+
+<h1 class="page-title"><?= (Auth::isModerator() ? $this->model->first_name . " " . $this->model->name . "'s " : "") ?>
+    Account Settings</h1>
+
+<form action="" method="post" enctype="multipart/form-data"
+      id="form_account_settings<?= (Auth::isModerator() ? "_admin" : "") ?>">
+<center><h3 style="color:red">This information is for administration use only and will not be shared</h3></center>
+<div class="join-box-fields">
+
+<? if (Auth::isModerator() && $this->acl->isAllowed($_SESSION['group'], "all_resources", "view")) { ?>
+    <div class="field">
+        <label for="assigned_to">Assigned to moderator</label>
+
+        <div class="field_wrapper">
+            <?= $this->formSelect('assigned_to', $this->model->assigned_to, null, $this->moderators); ?>
+        </div>
+    </div>
+    <div class="field">
+        <label for="auto_approve">Auto approve photos:</label>
+
+        <div class="field_wrapper">
+            <?php
+
+            echo $this->formRadio('auto_approve', $this->model->auto_approve, array(1, 0), array('no', 'yes'), '&nbsp;');?>
+        </div>
+    </div>
+    <div class="field">
+        <label for="assigned_to">Personal Profile Page</label>
+
+        <div class="field_wrapper">
+            <?php echo $this->formText('first_name', $this->model->first_name, array()); ?>
+        </div>
+    </div>
+<? } ?>
+
+<div class="field">
+    <label for="first_name">First name</label>
+
+    <div class="field_wrapper">
+        <? if (Auth::isModerator())
+            echo $this->formText('first_name', $this->model->first_name, array());
+        else {
+            ?>
+            <p class="disabled"><? echo $this->model->first_name; ?></p>
+        <? } ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="name">Last name</label>
+
+    <div class="field_wrapper">
+        <? if (Auth::isModerator())
+            echo $this->formText('name', $this->model->last_name, array('autocomplete' => 'off'));
+        else {
+            ?>
+            <p class="disabled"><? echo $this->model->last_name; ?></p>
+        <? } ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="email">Email (<?= (empty($this->model->activation_code) ? "verified" : "unverified") ?>)</label>
+    <div class="field_wrapper">
+        <? if (Auth::isModerator())
+            echo $this->formText('email', $this->model->email, array());
+        else {
+            ?>
+            <p class="disabled"><? echo $this->model->email; ?></p>
+        <? } ?>
+    </div>
+</div>
+
+<? if (!Auth::isModerator()) { ?>
+    <div class="field">
+        <span style="color:red">* For changing your name, last name and email, contact a moderator! </span>
+    </div>
+<? } ?>
+
+
+<div class="field">
+    <label for="gender">Gender</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('gender', $this->model->gender, null, array("f" => "female", "m" => "male")) ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="">Birthday</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('birthday_year', $birthday[0] ? $birthday[0] : 'year', null, $years) ?>
+        <?= $this->formSelect('birthday_month', $birthday[1] ? $birthday[1] : 'month', null, $months) ?>
+        <?= $this->formSelect('birthday_day', $birthday[2] ? $birthday[2] : 'day', null, $days) ?>
+
+        <div id="Birth"></div>
+    </div>
+</div>
+
+<div class="field">
+    <label for="ssn">SSN# (US only)</label>
+
+    <div class="field_wrapper">
+        <?= $this->formText('ssn', $this->model->ssn, $opt) ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="phone">Phone number</label>
+
+    <div class="field_wrapper">
+        <?= $this->formText('phone', $this->model->phone, array('autocomplete' => 'off')) ?>
+    </div>
+</div>
+
+<? if (Auth::isModel() || Auth::isModerator()) { ?>
+    <div class="field">
+        <label for="email">Notification email</label>
+
+        <div class="field_wrapper">
+            <?= $this->formText('notification_email', $this->model->notification_email, array()); ?>
+        </div>
+    </div>
+<? } ?>
+
+<? /*if (Auth::isModel()) { ?>
+    <div class="field">
+        <label for="confirm_password">Old Password</label>
+
+        <div class="field_wrapper">
+            <?= $this->formPassword('old_password', '', array('autocomplete' => 'off')) ?>
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="password">New Password</label>
+
+        <div class="field_wrapper">
+            <?= $this->formPassword('password', '', array('autocomplete' => 'off')) ?>
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="confirm_password">Confirm Password</label>
+
+        <div class="field_wrapper">
+            <?= $this->formPassword('confirm_password', '', array('autocomplete' => 'off')) ?>
+        </div>
+    </div>
+<? }*/ ?>
+<?php /*if(Auth::isModerator()){?>
+                    <div class="field">
+                    <label for="password">New Password</label>
+                    <div class="field_wrapper">
+                    <?=$this->formPassword('password', '', array('autocomplete'=>'off'))?>
+                    </div>
+                    </div>
+
+                    <div class="field">
+                    <label for="confirm_password">Confirm Password</label>
+                    <div class="field_wrapper">
+                    <?=$this->formPassword('confirm_password', '', array('autocomplete'=>'off'))?>
+                    </div>
+                    </div>
+                <?php }*/
+?>
+<div class="field">
+    <label for="address_real">Address</label>
+
+    <div class="field_wrapper">
+        <?= $this->formText('address_real', $this->model->address_real, array()) ?>
+    </div>
+</div>
+
+<? /*
+<div class="field">
+    <label for="timezone">Timezone</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('timezone', $this->model->timezone, array(), $timezones) ?>
+    </div>
+</div>
+
+
+                    <div class="field">
+                    <label for="country">Country</label>
+                    <div class="field_wrapper">
+                    <? // $this->formSelect('country', $this->model->country, array('onchange' => 'check_country()'), $countries) ?>
+                    </div>
+                    </div>
+                    <?
+                    // $opt = array();
+                    // $opt['autocomplete'] = 'off';
+                    // if($countries[$this->model->country] != 'United States') $opt["disabled"] = "disabled";
+                    */
+?>
+
+<div class="field">
+    <label for="region">Country</label>
+
+    <div class="field_wrapper">
+        <input type="text" id="country_name" name="country_name"/>
+        <input type="text" id="country_code" name="country_code"
+               value="<?= ($this->country ? $this->country->code : ''); ?>" style="display:none"/>
+        <input name="country" id="country" type="hidden" value="<?= $this->model->country; ?>"/>
+    </div>
+</div>
+
+<div class="field">
+    <label for="region">Region</label>
+
+    <div class="field_wrapper">
+        <input type="text" id="region_name" name="region_name"/>
+        <input type="text" id="region_code" name="region_code"
+               value="<?= ($this->region ? $this->region->code : ''); ?>" style="display:none"/>
+        <input name="region" id="region" type="hidden" value="<?= $this->model->region; ?>"/>
+    </div>
+</div>
+<div class="field">
+    <label for="city">City</label>
+
+    <div class="field_wrapper">
+        <input type="text" id="city_name" name="city_name"/>
+        <input name="city" id="city" type="hidden" value="<?= $this->model->city; ?>"/>
+        <input type="text"
+               value="<?= ($this->city->code ? $this->city->code : '') ?>"
+               id=" city_code"
+               name="city_code"
+               style="display:none;"/>
+    </div>
+</div>
+<div class="field">
+    <label for="zip_code">ZIP</label>
+
+    <div class="field_wrapper">
+        <input name="zip_code" id="zip_code" type="text" value="<?= $this->model->zip_code; ?>"/>
+    </div>
+</div>
+
+<!--<div class="field">
+    <label for="same_address">Same Gifts address?</label>
+
+    <div class="field_wrapper">
+        <div style="width: 100%; height: 40px;">
+            <?/*
+            $opt = array();
+            //if ($this->model->same_address == 1) $opt["checked"] = "checked";
+            // $opt['onclick'] = "click_address()";
+            echo $this->formCheckbox('same_address', null, $opt);
+            */?>
+        </div>
+    </div>
+</div>
+
+<div class="field">
+    <label for="gift_office_address" style="line-height: 15px;">Send gifts to our office?</label>
+
+    <div class="field_wrapper">
+        <div style="width: 100%; height: 40px;">
+            <?
+            $opt = array();
+            //if ($this->model->gift_office_address == 1) $opt["checked"] = "checked";
+            //$opt['onclick'] = "click_address()";
+            echo $this->formCheckbox('gift_office_address', null, $opt);
+            ?>
+        </div>
+    </div>
+</div>
+
+                <span class="gift_address">
+                    <div class="field">
+                        <label for="address">Gift receive address</label>
+
+                        <div class="field_wrapper">
+                            <?
+                            $opt = array();
+                            //if($this->model->same_address || $this->model->address == $this->model->address_real) $opt["disabled"] = "disabled";
+                            echo $this->formText('address', $this->model->address == $this->model->address_real ? '' : $this->model->address, $opt)?>
+
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="region">Gift receive country</label>
+
+                        <div class="field_wrapper">
+                            <input type="text" id="gift_country_name" name="gift_country_name"/>
+                            <input type="text"
+                                   value="<?= ($this->gift_country->code ? $this->gift_country->code : '') ?>"
+                                   id="gift_country_code" name="gift_country_code" style="display:none;"/>
+                            <input name="gift_country" id="gift_country" type="hidden"
+                                   value="<?//= $this->model->gift_country; ?>"/>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="region">Gift receive region</label>
+
+                        <div class="field_wrapper">
+                            <input type="text" id="gift_region_name" name="gift_region_name"/>
+                            <input name="gift_region" id="gift_region" type="hidden"
+                                   value="<?//= $this->model->gift_region; ?>"/>
+                            <input type="text"
+                                   value="<?= ($this->gift_region->code ? $this->gift_region->code : '') ?>"
+                                   id="gift_region_code" name="gift_region_code" style="display:none;"/>
+                        </div>
+                    </div>
+
+
+                    <div class="field">
+                        <label for="city">Gift receive city</label>
+
+                        <div class="field_wrapper">
+                            <input type="text" id="gift_city_name" name="gift_city_name"/>
+                            <input name="gift_city" id="gift_city" type="hidden"
+                                   value="<?//= $this->model->gift_city; ?>"/>
+                            <input type="text"
+                                   value="<?= ($this->gift_city->code ? $this->gift_city->code : '') ?>"
+                                   id=" gift_city_code" name="gift_city_code" style="display:none;"/>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="gift_zip">Gift ZIP</label>
+
+                        <div class="field_wrapper">
+                            <input name="gift_zip" id="gift_zip" type="text" value="<?//= $this->model->gift_zip; ?>"/>
+                        </div>
+                    </div>
+                    <br/>
+                </span>
+-->
+<div class="field" style="min-height: 100px;padding-top: 5px;">
+    <label for="headshot"> <a target="_blank" href="<?= $this->model->getHeadshot() ?>"><img
+                src="<?= $this->model->getHeadshot() ?>" border="0" width="120" height="90"></a> </label>
+
+    <div class="field_wrapper">
+        <?= empty($this->model->status) ? $this->formFile('headshot', array()) : '' ?>
+        <p class="field_notice"> Supported file formats: JPEG, GIF, PNG </p>
+
+        <p class="field_notice"> Headshot image must be at least 480x640</p>
+        <?= $this->formCheckbox('delete_headshot', null); ?> <label class="delete_label" for="delete_headshot">Delete
+            headshot</label>
+    </div>
+</div>
+
+<div class="field" style="min-height: 100px;padding-top: 5px;">
+    <label for="photo_id"> <a target="_blank" href="<?= $this->model->getPhotoId() ?>"><img
+                src="<?= $this->model->getPhotoId() ?>" border="0" width="120" height="90"></a> </label>
+
+    <div class="field_wrapper">
+        <?= empty($this->model->status) ? $this->formFile('photo_id', array()) : null ?>
+        <p class="field_notice"> Photo id image must be at least 640x480</p>
+        <? if (Auth::isModerator()) { ?>
+            <?= $this->formCheckbox('delete_photo_id', null); ?> <label class="delete_label" for="delete_photo_id">Delete
+                photo id</label>
+        <? } ?>
+
+
+    </div>
+</div>
+
+
+<?
+$photo_ids = $this->model->getAllPhotoIds("pending");
+if (count($photo_ids) > 0) {
+    ?>
+    <div class="field pending">
+        <? if (Auth::isModerator()) { ?>
+            <label>Activate doc</label>
+        <? } else { ?>
+            <label>Pending documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>None</a>
+                    <input type="radio" name="photoIdPending" value="all"/>
+                </div>
+            <? } ?>
+            <?//pendiong documents
+
+            foreach ($photo_ids as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="photoIdPending" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+
+<? //rejected
+$photos_id = $this->model->getAllPhotoIds("rejected");
+if (count($photos_id) > 0) {
+    ?>
+    <div class="field rejected">
+
+        <? if (Auth::isModerator()) { ?>
+            <label>Delete rejected docs</label>
+        <? } else { ?>
+            <label>Rejected documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>All</a>
+                    <input type="radio" name="photoIdRejected" value="all"/>
+                </div>
+            <? } ?>
+            <?//pending documents
+
+            foreach ($photos_id as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="photoIdRejected" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+<div class="field">
+    <label for="2257_form">Upload 2257 form</label>
+
+    <div class="field_wrapper">
+
+        <? $f2 = $this->model->get2257Form();
+        if ($f2) {
+            ?>
+            <a target="_blank" href="<?= $f2 ?>" title="Current 2257 form"><img src="<?= $f2 ?>" border="0" width="50"
+                                                                                height="30"></a>
+        <? } ?>
+        <?= $this->formFile('2257_form', array('class' => "inline")) ?>
+        <a class="link_download" target="_blank" href="/uploads/forms/2257-form.pdf">Download form here!</a>
+    </div>
+</div>
+
+
+<? //pending
+$photos_2257 = $this->model->getAll2257Form("pending");
+if (count($photos_2257) > 0) {
+    ?>
+    <div class="field pending">
+
+        <? if (Auth::isModerator()) { ?>
+            <label>Activate doc</label>
+        <? } else { ?>
+            <label>Pending documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>None</a>
+                    <input type="radio" name="2257FormPending" value="all"/>
+                </div>
+            <? } ?>
+            <?//pending documents
+
+            foreach ($photos_2257 as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="2257FormPending" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+<? //rejected
+$photos_2257 = $this->model->getAll2257Form("rejected");
+if (count($photos_2257) > 0) {
+    ?>
+    <div class="field rejected">
+
+        <? if (Auth::isModerator()) { ?>
+            <label>Delete rejected docs</label>
+        <? } else { ?>
+            <label>Rejected documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>All</a>
+                    <input type="radio" name="2257FormRejected" value="all"/>
+                </div>
+            <? } ?>
+            <?//pending documents
+
+            foreach ($photos_2257 as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="2257FormRejected" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+
+
+<div class="field">
+    <label for="w9_form">Upload W9 form</label>
+
+    <div class="field_wrapper">
+        <?= $this->formFile('w9_form', array('class' => "inline")) ?>
+        <? $w9 = $this->model->getW9Form();
+        if ($w9) {
+            ?>
+            <a target="_blank" href="<?= $w9 ?>" title="Current W9 form"><img src="<?= $w9 ?>" border="0" width="50"
+                                                                              height="30"></a>
+        <? } ?>
+        <a class="link_download" target="_blank" href="http://www.irs.gov/pub/irs-pdf/fw9.pdf">Download form here!</a>
+        <a class="link_download" target="_blank" href="http://www.irs.gov/pub/irs-pdf/iw9.pdf">Download form information
+            here!</a>
+    </div>
+</div>
+
+<?
+$photos_w9 = $this->model->getAllW9Form("pending");
+if (count($photos_w9) > 0) {
+    ?>
+    <div class="field pending">
+        <? if (Auth::isModerator()) { ?>
+            <label>Activate doc</label>
+        <? } else { ?>
+            <label>Pending documents</label>
+        <? } ?>
+
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>None</a>
+                    <input type="radio" name="W9FormPending" value="all"/>
+                </div>
+            <? } ?>
+            <?//pendiong documents
+
+            foreach ($photos_w9 as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="W9FormPending" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+
+<? //rejected
+$photos_w9 = $this->model->getAllW9Form("rejected");
+if (count($photos_w9) > 0) {
+    ?>
+    <div class="field rejected">
+
+        <? if (Auth::isModerator()) { ?>
+            <label>Delete rejected docs</label>
+        <? } else { ?>
+            <label>Rejected documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>All</a>
+                    <input type="radio" name="W9FormRejected" value="all"/>
+                </div>
+            <? } ?>
+            <?//pending documents
+
+            foreach ($photos_w9 as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="W9FormRejected" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+<div class="field">
+    <label for="release_form">Upload Release form</label>
+
+    <div class="field_wrapper">
+        <? $rl = $this->model->getReleaseForm();
+        if ($rl) {
+            ?>
+            <a target="_blank" href="<?= $rl ?>" title="Current release form"><img src="<?= $rl ?>" border="0"
+                                                                                   width="50" height="30"></a>
+        <? } ?>
+        <?= $this->formFile('release_form', array('class' => "inline")) ?>
+        <a class="link_download" target="_blank" href="/uploads/forms/release-form.pdf">Download form here!</a>
+    </div>
+</div>
+
+
+<?
+$photos_release = $this->model->getAllReleaseForm("pending");
+if (count($photos_release) > 0) {
+    ?>
+    <div class="field pending">
+        <? if (Auth::isModerator()) { ?>
+            <label>Activate doc</label>
+        <? } else { ?>
+            <label>Pending documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>All</a>
+                    <input type="radio" name="releaseFormPending" value="all"/>
+                </div>
+            <? } ?>
+            <?//pendiong documents
+
+            foreach ($photos_release as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="releaseFormPending" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+
+
+<? //rejected
+$photos_release = $this->model->getAllReleaseForm("rejected");
+if (count($photos_release) > 0) {
+    ?>
+    <div class="field rejected">
+
+        <? if (Auth::isModerator()) { ?>
+            <label>Delete rejected docs</label>
+        <? } else { ?>
+            <label>Rejected documents</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>All</a>
+                    <input type="radio" name="releaseFormRejected" value="all"/>
+                </div>
+            <? } ?>
+            <?//pending documents for upload
+
+            foreach ($photos_release as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="releaseFormRejected" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+    <div class="clear"></div>
+<? } ?>
+
+
+<div class="field">
+    <label for="scroll" style="width: auto;">Terms of Employment</label>
+
+    <div id="scroll" class="field_wrapper" style="overflow-y:scroll;height:400px;" onscroll="checkScrollPosition()">
+        <?php echo $this->terms->content; ?>
+        <?php
+        if ($this->model->terms_agreed == 1) {
+            $check = 'checked = "checked"';
+
+        } else {
+            $check = '';
+        }
+        ?>
+    </div>
+</div>
+<div class="field">
+
+    <label for="scrollLabel" style="width: auto;margin: 10px 150px 0px 0px; float: right;">I agree with Terms of
+        Employment
+
+        <input disabled="disabled" id="scrollLabel" type="checkbox" id="terms_agreed" class="termsOfEmploy"
+               name="terms_agreed" value="<?= $this->model->terms_signature ?>" <?php echo $check; ?>/> Updated
+        : <?= date("l jS F Y", time($this->terms->added)); ?>
+    </label>
+
+</div>
+
+
+</div>
+
+<br>
+<br>
+<? if ($this->acl->isAllowed($_SESSION['group'], "model-account-settings", "edit") || Auth::isModel()) { ?>
+    <div class="join-button" style="clear:both;">
+        <input type="submit" name="save" value="Save" class="btn btn-success">
+        <input type="hidden" name="save" value="Save">
+    </div>
+<? } ?>
+<br/>
+
+<div class="model_notice">
+    *This information is for administration use only and will not be shared
+</div>
+
+<br/>
+</form>
+<?
+if (Auth::isModerator()) {
+    echo '<input type="hidden" name="model_id" value="' . $this->model->id . '" id="model_id">';
+}
+
+?>
+</div>
+
+<br>
+<script type="text/javascript">
+    /** autocomplete */
+    $(document).ready(function () {
+        /* function to get selected country */
+        /* it will be called by token Input every time it make as post*/
+        /* send variabile as get */
+        function buildCountryUrl() {
+            return "/autocomplete";
+        }
+
+        function buildRegionUrl() {
+            return "/autocomplete/location/type/region/id/" + $("#country").val();
+        }
+
+        function buildCityUrl() {
+            return "/autocomplete/location/type/city/id/" + $("#region").val();
+        }
+
+        /* remove region when country change */
+        // Remove a token programatically
+        $("#country").change(function () {
+            //  $("#region").tokenInput("clear");
+            //   $('#region_id').val('');
+            //  return false;
+        });
+
+        $("#country_name").tokenInput(buildCountryUrl, {
+            method: "POST",
+            tokenLimit: "1",
+            resultsLimit: "1",
+            hintText: "Type country name",
+            onAdd: function (item) {
+                $('#country').val(item.id);
+                $('#country_code').val(item.code);
+                $('#region').val('');
+                $('#city').val('');
+                $('#region_name').tokenInput('clear');
+                $('#city_name').tokenInput('clear');
+            },
+            onDelete: function (item) {
+                $('#region_name').tokenInput('clear');
+                $('#city_name').tokenInput('clear');
+                $('#country_code').val('');
+                $('#country').val('');
+                $('#region').val('');
+                $('#city').val('');
+            },
+            prePopulate: [
+                <?php  if($this->country) {
+                    echo   '{id: "'.$this->country->id.'" , code: "'.trim($this->country->code).'", name: "'.trim($this->country->name).'"}';
+                } ?>
+            ]
+        });
+
+        /* to use dymanic values make a dunction to build url    */
+        /* and pass function name (not funcion name() ) as url   */
+        $("#region_name").tokenInput(buildRegionUrl, {
+            method: "POST",
+            tokenLimit: "1",
+            resultsLimit: "1",
+            hintText: "Select country and type region name",
+            onAdd: function (item) {
+                $('#region').val(item.id);
+                $('#region_code').val(item.code);
+                //$('#region_name').val(item.name);
+                $('#city').val('');
+                $('#city_name').tokenInput('clear');
+            },
+            onDelete: function (item) {
+                $('#region').val('');
+                $('#region_code').val('');
+                $('#city').val('');
+                $('#city_name').tokenInput('clear');
+            },
+            prePopulate: [
+                <?php if($this->region) {
+                    echo   '{id: "'.$this->region->id.'", name: "'.trim($this->region->name).'"}';
+                } ?>
+            ]
+        });
+
+        $("#city_name").tokenInput(buildCityUrl, {
+            method: "POST",
+            tokenLimit: "1",
+            resultsLimit: "1",
+            hintText: "Select country, region and type city name",
+            onAdd: function (item) {
+                $('#city').val(item.id);
+                $('#city_code').val(item.code);
+                //$('#city_name').val(item.name);
+            },
+            onDelete: function (item) {
+                $('#city').val('');
+                $('#city_code').val('');
+            },
+            prePopulate: [
+                <?php if($this->city) {
+                    echo   '{id: "'.$this->city->id.'", name: "'.trim($this->city->name).'"}';
+                } ?>
+            ]
+        });
+
+        /* gift address */
+
+        function gift_buildCountryUrl() {
+            return "/autocomplete/location/type/country";
+        }
+
+        function gift_buildRegionUrl() {
+            return "/autocomplete/location/type/region/id/" + $("#gift_country").val();
+        }
+
+        function gift_buildCityUrl() {
+            return "/autocomplete/location/type/city/id/" + $("#gift_region").val();
+        }
+
+        $("#gift_country_name").tokenInput(gift_buildCountryUrl, {
+            method: "POST",
+            tokenLimit: "1",
+            resultsLimit: "1",
+            hintText: "Type country name",
+            onAdd: function (item) {
+                $('#gift_country').val(item.id);
+                $('#gift_country_code').val(item.code);
+                $('#gift_region').val('');
+                $('#gift_region_code').val('');
+                $('#gift_city').val('');
+                $('#gift_region_name').tokenInput('clear');
+                $('#gift_city_name').tokenInput('clear');
+                $('#gift_city_code').tokenInput('clear');
+            },
+            onDelete: function (item) {
+                $('#gift_region_name').tokenInput('clear');
+                $('#gift_city_name').tokenInput('clear');
+                $('#gift_country').val('');
+                $('#gift_country_code').val('');
+                $('#gift_region').val('');
+                $('#gift_region_code').val('');
+                $('#gift_city').val('');
+                $('#gift_city_code').val('');
+            },
+            prePopulate: [
+                <?php  if($this->country) {
+                    echo   '{id: "'.$this->gift_country->id.'",code: "'.$this->gift_country->code.'", name: "'.trim($this->gift_country->name).'"}';
+                } ?>
+            ]
+        });
+
+
+        /* to use dymanic values make a dunction to build url    */
+        /* and pass function name (not funcion name() ) as url   */
+        $("#gift_region_name").tokenInput(gift_buildRegionUrl, {
+            method: "POST",
+            tokenLimit: "1",
+            resultsLimit: "1",
+            hintText: "Select country and type region name",
+            onAdd: function (item) {
+                $('#gift_region').val(item.id);
+                $('#gift_region_code').val(item.code);
+                $('#gift_city').val('');
+                $('#gift_city_name').tokenInput('clear');
+            },
+            onDelete: function (item) {
+                $('#gift_region').val('');
+                $('#gift_city').val('');
+                $('#gift_city_name').tokenInput('clear');
+                $('#gift_city_code').tokenInput('clear');
+            },
+            prePopulate: [
+                <?php if($this->gift_region) {
+                    echo   '{id: "'.$this->gift_region->id.'", name: "'.trim($this->gift_region->name).'"}';
+                } ?>
+            ]
+        });
+
+        $("#gift_city_name").tokenInput(gift_buildCityUrl, {
+            method: "POST",
+            tokenLimit: "1",
+            resultsLimit: "1",
+            hintText: "Select country, region and type city name",
+            onAdd: function (item) {
+                $('#gift_city').val(item.id);
+                $('#gift_city_code').val(item.code);
+            },
+            onDelete: function (item) {
+                $('#gift_city').val('');
+                $('#gift_city_code').val('');
+            },
+            prePopulate: [
+                <?php if($this->gift_city) {
+                    echo   '{id: "'.$this->gift_city->id.'", name: "'.trim($this->gift_city->name).'"}';
+                } ?>
+            ]
+        });
+
+        click_address();
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#same_address").click(function () {
+            $("#gift_office_address").removeAttr('checked');
+            click_address();
+        });
+        $("#gift_office_address").click(function () {
+            $("#same_address").removeAttr('checked');
+            click_address();
+        });
+
+
+    });
+    function click_address() {
+        //$("#gift_office_address").click(function(){$("#same_address").removeAttr('checked')}) ;
+        if ($("#same_address").is(":checked") || $("#gift_office_address").is(":checked")) {
+            // if(typeof $('#same_address').attr('checked') != 'undefined' ){
+
+
+            $('#gift_region_name').tokenInput('clear');
+            $('#gift_country_name').tokenInput('clear');
+            $('#gift_city_name').tokenInput('clear');
+
+            $('#gift_country').attr('disabled', 'disabled');
+            $('#gift_city').attr('disabled', 'disabled');
+            $('#gift_region').attr('disabled', 'disabled');
+
+
+            $('#address').val('');
+            $('#gift_zip').val('');
+            $('#gift_city').val('');
+            $('#gift_country').val('');
+            $('#gift_region').val('');
+
+            //$(".gift_address ul input").attr('disabled','disabled');
+            //$(".token-input-dropdown").hide();
+            //$('#address').attr('disabled','disabled');
+            //$('#gift_zip').attr('disabled','disabled');
+
+        } else {
+            //$(".gift_address").show();
+
+            //$(".gift_address ul input").removeAttr('disabled');
+
+            $('#address').removeAttr('disabled');
+            $('#gift_zip').removeAttr('disabled');
+
+        }
+    }
+
+    function check_country() {
+
+        if ($('#country').children()[parseInt($('#country').val())].label != 'United States') {
+            $('#ssn').attr('disabled', 'disabled');
+            $('#ssn').val('');
+        } else {
+            $('#ssn').removeAttr('disabled');
+
+        }
+    }
+
+    /* terms agreed */
+    function checkScrollPosition() {
+        var maxHeight = document.getElementById("scroll").scrollHeight;
+        var testHeight = $("#scroll").scrollTop();
+        if ((maxHeight - testHeight) == 400 && !$("#scroll").is(":checked")) {
+            document.getElementById('scrollLabel').disabled = false;
+        }
+    }
+</script>
+
+<? } ?>

@@ -1,0 +1,218 @@
+<? 
+
+  
+    //$latestVideos = $videoTable->getVideos($_SESSION["website_model"], $type = null, $private = null, $order = "added DESC", $nr = 4, $id_show = null, $not_type = null, $search = null);
+    $latestVideos = $this->loadModel("video")->getVideos($this->id_model,'vod',null,'added desc',null, null, null, null);
+
+    $latestAlbums = $this->loadModel("albums")->getAlbums($this->id_model,$viewable=1,$active=1, $parent_id = null, $limit=8,$start=0);
+    
+    $this->banners = $this->loadModel("banners")->getBannersModel($this->id_model, 1, true);
+    
+    $this->model = $this->loadModel("model")->getModelById($this->id_model);
+    
+    $type = array("public");
+    if(Auth::isUser()) $type[] = "members";
+    if(Auth::isModel()) $type[] = "performers";
+    if(Auth::isLogged()) $type[] = "everyone";
+    
+    $this->posts = $this->loadModel("blog_posts")->getAllPosts($type = null, $id_model=$this->id_model, $order_date = true, $status = true, $id_category = false, $limit = 5);
+
+?>
+
+<div class="row welcome">
+                    <div class="left col-lg-4 hidden-phone">
+                        <img src="<?=$this->model->getCover()?>">
+                    </div>
+                    <div class="left text col-lg-4">
+                        <h3>WELCOME</h3>
+                        <p>
+                            I finally have my own website! I get to show you guys my homemade videos and pictures. Massive amount of sexiness. I can finally be myself! Get comfortable. You will love my "fucking private life" :)
+                        </p>
+                    </div>
+                </div>  
+                             
+                <div class="row livecam">
+                    <a href="<?=$this->url(array(),"theme-watch")?>">
+                    <div class="left video col-lg-4">
+                        
+                    </div>
+                    </a>
+                    <div class="left text col-lg-4">
+                        <h3>MY LIVE <span class="highcolor">WEBCAM</span></h3>
+                        <p class="hidden-phone hidden-tablet">I will be on cam Multiple times a week. Keep up to date by reading my blog and checking my schedule. I will be streaming everything from photo shoots to hot Shows. V.I.P membership does have its privileges. This is definitely the best place to get the most of me. Theres no better way for us to spend time together.</p>
+                        <a href="/signup" class="btn btn-purple">Join now</a>
+                    </div>
+                </div>
+                
+                <div class="row social">
+                    <div class="col-lg-4">
+                         <? echo $this->partial("partials/latest_news.phtml", $this); ?>
+                    </div>
+                    <div class="col-lg-4">
+                         <? echo $this->partial("partials/my_twitter.phtml"); ?>
+                    </div>
+                    <div class="col-lg-4">
+                        <? echo $this->partial("partials/my_fans.phtml", $this); ?>
+                    </div>
+                </div>
+                
+                <div class="row latest_videos">
+                    <h2>My latest <span class="highcolor">videos</span></h2>
+                </div>
+                
+                <div class="row videos">
+                    <? foreach($latestVideos as $video) { ?>
+                    <div class="col-lg-3">
+                        <a href="<?=$this->url(array("id" => $video->id, "name" => ro_slug($video->title)), "video")?>" title="<?=$video->title?>">
+                            <span class="col-lg-3 play_button"></span>
+                            <img src="<?=$video->getCover()?>"/>
+                        </a>
+                    </div>
+                <? } ?>
+                </div>
+                
+                <div class="row events">
+                    <div class="col-lg-4 first">
+                        <div class="event_div left">
+                            <h2>BLOG</h2>
+                            <div class="event_box">
+                                <? if($this->posts) { 
+                                        foreach($this->posts as $this->post){ 
+                                                $types = (explode(',', $this->post->type));
+                                                $chips = (explode(',', $this->post->chips));
+                                                $dates = (explode(',', $this->post->date));
+                                                 //p($this->post->toArray(),1);
+                                                
+                                                $key = array_search('everyone', $types);
+                                             
+                                                $post_chips = (!is_null($key) ? $chips[$key] : null);
+                                               
+                                                if(!$post_chips || $post_chips == 0){
+                                                    if(Auth::isUser()){
+                                                        $key = array_search('user', $types);
+                                                        if($key)
+                                                            $post_chips = $chips[$key];
+                                                    } elseif(Auth::isModel()){
+                                                        $key = array_search('model', $types);
+                                                        if($key)
+                                                            $post_chips = $chips[$key];
+                                                    } 
+                                                }
+                                                
+                                                
+                                                
+                                                $key = null;
+                                                if(Auth::isUser()) $key_ = array_search('members', $types);
+                                                elseif(Auth::isModel()) $key_ = array_search('members', $types);
+                                                
+                                                $post_date = $dates[$key_];
+                                                if($post_date == 0) {
+                                                    $key_ = array_search('everyone', $types);
+                                                    $post_date = $dates[$key_];
+                                                }
+                                                
+                                                if($post_date == 0) {
+                                                    $key_ = array_search('public', $types);
+                                                    $post_date = $dates[$key_];
+                                                }
+                                                
+                                            ?>
+                                            <div class="news">
+                                                <p> 
+                                                    
+                                                        <span class="date"><?=($post_date ? date("jS F", $post_date) : "")?></span> 
+                                                        <span class="title">
+                                                            <a href="<?=$this->url(array("profile_type" => "blog", "title" => slug($this->post->title), "id_post" => $this->post->id), "theme-blog")?>">
+                                                                <?=$this->post->title?>
+                                                            </a>
+                                                        </span> 
+                                                        <span class="news_content"><?php echo substr(strip_tags($this->post->content), 0, 50)?></span> 
+                                                    
+                                                </p>
+                                            </div>
+                                        <? 
+                                        } 
+                                } ?>
+
+                            
+                            </div>
+                        </div>
+                        <div class="border"></div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-4 second" >
+                        <div class="event_div left">
+                            <div class="event_box">
+                                <!--<div class="calendar"></div>-->
+                                 <?php echo $this->partial('partials/event_calendar.phtml',array('id_model' => $this->id_model));?>
+                            </div>
+                        </div>
+                        <div class="border"></div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-4 third">
+                        <? echo $this->partial("partials/my_events.phtml", $this); ?>
+                       <? /* <div class="event_div left">                               
+                            <h2>Events</h2>
+                            <div class="event_box">
+     
+                                 
+                                <?
+                                if(count($this->banners)){?>
+                                    <ul id="mycarousel" class="jcarousel-skin-tango">
+                                        <? foreach ($this->banners as $this->banner) {?>
+                                            <li>
+                                                <?=$this->banner->content?>                                               
+                                            </li>   
+                                        <? } ?>             
+                                    </ul>                                       
+                                <? } ?>             
+
+                            </div>*/ ?>
+                        </div>                    
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                
+                <div class="row latest_pictures">
+                    <h2> my latest <span class="highcolor">pictures sets</span></h2>
+                </div>
+                
+                <div class="row pictures">
+                    <? 
+                         $k = 0; 
+                         foreach($latestAlbums as $album) { 
+                            
+                             if($k==4) echo '</div><div class="row pictures">';
+                              $k++;
+                     ?>
+                        <div class="col-lg-3">
+                            <a href="<?=$this->url(array("id_gallery" => $album->id, "name" => $album->name), "model-profile-gallery")?>">
+                                <img src="<?=$album->getCover()?>"/>
+                            </a>
+                        </div>
+                     <? } ?>
+
+                </div>
+                <div class="row footer-buttons">
+                
+                    <span></span>
+                    <a href="/signup"><span class="col-lg-5 join"></span></a>
+                    <a href="/signup"><span class="col-lg-5 continue"></span></a>
+                </div>
+                
+                    <script type="text/javascript">
+                        d1=new Date();
+                        d1.toString('yyyy-MM-dd');         
+                        $( ".calendar" ).datepicker(
+                                { dateFormat: "yy-mm-dd" ,
+                                  defaultDate:  d1,
+                                  onSelect: function(dateText, inst) {
+                                      window.location.href = '/premieres/date/'+dateText;
+                                      
+                                  }
+
+                                }
+                        );
+                    </script>
+               

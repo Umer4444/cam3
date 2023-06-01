@@ -1,0 +1,103 @@
+<?
+if ($this->params['parent']) {
+    switch ($this->params['parent']) {
+        case 'start':
+            $title = "Getting Started";
+            break;
+        case 'room_studio':
+            $title = "Room & Studio Development";
+            break;
+        case 'performance':
+            $title = "Performance Development";
+            break;
+
+    }
+}
+$title = $this->page_content->title;
+if ($this->page_content->title) $this->headTitle($this->page_content->title);
+else $this->headTitle($title);
+?>
+<div class="model_content">
+
+    <div class="page-content round-corners" style="float: left;">
+        <?= $this->notice ?>
+        <h1 class="page-title"><?= $title ?></h1>
+        <?
+        echo '<div class="tutorial_header">';
+        echo '<br>Here are Some helpful Tips and tricks to help you become one of the elite performers.<br>';
+        echo '<br>BECOMING A FLAWLESS WEBCAM MODEL:<br>
+                 This guide describes the standards that we MUST follow and demand of all webcam models that appear on our Network in
+                 order for us to give the best customer service and maintain our professional reputation.';
+        echo '<br>';
+        echo '<br>';
+        echo '</div>
+              <div class="clear"></div>';
+        if (count($this->development)) {
+            echo '<div class="tutorial_menu">';
+            foreach ($this->development as $tutorial_page) {
+
+                $class = $this->params['action'] == 'page' && ($this->params['parent'] == $tutorial_page->page || $tutorial_page->page == $this->page_content->page) ? 'selected' : '';
+                $href = $this->url(array("parent" => $tutorial_page->page), "model-static-pages");
+                $title = $tutorial_page->title;
+                ?>
+                <a class="<?= $class ?>" href="<?= $href ?>" title="<?= $title ?>">
+                    <?= $title ?>
+                </a>
+            <?
+
+            }
+            echo '</div>';
+        }
+
+        if ($this->page_content) echo '<script src="/scripts/flowplayer-3.2.6.min.js"></script>';
+        if (!count($this->development)) {
+            $extraClass = 'no_margin_left';
+        } else {
+            $extraClass = '';
+        }
+        echo '<div class="tutorial_content ' . $extraClass . '">';
+        if ($this->page_content->title) {
+            echo '<div class="tutorial_title">' . strtoupper($this->page_content->title) . '</div>';
+        }
+        if ($this->page_content->video) {
+            ?>
+
+            <div class="tutorial_player" id="player_<?= $this->page_content->page ?>"></div>
+            <script type="text/javascript">
+                flashembed("player_<?=$this->page_content->page?>", "/scripts/player/flowplayer-3.2.7.swf", {
+                    config: {
+                        plugins: {
+                            controls: true
+                        },
+                        playlist: [
+
+                            {
+                                url: '<?=$this->video->getVideoFile()?>',
+                                autoPlay: false,
+                                autoBuffering: true
+                            }
+
+                        ]
+                    }
+                });
+            </script>
+            <center>
+                Read & watch video for example and understanding
+            </center>
+            <br>
+        <?
+        }
+        echo '<div class="tutorial_text">';
+        if ($this->page_content) {
+            echo $this->page_content->content;
+
+        }
+        echo '</div>';
+        echo '</div>';
+        ?>
+
+        <div class="clear"></div>
+
+    </div>
+
+</div>

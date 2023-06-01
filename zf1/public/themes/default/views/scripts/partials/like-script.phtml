@@ -1,0 +1,55 @@
+<script language="javascript">
+    <!--
+    $(".container-like button").hover(
+        function () {
+            if ($(this).val() == "1")
+                $(this).find(".thumbs-up").addClass("tup-hover");
+            else
+                $(this).find(".thumbs-down").addClass("tdown-hover");
+        },
+        function () {
+            if ($(this).val() == "1") {
+                $(this).find(".thumbs-up").removeClass("tup-hover");
+                $(this).find(".thumbs-up").addClass("thumbs-up");
+            } else {
+                $(this).find(".thumbs-down").removeClass("tdown-hover");
+                $(this).find(".thumbs-down").addClass("thumbs-down");
+            }
+        }
+    );
+
+    $(".container-like .close").on("click", function () {
+        $(this).parent().parent().parent().find(".stats").slideUp();
+    });
+
+    $(".container-like .option").click(function () {
+        var option = $(this).val();
+        var item = $(this).parent().find("#item").val();
+        var stats = $(this).parent().find(".stats");
+        var item_type = $(this).parent().find("#item_type").val();
+
+        stats.slideDown("fast").html("Loading....");
+        $.ajax({
+            type: "POST",
+            url: "/process",
+            data: "action=likes&option=" + option + "&item=" + item + "&item_type=" + item_type,
+            success: function (responce) {
+                var json = jQuery.parseJSON(responce);
+                //alert(json.ip_exists);
+                var total = parseInt(json.likes) + parseInt(json.dislikes);
+
+                option = (option == "1") ? "Liked" : "Disliked";
+                var likes = (parseInt(json.likes) * 100 ) / total;
+                var dislikes = (parseInt(json.dislikes) * 100 ) / total;
+                if (json.like_status == "ok") {
+                    stats.html('<div class="stat-details"><span class="close"></span>You ' + option + ' this. Thanks for the feedback! &nbsp;&nbsp;&nbsp;<b>Rating for this item</b> <span id="small"> (' + total + ' total)</span><table border="0" width="100%"><tr><td width="25px"><span class="thumbs-up"></span></td><td width="50px;">' + json.likes + '</td><td><div class="bar green" style="width:' + likes + '%;"></div></td></tr><tr><td><span class="thumbs-down"></span></td><td>' + json.dislikes + '</td><td><div class="bar red" style="width:' + dislikes + '%;"></div></td></tr></table>');
+                } else if (json.like_status == "is_voted") {
+                    stats.html('<div class="stat-details"><span class="close"></span>You already appreciated this! &nbsp;&nbsp;&nbsp;<b>Rating for this item</b> <span id="small"> (' + total + ' total)</span><table border="0" width="100%"><tr><td width="25px"><span class="thumbs-up"></span></td><td width="50px;">' + json.likes + '</td><td><div class="bar green" style="width:' + likes + '%;"></div></td></tr><tr><td><span class="thumbs-down"></span></td><td>' + json.dislikes + '</td><td><div class="bar red" style="width:' + dislikes + '%;"></div></td></tr></table>');
+                } else if (json.like_status == "error_not_found") {
+                    stats.html('<div class="stat-details"><span class="close"></span>Error, item not found!');
+                }
+            }
+        });
+    });
+    //-->
+</script>

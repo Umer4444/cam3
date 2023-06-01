@@ -1,0 +1,26 @@
+<?php
+
+$type = $this->Params()->fromRoute('type');
+$form = $this->registerForm;
+$form->prepare();
+$form->setAttribute('method', 'post');
+$form->setAttribute('class', 'form-horizontal center');
+$form->setAttribute('id', 'register');
+
+$form->get('submit')->setOptions(array('skipLabel' => true));
+$form->get('submit')->setAttributes(array("class" => "btn btn-magenta"));
+
+?>
+
+<div class="row-fluid">
+    <div class="span3"></div>
+    <div class="span6 well">
+        <h1 style="text-align: center"><?php echo ucwords($type); ?> Register</h1>
+        <br/>
+        <?php
+        echo $this->ztbForm($form);
+        ?>
+    </div>
+    <div class="span3"></div>
+</div>
+

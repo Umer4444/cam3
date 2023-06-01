@@ -1,0 +1,99 @@
+<div class="row row-no-margin generic-border padding-10 margin-10">
+    <div class="col-md-12">
+        <div class="row row-no-margin margin-top-fix">
+            <h2 class="album-title-h2"><?= $this->pledge->title ?></h2>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <?php $image = $this->pledge->photo_cover_big ? $this->pledge->photo_cover_big : '/images/no-picture.png'; ?>
+        <div class="pledge-main-img pledge-image-fix">
+            <img class="img-responsive" src="<?= $image ?>"/>
+        </div>
+        <hr/>
+    </div>
+
+    <div class="col-md-12">
+        <?= $this->pledge->content ?>
+        <hr/>
+    </div>
+
+    <div class="col-md-12">
+        <div class="pledge_comments">
+            <!-- tab content -->
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="http://<?= ($_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]) ?>#disqus_thread"
+                       data-toggle="tab">
+                        Comments
+                    </a>
+                </li>
+                <li>
+                    <a href="#updates" data-toggle="tab">
+                        Updates
+                    </a>
+                </li>
+                <? if ((count($this->photos) > 0 && !empty($this->photos)) || $this->video) { ?>
+                    <li>
+                        <a href="#galleria" data-toggle="tab">
+                            Gallery
+                        </a>
+                    </li>
+                <? } ?>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane" id="disqus_thread">
+                    <?= Zend_Registry::get('service_manager')->get('ViewHelperManager')->get('commentCustom')->__invoke() ?>
+                </div>
+                <div class="tab-pane" id="updates">
+                    <? if ($this->updates) { ?>
+                        <? foreach ($this->updates as $this->update)
+                            echo $this->partial("partials/item-pledge-update.phtml", array("update" => $this->update));
+                        ?>
+                    <? } else {
+                        echo "no updates";
+                    } ?>
+                </div>
+                <? if (count($this->photos) > 0 && !empty($this->photos)) { ?>
+                    <script>
+                        $(document).ready(function () {
+                            Galleria.loadTheme('/assets/vendor/galleria/src/themes/classic/galleria.classic.js');
+                            Galleria.run('#galleria', {
+                                height: parseInt($('#gallery').css('height')),
+                                wait: true
+                            });
+                        });
+                    </script>
+                    <div class="tab-pane" id="galleria" style="width: 480px; height: 400px;">
+                        <? foreach ($this->photos as $this->photo) { ?>
+                            <img src="<?= $this->photo->filename ?>"/>
+                        <? } ?>
+                        <? if ($this->video) { ?>
+                            <? if ($this->video->state == 1) { ?>
+
+                                <? if (!$this->isPaidVideo) { ?>
+                                    <div style="height: 400px;">
+                                        <a id="player"></a>
+                                        <script language="JavaScript">
+                                            flashembed("player", "/assets/vendor/flowplayer-flash/flowplayer.swf", {
+                                                config: {
+                                                    clip: {
+                                                        url: '<?=$this->video->getVideoFile()?>',
+                                                        autoPlay: false,
+                                                        autoBuffering: true
+                                                    }
+                                                }
+                                            });
+                                        </script>
+                                    </div>
+                                <? } elseif ((Auth::idModerator() && user()->id == 0 || user()->id == $this->pledge->id_moderator) || (Auth::isModel() && user()->id == $this->pledge->id_model)) { ?>
+                                    Video pending
+                                <? } ?>
+                            <? } ?>
+                        <? } ?>
+                    </div>
+                <? } ?>
+            </div>
+        </div>
+    </div>
+</div>

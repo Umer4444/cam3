@@ -1,0 +1,53 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+
+    {% if not params().fromRoute('token') %}
+
+        {% block gameContacting %}
+
+            {% set game = params().fromRoute('action') %}
+
+            <div class="text-center col-md-12" id="contacting">
+                <img src="/assets/images/animated/loading.gif"><br>
+                Contacting the opponent ...
+            </div>
+            <script type="text/javascript">
+
+                var interval = null;
+                function noGame(reason) {
+                    window.clearInterval(interval);
+                    $('#contacting').html(reason);
+                }
+
+                $(function() {
+
+                    var i = 0;
+                    interval = setInterval(function () {
+
+                        i++;
+                        if (i > $.game.iterations) {
+                            noGame('No answer from the opponent ! Please try again later.');
+                        }
+
+                        console.log('waiting for opponent answer');
+                        var game = {
+                            initiator: user,
+                            name: '{{ game }}',
+                            price: '{{ cfg(user).getConfigValue('play/' ~ game) }}',
+                            opponent: {
+                                id: '{{ user.getId() }}',
+                                username: '{{ user.getDisplayName() }}'
+                            }
+                        };
+                        notificationsSocket.emit('game request', game);
+                    }, $.game.interval);
+                });
+
+            </script>
+
+        {% endblock gameContacting %}
+
+    {% endif %}
+
+{% endblock content %}

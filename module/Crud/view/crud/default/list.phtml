@@ -1,0 +1,8 @@
+<?php $this->headTitle('List'); ?>
+<a href="<?=$this->url('zfcadmin/crud/default', array('controller' => $this->entity, 'action' => 'create'))?>" class="btn btn-success">Create</a>
+
+<div id="tableContainer"></div>
+
+<script>
+    $("#tableContainer").zfTable('<?=$this->url('zfcadmin/crud/default', array('controller' => $entity, 'action' => 'ajax-list'))?>');
+</script>

@@ -1,0 +1,8 @@
+<?php $this->headTitle('Update'); ?>
+
+<?php
+   	echo $this->partial('partial/form-partial', array(
+	    'form' => $this->form,
+	    'url' => $this->url('zfcadmin/crud/default', array(), array(), true))
+    );
+?>

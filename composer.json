@@ -1,0 +1,121 @@
+{
+    "name": "xexposed.com",
+    "minimum-stability": "dev",
+    "scripts": {
+        "all-in-one": [
+          "(cd nodejs;npm install)",
+          "(cd nodejs/chess;npm install)",
+          "(cd nodejs/tic-tac-toe;npm install)",
+          "(cd nodejs/checkers;npm install)",
+          "(cd magento;php ../composer.phar install)",
+          "bower update --allow-root",
+          "forever stopall",
+          "forever start -w --watchDirectory ./nodejs/ ./nodejs/notifications.js",
+          "forever start -w --watchDirectory ./nodejs/chat/ ./nodejs/chat/server.js",
+          "OPENSHIFT_NODEJS_IP=0.0.0.0 forever start -w --watchDirectory ./nodejs/tic-tac-toe/ ./nodejs/tic-tac-toe/app.js",
+          "OPENSHIFT_NODEJS_IP=0.0.0.0 forever start -w --watchDirectory ./nodejs/chess/ ./nodejs/chess/server.js",
+          "OPENSHIFT_NODEJS_IP=0.0.0.0 forever start -w --watchDirectory ./nodejs/checkers/ ./nodejs/checkers/server.js",
+          "php public/index.php assetic build",
+          "php public/index.php orm:clear-cache:result",
+          "php public/index.php orm:clear-cache:metadata",
+          "php public/index.php orm:clear-cache:query",
+          "ZfSnapGeoip\\Composer\\ScriptHandler::downloadData",
+          "php public/index.php diag"
+        ],
+        "post-install-cmd": [
+            "php public/index.php assetic setup",
+            "@all-in-one"
+        ],
+        "post-update-cmd": [
+            "@all-in-one"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/IonutPerfectWeb/zf2sluggenerator"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Perfect-Web/CgmConfigAdmin"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Perfect-Web/paginator-module"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Perfect-Web/zf2-for-1"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Perfect-Web/DoctrineORMModule"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Perfect-Web/visio-crud-zf2"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "zendframework/zendframework": "2.5.3",
+        "zendframework/zend-servicemanager": "2.7.7",
+        "zendframework/zendframework1": "dev-master",
+        "zendframework/zftool": "dev-master",
+        "zf-commons/zfc-admin": "0.2.1",
+        "zf-commons/zfc-user-doctrine-orm": "1.0.1",
+        "bjyoungblood/bjy-authorize": "dev-master",
+        "zf-commons/zfc-twig": "1.2.2",
+        "mwillbanks/zfc-twitter-bootstrap": "@dev",
+        "cgm/config-admin": "1.2.1",
+        "doctrine/doctrine-orm-module": "0.10.0",
+        "doctrine/migrations": "1.4.1",
+        "gedmo/doctrine-extensions": "2.4.22",
+        "webino/webino-image-thumb": "dev-master",
+        "widmogrod/zf2-assetic-module": "1.5.0",
+        "olliebrennan/zf2-slug-generator": "dev-master",
+        "zfcampus/zf-apigility": "dev-master",
+        "zfcampus/zf-apigility-documentation-swagger": "dev-master",
+        "zfcampus/zf-apigility-documentation": "dev-master",
+        "nicovogelaar/crud-controller-module": "dev-master",
+        "nicovogelaar/paginator-module" : "dev-master",
+        "dudapiotr/zftable": "3.1",
+        "robertboloc/rbcomment": "dev-master",
+        "roave/zf2-for-1": "dev-master",
+        "mtudor/zfc-user-impersonate": "1.0.0",
+        "natxet/CssMin": "3.0.4",
+        "linkorb/jsmin-php": "1.0.0",
+        "mpalourdio/zf2-twitter-widget": "0.2.*@dev",
+        "cosenary/instagram":"2.3",
+        "acelaya/zf2-acmailer": "5.2.1",
+        "hyphers/visio-crud-zf2": "dev-master#58de61b4c3e42b62bfcb5bb420be96c008c407b9",
+        "zfcampus/zf-apigility-doctrine": "2.0.5-beta",
+        "phpro/zf-doctrine-hydration-module": "2.0.1",
+        "twilio/sdk": "5.2.x-dev",
+        "payum/payum-module": "0.15.0",
+        "php-http/guzzle6-adapter": "1.1.1",
+        "omnipay/2checkout": "dev-master",
+        "eye4web/eye4web-zfc-user-warnings-ban": "0.0.2",
+        "org_heigl/contact": "dev-master",
+        "bitweb/zf2-cron-module": "2.0.5",
+        "defuse/php-encryption": "2.0.1",
+        "snapshotpl/zf-snap-geoip": "2.4.2",
+        "hiqdev/omnipay-paxum": "dev-master",
+        "authorizenet/authorizenet": "~1.8"
+    },
+    "require-dev": {
+        "zfcampus/zf-apigility-admin": "1.5.7",
+        "zfcampus/zf-development-mode": "2.1.2",
+        "digitalnature/php-ref": "dev-master",
+        "nelmio/alice": "2.1.4",
+        "sensiolabs/security-checker": "dev-master",
+        "vdb/php-spider": "dev-master",
+        "zendframework/zend-developer-tools": "dev-master",
+        "hounddog/doctrine-data-fixture-module": "0.0.4",
+        "aist/aist-git-tools": "dev-master",
+        "ocramius/ocra-service-manager": "^2.2@dev",
+        "snapshotpl/zf-snap-event-debugger": "dev-master",
+        "san/san-session-toolbar": "^0.1.0@dev",
+        "jhuet/zdt-logger-module": "0.3"
+    }
+}

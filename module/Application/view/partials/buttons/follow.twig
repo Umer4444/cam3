@@ -1,0 +1,14 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Follow{% endblock button_text %}
+{% block button_class %}btn btn-info btn-block xeditable {{ block('button_id') }}{% endblock button_class %}
+
+{% block button_data %}
+    {% if zfcUserIdentity() %}
+        data-type='checklist' data-pk='{{ user.getId() }}' data-title='Follow' data-display='false'
+        data-url='{{ url('api.rpc.follow', {user: user.getId()}) }}' data-value='{{ cfg('cfg').getConfigValue('performer/follow')|join(',') }}' data-placement='bottom'
+        data-source='[{% for value,label in cfg('cfg').getConfigPossibleValues('performer/follow') %}{{({value:value, text:label})|json_encode }},{% endfor %}]'
+    {% endif %}
+{% endblock button_data %}
+
+{% block button_javascript %}App.button.tip('{{ block('button_id') }}'{{ isContext == false ? '' : ', key, options' }}){% endblock button_javascript %}

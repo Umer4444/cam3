@@ -1,0 +1,13 @@
+<? $this->headTitle('Edit Notes ' . ($this->theme()->view->params['id'] != "all" ? 'for ' . $this->theme()->view->params['name'] : ""));
+if ($this->theme()->view->params['id'] != "all") {
+    echo $this->partial('partials/moderator-submenu.phtml',
+        array("params" => $this->theme()->view->params,
+            "type" => "model",
+            "acl" => $this->acl,
+            "user" => $this->{$this->theme()->view->params['type']}));
+
+}
+
+echo $this->partial('partials/manage-notes.phtml', $this);
+
+?>

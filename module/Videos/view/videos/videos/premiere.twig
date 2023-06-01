@@ -1,0 +1,150 @@
+{% extends 'layout/frontend' %}
+
+{% block container %}
+
+<div class="row">
+    <h2 class="title">{{ video.getTitle() }}</h2>
+</div>
+<div class="row">
+    <div class="player col-md-8">
+        <script src="/scripts/flowplayer-3.2.6.min.js"></script>
+        <video class="flowplayer is-splash">
+            <source type="video/mp4"
+                    src="{{ video.getFilename() }}">
+            <source type="video/flash"
+                    src="{{ video.getFilename() }}:bauhaus">
+        </video>
+    </div>
+    <div class="thumbs col-md-4">
+        {#conditions#}
+        {% set where = newInstance('Doctrine\\Common\\Collections\\Criteria').expr() %}
+        {% set active =  (where).eq('status', (constant('PerfectWeb\\Core\\Utils\\Status::ACTIVE'))) %}
+        {% set id =  (where).neq('id', video.getId()) %}
+        {% set user =  (where).eq('user', user().getUser()) %}
+        {#end conditions#}
+        {#criteria#}
+        {% set criteria = newInstance('Doctrine\\Common\\Collections\\Criteria').create() %}
+        {#end criteria#}
+        {#array collection#}
+        {% set related = video.getCategory().getVideos().matching(criteria.where(id).andWhere(active).andWhere(user)) %}
+        {#end array collection#}
+        {% for rel in related %}
+            <div class="thumbnail left">
+                <a href="{{ user().url('videos/video', {(constant('Application\\Mapper\\Injector::VIDEO')) : rel.getId(), 'slug' : slugify(rel.getTitle())} ) }}">
+                    <img src="{{ rel.getCover() }}" border="0" width="124" height="91"/>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="rating-video">
+            <div class="left">
+                {% set id = video.getId() %}
+                {% set average = video.getRating() %}
+                {% set itemType = 'video' %}
+                {{ stars(itemType,id,average,'big') }}
+            </div>
+            <div class="right">
+                {{ likes(video) }}
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <p class="description">{{ video.getDescription() }}</p>
+
+        <p class="cast"><b>Cast:</b>{{ video.getCast() }}</p>
+
+        <p class="tags"><b>Tags:</b>
+            {{ video.getTags() }}</p>
+
+        <p class="tags"><b>Category:</b>
+            {{ video.getCategory().getName() }}</p>
+    </div>
+    <div class="col-md-6">
+        <p><b>Added:</b> {{ video.getAdded()|date('d-m-Y') }}</p>
+
+        <p><b>Duration:</b> <span class="time">{{ video.getDuration() }}</span></p>
+
+        <p><b>Views:</b> {{ video.getViews() }}</p>
+
+    </div>
+</div>
+{% set videoRepo = serviceLocator().get('doctrine.entity_manager.orm_default').getRepository('Videos\\Entity\\Video') %}
+{% set reviews = videoRepo.getReviews(video.getId()) %}
+<div class="row">
+    <div id="tabs" role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#comments" aria-controls="comments" role="tab"
+                                                      data-toggle="tab">Comments</a></li>
+            <li role="presentation" class="">
+                <a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">
+                    {{ reviews|length }} Reviews
+                </a>
+            </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div id="reviews" role="tabpanel" class="tab-pane">
+                {% if(zfcUserIdentity()) %}
+                    <a id="review_button" class="btn purple-button right" style="color:black;">Add review</a>
+                    <div class="clear"></div>
+                    <br/>
+                    <div id="add_review" class="hide">
+                        {% set form = newInstance('Application\\Form\\AddReview').prepare().setAttribute('class', 'form-horizontal').setAttribute('action', '') %}
+                        {% do form.get('submit').setAttributes({'class' : 'green-button'}).setAttributes({'id' : 'submit'}) %}
+                        {% do form.get('review').setAttributes({'id' : 'new_review'}) %}
+                        {{ form(form) }}
+                    </div>
+                {% endif %}
+
+                {% if reviews|length == 0 %}
+                    No reviews yet! Be the first to write a review!
+                {% else %}
+                    {% for review in reviews %}
+
+                        <div class="col-md-12 review_table {% if review.getActive()== 0 %} inactive {% else %} active {% endif %}"
+                             id="review_{{ review.getId() }}">
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ review.getUser().getUsername() }}
+                                </div>
+                                <div class="col-md-9">
+                                    <a name="review_{{ review.getId() }}"> {{ review.getDate()|date('l, F j Y') }}
+                                        at {{ review.getDate()|date('H:i') }}</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <a href="#"><img width="40" height="40"
+                                                     src="/themes/anakaliyah/images/user_default.png"
+                                                     title="{{ review.getUser().getUsername() }}"></a>
+                                </div>
+                                <div class="col-md-11">
+                                    {{ review.getReview() }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div id="comments" role="tabpanel" class="tab-pane active">{{ commentCustom() }}</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#review_button').click(function(){
+            $('#add_review').removeClass('hide');
+        });
+    });
+</script>
+
+{% endblock %}

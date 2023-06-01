@@ -1,0 +1,93 @@
+{% extends 'layout/backend' %}
+
+{% block content %}
+
+<div id='approvedFriends' class="col-md-10 panel panel-default no-padding">
+    <div class="panel-heading margin-bottom-10">
+        <div class="control-group pull-right">
+            <div class="form-group">
+                <select id="selectFilter" class="form-control">
+                    <option {{ params().fromRoute('status') == '1' ? 'selected' : '' }} value="1">
+                        Approved
+                    </option>
+                    <option {{ params().fromRoute('status') == '3' ? 'selected' : '' }} value="3">
+                        Pending
+                    </option>
+                    <option {{ params().fromRoute('status') == '4' ? 'selected' : '' }} value="4">
+                        Denied
+                    </option>
+                </select>
+            </div>
+        </div>
+        <h4>Manage Friends</h4>
+    </div>
+    <div class="col-md-12 sortitems" id="sortapproved">
+
+        {% if friends is not null %}
+
+            {% for friend in friends %}
+
+                {% set status = friend.getStatus() %}
+                {% set position = friend.getPosition() %}
+                {% set disable = "" %}
+
+                <div class="panel panel-default col-md-2 no-padding margin-left-5 sort" id="{{ friend.getId() }}">
+                    <div class="panel-heading">
+                        <a class="a_cover" href="{{ friend.getFriend().getAvatar() }}">
+                            {{ friend.getFriend().getUsername() }}
+                        </a>
+                    </div>
+
+                    <img class="img-responsive" alt="{{ friend.getFriend().getUsername() }}"
+                         id="img_{{ friend.getId() }}"
+                         src="{{ friend.getFriend().getAvatar() }}">
+
+                    <div class="clear"></div>
+                    {{ moderate(friend, 'api.rest.doctrine.friends') }}
+                </div>
+            {% endfor %}
+
+        {% else %}
+            You have no friends ! Do you feel lonely ?
+    {% endif %}
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#selectFilter").on("change", function () {
+            var path = '{{ url('zfcadmin/friends')}}';
+            window.location = path.substring(0, path.length - 2) + '/' + $(this).val();
+        });
+
+          jQuery('.sortitems').sortable({
+            connectWith : ".sortitems",
+            zIndex: 9999,
+            forceHelperSize: true,
+            forcePlaceholderSize: true,
+            start: function (event, ui) {
+                ui.item.startPos = ui.item.index() + 1;
+
+            },
+            update: function (event, ui) {
+
+                $.each($(this).sortable('toArray'), function(index, value) {
+
+                    $.ajax({
+                        url: "{{ url('api.rest.doctrine.friends') }}/" + value,
+                        type: 'PATCH',
+                        data: {'position': index + 1}
+                    });
+
+                });
+
+            }
+        }).disableSelection();
+
+    });
+
+</script>
+
+{% endblock %}

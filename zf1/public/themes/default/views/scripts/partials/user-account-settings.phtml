@@ -1,0 +1,37 @@
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= (Auth::isModerator() ? $this->user->username . "'s" : "My") ?> Account Settings</h1>
+
+    <form action="" method="post" id="form_account_settings<?= (Auth::isModerator() ? "_admin" : "") ?>_user">
+        <div class="join-box-fields">
+
+            <div class="field">
+                <label for="email">Email</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('email', $this->user->email, array()) ?>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "user-account-settings", "edit") || Auth::isUser()) { ?>
+            <div class="join-button">
+                <input type="submit" name="save" value="Save" class="btn btn-success">
+                <input type="hidden" name="save" value="Save">
+            </div>
+        <? } ?>
+        <br/>
+
+        <div class="model_notice">
+            *This information is for administration use only and will not be shared
+        </div>
+
+        <br/>
+    </form>
+    <? if (Auth::isModerator()) { ?>
+        <input type="hidden" name="user_id" value="<?= $this->user->id ?>" id="user_id">
+    <? } ?>
+</div>

@@ -1,0 +1,147 @@
+<div class="page-content round-corners">
+
+    <?
+    $years = array('' => 'year');
+    for ($i = date('Y') - 18; $i >= 1950; $i--) $years[$i] = $i;
+    $months = array('' => 'month');
+    for ($i = 1; $i <= 12; $i++) {
+        $months[$i] = date("F", mktime(0, 0, 0, $i, 10));
+    }
+    $days = array('' => 'day');
+    for ($i = 1; $i <= 31; $i++) $days[$i] = str_pad((int)$i, 2, "0", STR_PAD_LEFT);
+
+    $countries = array(' -- ');
+    foreach ($this->countries as $c) {
+        $countries[$c->id] = substr($c['name'], 0, 35);
+    }
+
+    $timezones = array();
+    foreach ($this->timezones as $t) {
+        $timezones[$t->id] = substr($t['name'], 0, 37);
+    }
+
+    $birthday = explode('-', $this->user->birthday);
+    ?>
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= (Auth::isUser() ? "My " : $this->user->username . "'s") ?> profile</h1>
+
+    <form action="" method="post" id="form_profile_settings<?= (Auth::isModerator() ? "_admin" : "") ?>_user"
+          enctype="multipart/form-data">
+        <div class="join-box-fields">
+
+            <div class="field_wrapper" style="min-height: 15px;">
+                <div id="notice_nick" class="field" style="visibility: hidden;">
+                    <span style="color:red;font-size:11px;">* Changing <?= (Auth::isUser() ? "your" : "the") ?> Nickname may lead to communication loss!</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="nickname">Nickname</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('username', $this->user->username) ?>
+                </div>
+
+            </div>
+
+            <div class="field_wrapper">
+                <div id='nick_name'></div>
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    $("#nickname").focus(function () {
+                        $("#notice_nick").css('visibility', 'visible').fadeIn();
+                    });
+                    $("#nickname").blur(function () {
+                        $("#notice_nick").css('visibility', 'hidden').fadeOut();
+                    });
+                });
+            </script>
+
+            <div class="field" style="min-height: 100px;padding-top: 5px;">
+                <label for="avatar"> <a target="_blank" href="<?= $this->user->getAvatar() ?>"><img
+                            src="<?= $this->user->getAvatar() ?>" border="0" width="90" height="90"></a> </label>
+
+                <div class="field_wrapper">
+                    <?= $this->formFile('avatar', array()) ?>
+                    <p> Supported file formats: JPEG, GIF, PNG </p>
+
+                    <p> Avatar image must be at least 300x200</p>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="about_me">Chips privacy settings</label>
+
+                <div class="field_wrapper">
+                    <?php $privacy = array('less' => 'Show Chips as <100', 'normal' => 'Show Chips as ' . $this->user->chips, 'more' => 'Show Chips as >100'); ?>
+                    <?= $this->formSelect('privacy', $this->user->chips_privacy, null, $privacy) ?>
+                </div>
+            </div>
+            <div class="field">
+                <label for="about_me">About me</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formTextarea('about_me', $this->user->about_me, array('cols' => 30, 'rows' => 3)) ?>
+                </div>
+            </div>
+            <div class="field">
+                <label for="phone">Phone</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('phone', $this->user->phone) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="">Birthday</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('birthday_year', $birthday[0] ? $birthday[0] : 'year', null, $years) ?>
+                    <?= $this->formSelect('birthday_month', $birthday[1] ? $birthday[1] : 'month', null, $months) ?>
+                    <?= $this->formSelect('birthday_day', $birthday[2] ? $birthday[2] : 'day', null, $days) ?>
+
+                    <div id="Birth"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="timezone">Timezone</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('timezone', $this->user->timezone, array(), $timezones) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="country">Country</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('country', $this->user->country, null, $countries) ?>
+                </div>
+            </div>
+            <div class="field">
+                <label for="newsletter">Receive newsletter </label>
+
+                <div class="field_wrapper">
+
+                    <input type="checkbox" name="newsletter" <?= (($this->receive_news->send == 1) ? "checked" : "") ?>>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "user-settings", "edit") || (Auth::isUser() && $this->user->user_id == $_SESSION['user']['id'])) { ?>
+            <div class="join-button">
+                <input type="submit" name="save" value="Save" class="btn btn-success">
+                <input type="hidden" name="save" value="Save">
+            </div>
+        <? } ?>
+    </form>
+    <? if (Auth::isModerator()) { ?>
+        <input type="hidden" name="user_id" value="<?= $this->user->id ?>" id="user_id">
+    <? } ?>
+</div>

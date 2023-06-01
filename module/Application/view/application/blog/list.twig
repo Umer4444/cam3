@@ -1,0 +1,56 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+
+    {% set useless = paginator(paginator) %}
+
+
+    <div class="row row-no-margin" id="container" data-type="infinite">
+        {% for blog in paginator.getPaginator().getCurrentItems() %}
+            {% include 'blog/item' %}
+        {% endfor %}
+    </div>
+
+    {{ paginationControl(paginator.getPaginator(), 'Sliding', 'slide-paginator') }}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var vg = $("#container").vgrid({
+                easing: "easeOutQuint",
+                useLoadImageEvent: true,
+                useFontSizeListener: true,
+                time: 400,
+                delay: 20,
+                wait: 500,
+                fadeIn: {
+                    time: 500,
+                    delay: 50
+                },
+                onStart: function(){
+                    $("#message1")
+                            .css("visibility", "visible")
+                            .fadeOut("slow",function(){
+                                $(this).show().css("visibility", "hidden");
+                            });
+                },
+                onFinish: function(){
+                    $("#message2")
+                            .css("visibility", "visible")
+                            .fadeOut("slow",function(){
+                                $(this).show().css("visibility", "hidden");
+                            });
+                }
+            });
+
+            $(window).load(function(e){
+                vg.vgrefresh();
+            });
+            $(document).ajaxComplete(function() {
+                vg.vgrefresh();
+            });
+        });
+
+    </script>
+
+{% endblock %}
+

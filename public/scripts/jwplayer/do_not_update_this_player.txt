@@ -1,0 +1,2 @@
+this is vers 4.4
+later v4.5.x players don't support type=camera

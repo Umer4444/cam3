@@ -1,0 +1,30 @@
+<? $this->headTitle('Edit ' . $this->model->first_name . " " . $this->model->name . '\'s Account - Settings');
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "model",
+        "acl" => $this->acl,
+        "user" => $this->model));
+
+
+echo $this->partial('partials/model-account-settings.phtml',
+    array("model" => $this->model,
+        "acl" => $this->acl,
+        "notice" => $this->notice,
+        "countries" => $this->countries,
+        "timezones" => $this->timezones,
+        "country" => $this->country,
+        "region" => $this->region,
+        "city" => $this->city,
+        "moderators" => $this->moderators,
+    ));
+
+if ($this->acl->isAllowed($_SESSION['group'], "model-permissions", "view")) {
+
+    echo $this->partial('partials/model-permissions.phtml',
+        array("model" => $this->model,
+            "acl" => $this->acl,
+            "notice" => $this->notice,
+            "permissions" => $this->permissions));
+
+}

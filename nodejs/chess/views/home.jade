@@ -1,0 +1,44 @@
+extends layout
+
+block content
+
+  .container
+    .row
+        .col-sm-6
+            p Preparing the game
+    .row.hide
+      .col-sm-6
+        h2 Start a New Game
+        form#startForm(action="/node/play/chess/start", method="POST", role="form")
+          .form-group
+            label Play as
+            div
+              input(type="hidden", name="player-id", value="#{playerId}")
+              input(type="hidden", name="opponent-id", value="#{opponentId}")
+              input(type="hidden", name="initiator-id", value="#{initiatorId}")
+              .btn-group(data-toggle="buttons")
+                label.btn.btn-default.active
+                  input(type="radio", name="player-color", value="white", checked="checked")
+                  | White
+                label.btn.btn-default
+                  input(type="radio", name="player-color", value="black")
+                  | Black
+          .form-group
+            label(for="playerName") Name
+            input#playerName.form-control(type="text", name="player-name", placeholder="Player 1", value="#{playerName}")
+          button.btn.btn-primary(type="submit") Start Game
+      .col-sm-6
+        h2 Join an Existing Game
+        form#joinForm(action="/node/play/chess/join", method="POST", role="form")
+          input(type="hidden", name="player-id", value="#{playerId}")
+          input(type="hidden", name="opponent-id", value="#{opponentId}")
+          input(type="hidden", name="initiator-id", value="#{initiatorId}")
+          .form-group
+            label(for="gameID") Game ID
+            input#gameID.form-control(type="text", name="game-id", value="#{gameID}")
+          .form-group
+            label(for="playerName") Name
+            input#playerName.form-control(type="text", name="player-name", placeholder="Player 2", value="#{playerName}")
+          button.btn.btn-primary(type="submit") Join Game
+
+  script !{javascript}

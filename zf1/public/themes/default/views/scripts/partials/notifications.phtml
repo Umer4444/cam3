@@ -1,0 +1,160 @@
+<style>
+    table .unread {
+        font-weight: bold;
+    }
+</style>
+<SCRIPT>
+    /* multiple selection */
+    function check() {
+        var ids = '';
+        $('.case:checkbox:checked').each(function () {
+            if (typeof $(this).val() != 'undefined') {
+                ids += $(this).val() + ',';
+            }
+        });
+        $('#multiple_select').val(ids);
+    }
+
+    $(function () {
+        // add multiple select / deselect functionality
+        $("#selectall").click(function () {
+            $('.case').attr('checked', this.checked);
+            check();
+        });
+        // if all checkbox are selected, check the selectall checkbox
+        // and viceversa
+        $(".case").click(function () {
+            check();
+            // alert(this);
+            if ($(".case").length == $(".case:checked").length) {
+                $("#selectall").attr("checked", "checked");
+            } else {
+                $("#selectall").removeAttr("checked");
+            }
+
+        });
+    });
+</SCRIPT>
+
+<?php echo $this->partial('partials/notifications-filter.phtml'); ?>
+
+<div class="page-content round-corners">
+
+    <? if (!count($this->paginator)) { ?>
+        <p> You have no notifications</p>
+    <? } else { ?>
+
+        <table class="listing_items messages" cellpadding="2" cellspacing="1">
+            <tbody>
+            <tr class="table_header">
+                <th>Notification</th>
+                <th>Date</th>
+                <th>Options</th>
+                <th>Mark</th>
+            </tr>
+
+            <? foreach ($this->paginator as $not) {
+                if ($not->read == 1) $class = "read"; else $class = "unread";
+                ?>
+                <tr class="<?= $not->type . " " . $class ?>">
+                    <td><?= $not->notification ?></td>
+                    <td><?= date("D, M j Y,  h:i A", $not->date) ?></td>
+                    <td>
+                        <? if (Auth::isModerator()) { ?>
+                            <? if ($not->type == "upload_doc") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource), "moderator-docview"); ?>">view
+                                    doc</a>
+                            <? } elseif ($not->type == "model_signup") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "name" => "model", "manage" => "edit"), "manage-model-account"); ?>">edit
+                                    model</a>
+                            <? } elseif ($not->type == "screen_name") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "name" => "model", "manage" => "edit"), "manage-model"); ?>">edit
+                                    model</a>
+                            <? } elseif ($not->type == "moderator_assigned") { ?>
+                                <a href="<?= $this->url(array("id_model" => $not->resource, "profile_type" => "profile", "name" => "model"), "model-profile"); ?>">view
+                                    profile</a>
+                            <? } elseif ($not->type == "reviews_photo") { ?>
+                                <a href="<?= $this->url(array("id_image" => $not->linked_resource), "model-image-gallery") . "#reviews"; ?>">view
+                                    review</a>
+                            <? } elseif ($not->type == "reviews_gallery") { ?>
+                                <a href="<?= $this->url(array("id_gallery" => $not->linked_resource, "name" => "album"), "model-profile-gallery") . "#reviews"; ?>">view
+                                    review</a>
+                            <? } elseif ($not->type == "reviews_video") { ?>
+                                <a href="<?= $this->url(array("id" => $not->linked_resource, "name" => "video"), "video") . "#reviews"; ?>">view
+                                    review</a>
+                            <? } elseif ($not->type == "model_online") { ?>
+                                <a href="<?= $this->url(array("id_model" => $not->resource, "name" => "model"), "watch"); ?>">watch
+                                    live</a>
+                            <? } elseif ($not->type == "video_upload") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "name" => "moderate"), "video"); ?>">view
+                                    video</a>
+                            <? } elseif ($not->type == "new_message") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "message_action" => "inbox"), "messages-moderator"); ?>">inbox</a>
+                            <? } elseif ($not->type == "banner") { ?>
+                                <a href="<?= $this->url(array("id_model" => $not->resource, "name" => "performer"), "banner-list-moderator-backend", true); ?>">view
+                                    banners</a>
+                            <? } elseif ($not->type == "blog_post" || $not->type == "report_blog") { ?>
+                                <? /*<a href="<?=$this->url(array("name" => "name", "id_model" => $not->linked_resource, "profile_type" => "blog", "title" => "title", "id_item" => $not->resource, "type_action" => "post"), "model-profile4")?>">view post</a>*/ ?>
+                                <? /* <a href="<?=$this->url(array("name" => "performer", "action_type" => "view", "id_item" => $not->resource, "id_model" => $not->linked_resource), "manage-blog-post", true)?>">view post</a> */ ?>
+                                <a href="<?= $this->url(array("name" => "performer", "id_model" => $not->linked_resource, "id_post" => $not->resource, "title" => "title"), "blog-post-view-moderator-backend", true) ?>">view
+                                    post</a>
+
+                            <? } elseif ($not->type == "cover_photo") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "name" => "model", "manage" => "edit"), "manage-model"); ?>">view
+                                    profile</a>
+                            <? } elseif ($not->type == "model-pledge-add" || $not->type == "model-perk-add") { ?>
+                                <a href="<?= $this->url(array("id_pledge" => $not->resource, "id_model" => $not->resource, "name" => "performer"), "pledge-edit-moderator-backend"); ?>">view
+                                    pledge</a>
+                            <? } elseif ($not->type == "new_photo_album" || $not->type == "new_photo") { ?>
+                                <a href="<?= $this->url(array("id_gallery" => $not->resource, "name" => "title"), "model-profile-gallery"); ?>">view
+                                    gallery</a>
+                            <? } elseif ($not->type == "image" || $not->type == "report_photo" || $not->type == "report_image") { ?>
+                                <a href="<?= $this->url(array("id_image" => $not->resource), "model-image-gallery"); ?>">view
+                                    image</a>
+                            <? } elseif ($not->type == "report_pledge") { ?>
+                                <a href="<?= $this->url(array("id_pledge" => $not->resource, "id_model" => $not->linked_resource, "name" => "performer"), "pledge-edit-moderator-backend"); ?>">edit
+                                    pledge</a>
+                            <? } elseif ($not->type == "report_model") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "name" => "performer", "manage" => "edit"), "manage-model"); ?>">edit
+                                    profile</a>
+                            <? } ?>
+                        <? } elseif (Auth::isModel()) { ?>
+                            <? if ($not->type == "new_message") { ?>
+                                <a href="<?= $this->url(array("id" => $not->resource, "message_action" => "inbox"), "messages-model"); ?>">inbox</a>
+                            <? } elseif ($not->type == "image") { ?>
+                                <a href="<?= $this->url(array("id_image" => $not->resource), "model-image-gallery"); ?>">view
+                                    image</a>
+                            <? } elseif ($not->type == "new_photo_album") { ?>
+                                <a href="<?= $this->url(array("id_gallery" => $not->resource, "name" => "title"), "model-profile-gallery"); ?>">view
+                                    gallery</a>
+                            <? } ?>
+                        <? } ?>
+                    </td>
+                    <td align="right"><input type="checkbox" class="case" name="case" value="<?= $not->id ?>"/></td>
+
+                </tr>
+
+
+            <? } ?>
+
+            <tr>
+                <td colspan="4" align="right">Select all <input type="checkbox" id="selectall"/></td>
+            </tr>
+            </tbody>
+        </table>
+        <form action="" method="POST">
+            <input type="hidden" name="multiple_select" id="multiple_select"/>
+
+            <p style="text-align:right;">With selected:
+                <input type="submit" name="mark_read" id="mark_read" value="Mark as read"/>
+                <input type="submit" name="mark_unread" id="mark_unread" value="Mark as unread"/>
+                <input type="submit" name="mark_delete" id="mark_delete" value="Delete"/>
+            </p>
+
+        </form>
+    <? } ?>
+
+
+
+    <? echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml'); ?>
+</div>

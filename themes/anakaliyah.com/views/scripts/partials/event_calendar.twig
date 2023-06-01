@@ -1,0 +1,97 @@
+<link rel="stylesheet" href="/themes/anakaliyah/scripts/eventCalendar/css/anak.css">
+
+<h2 class="title">SCHEDULED</h2>
+
+<div id="eventCalendarDefault"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $("#eventCalendarDefault").eventCalendar({
+            eventsjson: '{{ url('solo/scheduleAjax') }}', // link to events json
+            jsonDateFormat: 'human',
+            showGoToEventUrl: true,
+            eventsLimit: 10,
+            startWeekOnMonday: false
+        });
+
+        $('li.eventsCalendar-day.today.dayWithEvents a').trigger('click');
+
+        clickOnCal();
+
+        $('.arrow').click(function (e) {
+            clickOnCal();
+        });
+
+        $('#day').change(function () {
+            if ($(this).val() == '') {
+                $('#to_date').prop("disabled", false);
+            } else {
+                $('#to_date').prop("disabled", true);
+                //$('#to_date').val("");
+            }
+        });
+
+        $("#fieldDays").hide();
+        $("#repeatFor").hide();
+        $("#repeat").change(function () {
+
+            if ($(this).val() != '') {
+                $("#repeatFor").show();
+                if ($(this).val() == 'daily') {
+                    $("#forTime").html("days");
+                } else {
+                    $("#forTime").html($(this).val().replace("ly", "s"));
+                }
+            } else {
+                $("#repeatFor").hide();
+            }
+            if ($(this).val() == '' || $(this).val() == "monthly") {
+                $('#to_date').prop("disabled", false);
+            } else {
+                $('#to_date').prop("disabled", true);
+                //$('#to_date').val("");
+            }
+
+            if ($(this).val() == "weekly") {
+                $("#fieldDays").show();
+            } else {
+                $("#fieldDays").hide();
+            }
+
+        });
+    });
+    function clickOnCal() {
+        $("li.eventsCalendar-day").click(function (e) {
+            day = $(this).attr('rel');
+            month = $("#eventCalendarDefault").attr('data-current-month');
+            month++;
+            year = $("#eventCalendarDefault").attr('data-current-year');
+
+            $('#to_date').val(month + '/' + day + '/' + year);
+
+            $('#hour').val('');
+            $('#minute').val('');
+            $('#type').val('');
+            $('#title').val('');
+//            $('#description').val('');
+            $('#save_edit_btn').val('Save');
+            $('#delete_btn').css('display', 'none');
+            $('#id_item').val('');
+        });
+    }
+    $(function () {
+        $("#to_date").datepicker({
+            maxDate: "+6M"
+        });
+    });
+
+    $(document).ajaxComplete(function(){
+
+
+       $('.error').hide();
+
+    });
+
+</script>

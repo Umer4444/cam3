@@ -1,0 +1,103 @@
+{% extends 'layout/frontend' %}
+
+{#conditions#}
+{% set where = newInstance('Doctrine\\Common\\Collections\\Criteria').expr() %}
+{% set wherePrev =  (where).lt('id', image.getId()) %}
+{% set whereNext =  (where).gt('id', image.getId()) %}
+{% set wherePending =  (where).eq('active', 0) %} {# TODO replace with filter #}
+{% set whereActive =  (where).eq('active', 1) %} {# TODO replace with filter #}
+{% set whereUser =  (where).eq('user', image.getUser()) %}
+{#end conditions#}
+
+{#criteria#}
+{#end criteria#}
+{% set criteria = newInstance('Doctrine\\Common\\Collections\\Criteria').create() %}
+
+{#array collections#}
+{% set photos = image.getAlbum().getPhotos() %}
+{% set reviewsCol = image.getUser().getReviews() %}
+{#end array collections#}
+
+{# result photos#}
+{% set next = photos.matching(criteria.where(whereNext)).current().setFirstResult(0).setMaxResults(1)  %}
+{% set prev = photos.matching(criteria.where(wherePrev)).current().setFirstResult(0).setMaxResults(1)  %}
+{# end result photos #}
+
+{# results reviews #}
+{% set reviewsPending = reviewsCol.matching(criteria.where(wherePending).andWhere(whereUser)) %}
+{% set reviews = reviewsCol.matching(criteria.where(whereActive)) %}
+{# end results reviews #}
+
+{% block content %}
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <div class="row row-no-margin padding-10">
+            <div class="col-sm-6 col-lg-6 col-md-6 generic-border padding-10">
+                <h3 class="album-title-h2 no-top-margin pink-background">
+                    <strong>{{ image.getCaption() }}</strong>
+                </h3>
+                <hr>
+                <div class="form-group">
+                    <div class="text-center form-group centered">
+                        <img src="{{ image.getAlbum() and buy(image.getAlbum()).isPurchasable() and buy(image.getAlbum()).isPurchased() ? image : image.getFilename(false) }}" class="img-responsive centered"/>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="pull-left">
+                            {{ stars('image', image.getId(), image.getRating()) }}
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="rating-video pull-right">
+                            <div class="right">
+                                {{ likes(image) }}
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <hr>
+                </div>
+                <div class="clear-fix"></div>
+
+                <div class="form-group">
+                    <div class="row row-no-margin">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Comments</div>
+                                <div class="panel-body">
+                                    {{ commentCustom('default', 1, image.getUser().getGuestbook() ?: 'null', image.getUser().getId()) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-6 col-md-6 padding-10">
+                <div class="form-group">
+                    <div class="row row-no-margin">
+                        <div class="col-sm-4 text-center">
+                            <div class="blog-buttons">
+                                {{ user().buttons().favorite() }}
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <div class="blog-buttons">
+                                {{ user().buttons().follow() }}
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <div class="blog-buttons">
+                                {{ user().buttons().friend() }}
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group ad">
+                    {{ related(newInstance('Images\\Entity\\Image'), 'image/related-image-inner', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST'), null, 4) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,109 @@
+<?php $this->headTitle()->prepend('Settings'); ?>
+
+<link href="<?= $this->basePath() ?>/css/bootstrap-duallistbox.css" media="screen" rel="stylesheet" type="text/css">
+<script src="<?= $this->basePath() ?>/js/jquery.bootstrap-duallistbox.js"></script>
+
+<div class="span12">
+
+    <div class="widget stacked">
+
+        <div class="widget-header">
+            <i class="icon-check"></i>
+
+            <h3>Change images settings:</h3>
+        </div>
+
+        <div class="widget-content">
+
+            <?php $this->form->prepare(); ?>
+            <?php echo $this->cgmFlashMessages(); ?>
+            <span class="form-horizontal">
+
+                <div class="control-group hidden" id="size">
+                    <label class="control-label" for="size">Input custom size</label>
+
+                    <div class="controls">
+
+                        <input name="size" type="text" id="width" style="width:35px!important;"> x <input
+                            name="size1" type="text" id="height" style="width:35px!important;">
+                    </div>
+                </div>
+
+            </span>
+
+            <?php echo $this->cgmConfigAdminAccordionForm($this->form); ?>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('input[type="number"]').attr('disabled', '');
+
+        $('input[name="WebinoImageThumb[test]"]').parent().parent().addClass('hidden');
+        $("select[name='WebinoImageThumb[size]']").change(function () {
+
+            if ($("select[name='WebinoImageThumb[size]']").find('option:selected').text() == 'custom') {
+
+                $("#size").removeClass('hidden');
+                $('#width').change(function () {
+                    if ($('#height').val()) {
+
+                        var res = $('#width').val() + 'x' + $('#height').val();
+
+                        $("input[name='WebinoImageThumb[test]'").val(res);
+
+                    } else {
+
+                        $("input[name='WebinoImageThumb[test]'").val('');
+                    }
+
+                });
+
+                $('#height').change(function () {
+                    if ($('#width').val()) {
+
+                        var res = $('#width').val() + 'x' + $('#height').val();
+
+                        $("input[name='WebinoImageThumb[test]'").val(res);
+
+                    } else {
+
+                        $("input[name='WebinoImageThumb[test]'").val('');
+                    }
+
+                });
+
+            } else {
+
+                $("#size").addClass('hidden');
+                $("input[name='WebinoImageThumb[test]'").val('');
+            }
+
+        });
+
+        var n = 1;
+        $('.accordion-group').removeClass('open');
+        $('.accordion-body').removeClass('in');
+        $('.accordion').attr('id', 'col');
+        $('.accordion-toggle').attr('data-parent', '#col');
+
+        $('.accordion-body').each(function () {
+
+            $(this).attr('id', n);
+            $(this).parent().children('.accordion-heading').children().attr('href', '#' + n);
+            n++;
+
+        });
+
+        $('.btn').removeClass('btn-large');
+
+    });
+
+</script>

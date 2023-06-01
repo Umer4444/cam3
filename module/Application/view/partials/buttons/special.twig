@@ -1,0 +1,8 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Special Request{% endblock button_text %}
+{% block button_class %}btn btn-magenta btn-block{% endblock button_class %}
+{% block button_href_logged %}
+    {# route to zf1 @todo move it to zf2 #}
+    {{ user().url('performer-special-requests', {'name': user.getDisplayName(), 'id_model' : user.getId()}) }}
+{% endblock button_href_logged %}

@@ -1,0 +1,64 @@
+<? $this->headTitle('User Login'); ?>
+
+<div class="row">
+    <h2 class="title">Log In</h2>
+
+        <form action="" method="post" class="form-horizontal">
+        
+                    
+            <?=$this->notice?>
+             <?
+                 echo form_field(array("type" => "text", "name" => "email", "value" => "", "label" => "Email"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>
+            <?
+                 echo form_field(array("type" => "password", "name" => "password", "value" => "", "label" => "Password"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?> 
+             <? if($this->captcha) {?>
+              <div class="control-group">
+                <label class="control-label" for="captcha">Are you human?</label>
+                <div class="controls"> 
+                     <?=$this->captcha?>
+                </div>  
+                <br/>
+               <? } ?> 
+             <?
+                 echo form_field(array("type" => "submit", "name" => "login", "value" => "Login"), $attr = array("class" => "btn btn-purple"), $options = null, $icon = "");
+             ?>  
+             <input type="hidden" name="url" value="<?=$_SERVER['HTTP_REFERER']?>">
+             
+          <? /*   
+             
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="user_login">Email</label>
+                    <div class="field_wrapper">
+                        <input id="email" class="short" name="email" type="text" tabindex="10">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="user_password">Password</label>
+                    <div class="field_wrapper">
+                        <input type="password" class="short" id="password" name="password" tabindex="11">
+                    </div>
+                </div>
+                <br>
+                <? if($this->captcha) {?>
+                    <div class="clear"></div>       
+                    <div class="captcha" style = "clear:both">                       
+                           <?=$this->captcha?>
+                     </div>                                       
+                    <br/>
+                <? } ?>
+            </div>
+               
+            
+            <div class="clear"></div>
+            <div class="join-button">
+                <input type="submit" name="login" value="Login" id="submit" class="green-button">
+                <br>
+                <a style="color: #004A95;" href="/pwreset/">Request a Password Reset</a>
+            </div>
+            <input type="hidden" name="url" value="<?=$_SERVER['HTTP_REFERER']?>">
+               */ ?>
+        </form>
+    </div>

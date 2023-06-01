@@ -1,0 +1,64 @@
+<?php if (count($this->paginator)) { ?>
+    <table class="listing_items messages table table-striped" cellpadding="2" cellspacing="1">
+        <tr class="table_header">
+            <th width="50">Cover</th>
+            <th>Title/description</th>
+            <th width="350">Options</th>
+        </tr>
+
+        <?php foreach ($this->paginator as $this->pledge) { ?>
+            <?php
+            $class = "";
+            if ((Auth::isModel() && $this->pledge->id_model == user()->id) || (Auth::isModerator() && (user()->id == 0 || user()->id == $this->pledge->id_moderator))) {
+                if ($this->pledge->status == 1) $class = "green-back";
+                elseif ($this->pledge->status == 2) $class = "orange-back";
+                elseif ($this->pledge->status == -1) $class = "red-back";
+            }
+            ?>
+            <tr <?= ($class ? 'class="' . $class . '"' : "") ?>>
+                <td><img width="50" src="<?= $this->pledge->photo_cover ?>"/></td>
+                <td>
+                    <b><?= $this->pledge->title ?></b>
+                    <?php //short_description($this->pledge->content);?>
+
+                </td>
+                <td>
+                    <?php  if (Auth::isModel() && $this->pledge->status != 1) { ?>
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("title" => slug($this->pledge->title), "id_pledge" => $this->pledge->id), "pledge-edit-performer-backend") ?>">Edit</a>
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("title" => slug($this->pledge->title), "id_pledge" => $this->pledge->id), "pledge-delete-performer-backend") ?>">Delete</a>
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("title" => slug($this->pledge->title), "id_pledge" => $this->pledge->id), "pledge-photos-performer-backend") ?>">Photos</a>
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("id_pledge" => $this->pledge->id), "perk-add-performer-backend") ?>">Perks</a>
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("id_pledge" => $this->pledge->id), "pledge-add-update-performer-backend") ?>">Updates</a>
+
+                        <a class="btn btn-magenta btn-xs" target="_blank"
+                           href="<?= $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-view-frontend") ?>">View</a>
+                    <?php } ?>
+                    <?php if (Auth::isModerator()) { ?>
+
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("id_model" => $this->params["id_model"], "name" => $this->params["name"], "id_pledge" => $this->pledge->id), "pledge-edit-moderator-backend") ?>"
+                           title="Edit Pledge">Edit</a>
+
+                        <a class="btn btn-magenta btn-xs"
+                           href="<?= $this->url(array("id_model" => $this->params["id_model"], "name" => $this->params["name"], "id_pledge" => $this->pledge->id), "perk-add-moderator-backend") ?>"
+                           title="Add perk">Perks</a>
+
+                        <a class="btn btn-magenta btn-xs" target="_blank"
+                           href="<?= $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-view-frontend") ?>">View</a>
+
+                    <?php } ?>
+
+                </td>
+            </tr>
+        <?php } ?>
+
+    </table>
+    <?php
+    echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+    ?>
+<?php } ?>

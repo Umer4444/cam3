@@ -1,0 +1,20 @@
+<?
+$page_title = "Update pledge";
+
+$this->headTitle($page_title);
+
+
+?>
+<div class="model_content">
+
+    <?= $this->notice ?>
+
+    <? echo $this->partial("partials/model-submenu.phtml", array("type" => "pledges", "params" => $this->params)); ?>
+    <div class="page-content round-corners">
+        <h1 class="page-title"><?= $page_title ?></h1>
+        <?= $this->partial("pledge/update-form.phtml", $this); ?>
+    </div>
+
+    <?= $this->partial("pledge/update-list.phtml", $this); ?>
+
+</div>

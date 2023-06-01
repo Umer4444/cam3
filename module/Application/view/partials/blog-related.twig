@@ -1,0 +1,44 @@
+{% if rows|length == 0 %}
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert">
+            No videos uploaded yet!
+        </div>
+    </div>
+{% else %}
+    {% for blog in rows %}
+        {% set url = url('blog/view', {(constant('Application\\Mapper\\Injector::BLOG_SLUG')): blog.getSlug() }) %}
+        <div class="col-sm-6">
+            <div class="post-2 padding-10">
+                <a href="{{ url }}">
+                    <h1 class="padding-10 no-background blog-title">{{ blog.getTitle() }}</h1>
+                </a>
+                {{ blog.getPostedOn().format('h:i a l, F Y') }}
+                <br>
+                <div>
+                    <a class="catname col-sm-6" href="{{ url('blog/filters', {category: blog.getCategory(), categoryId: blog.getId()}) }}">
+                        {{ blog.getCategory() }}
+                    </a>
+                </div>
+                <div class="text-right col-sm-6">
+                    {% include 'tags' with {'tags' : blog.getTags(), 'route': 'blog/filters'} %}
+                </div>
+                <div class="post_picture_big">
+                    <a href="{{ url }}">
+                        <img src="{{ blog.getSmallCover() }}">
+                    </a>
+                    <div class="blog-post-stats">
+                        {{ blog.getInteraction().getLikes() }} Likes · {{ blog.getInteraction().getDislikes() }} Dislike
+                    </div>
+                </div>
+                <p class="post-text text-justify">
+                    {{ blog.getContent()|striptags|slice(0, 80) }} ...
+                </p>
+                <p class="text-right read-more">
+                    <a href="{{ url }}">Read more...</a>
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+

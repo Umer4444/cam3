@@ -1,0 +1,265 @@
+<style>#content {
+        width: 640px;
+    } </style>
+
+
+<? if ($this->pledge) { ?>
+    <? $this->headTitle("Contribute to " . $this->pledge->title . ' By ' . $this->pledge->model_screen_name); ?>
+    <div class="pledge-contribute">
+
+        <div class="cover">
+            <img src="<?= $this->pledge->photo_cover_big ?>"/>
+        </div>
+        <div class="title magenta">
+            <h2><?= $this->pledge->title ?></h2>
+        </div>
+
+        <div class="model_category">
+            <span>created by  <a title="<?= $this->pledge->model_screen_name ?>"
+                                 href="<?= $this->url(array("id_model" => $this->pledge->id_model, "name" => $this->pledge->model_screen_name, "profile_type" => "profile"), "model-profile"); ?>">
+                    <?= $this->pledge->model_screen_name ?>
+                </a>
+                </span>
+            <span>  <a
+                    href="/pledges/filter/categories/<?= str_replace(array(" ", "/"), array("_", "-"), $this->pledge->category_name) ?>"><?= $this->pledge->category_name ?></a></span>
+        </div>
+        <div class="clear"></div>
+        <div class="share_campaign">
+            <img width="60px" src="/images/share_bubble.png"/>
+            <label for="share">Share URL</label>
+            <input type="text" name="share" id="share"
+                   value="http://<?= ($_SERVER["SERVER_NAME"] . $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-view-frontend")) ?>"/>
+
+            <p class="magenta">&hearts; Follow</p>
+        </div>
+        <div class="clear"></div>
+        <br/>
+        <hr/>
+        <div class="contribute">
+            <h1>Contribute now!</h1>
+
+            <div class="custom-contribute">
+                <input type="hidden" id="id_pledge" value="<?= $this->pledge->id ?>"/>
+                <? if ($this->selected_perk) { ?>
+
+                    <p>Selected perk: <?= $this->selected_perk->title ?></p>
+                    <br/>
+                    <label for="amount_contribute">Chip Amount</label>
+                    <input type="text" id="amount_contribute" disabled value="<?= $this->selected_perk->amount ?>"/> ($
+                    <span class="dollars"><?= ($this->selected_perk->amount) ?></span>)
+                    <input type="hidden" id="id_perk" value="<?= $this->selected_perk->id ?>"/>
+                    <a class="button-black"
+                       href="<?= $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-contribute-frontend", true) ?>">
+                        Custom chip amount
+                    </a>
+
+
+                <? } else { ?>
+                    <label for="amount">Amount</label>
+                    <input type"text" id="amount" value="0"/> $
+                <? } ?>
+                <br/>
+                <br/>
+                <!--<small>
+                    <label for="anonymous">Anonymous contribution</label>
+                    <input type="checkbox" name="anonymous" id="anonymous" value=""/>
+                </small>-->
+                <br/>
+                <span class="okbutton">
+                    <?php if (Auth::isLogged()) { ?>
+                        <a href="javascript:void(0)" class="acceptButton">Done</a>
+                    <? } else { ?>
+                        <a href="/account/login" class="denyButton">Login</a>
+                    <? } ?>
+                </span>
+            </div>
+        </div>
+
+
+        <div class="perks">
+
+            <? if (count($this->perks_moderator) > 0 || count($this->perks_model) > 0) { ?>
+                <h2> Click perk to select</h2>
+                <? if (Auth::isModerator() && (user()->id == 0 || user()->id == $this->pledge->id_moderator)) {
+                    echo $this->partial("partials/moderation-bar.phtml", array("type" => "perks"));
+                } ?>
+                <div class="perks">
+                    <?php if (count($this->perks_moderator) > 0) { ?>
+                        <h3>Admin bonuses</h3>
+                        <? foreach ($this->perks_moderator as $this->perk) { ?>
+                            <? echo $this->partial("pledge/perk-item.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+                        <? } ?>
+                    <? } ?>
+                    <?php if (count($this->perks_model) > 0) { ?>
+                        <h3>Performer offers</h3>
+                        <? foreach ($this->perks_model as $this->perk) { ?>
+                            <? echo $this->partial("pledge/perk-item.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+                        <? } ?>
+                    <? } ?>
+                </div>
+            <? } ?>
+        </div>
+    </div>
+
+
+
+<? } else {
+    echo "No pledge found!";
+} ?>
+
+
+<script>
+
+
+    $("#share").click(function () {
+        this.select();
+    });
+
+
+    <?/*       $("#contribute_button").click(function(){
+              amounts = $("#contribute_button span.form .contribute_amount").val();
+              $("#contribute_button span.form .dollars").html('$' + parseFloat(amounts/<?=(config()->chips_parity > 1 ? config()->chips_parity : 1)?>));
+
+              $("#contribute_button span.btext p").hide();
+              if(!logged){
+                  $("#contribute_button span.login").show()
+              }else{
+                 $("#contribute_button span.form").show();
+                 $("#contribute_button span.form .contribute_amount").bind("keyup", function(){
+                       amounts = $("#contribute_button span.form .contribute_amount").val();
+                       $("#contribute_button span.form .dollars").html('$' + parseFloat(amounts/<?=(config()->chips_parity > 1 ? config()->chips_parity : 1)?>));
+                   });
+              }
+          });
+         $("#contribute_button").mouseleave(function(){
+              setTimeout(function(){
+                      $("#contribute_button span.btext p").show();
+                      $("#contribute_button span.form").hide();
+                      $("#contribute_button span.login").hide();
+                  },
+                  3000
+              );
+
+          });
+
+
+          $(".contribute_ok").click(function(){
+              var amount = $(".contribute_amount").val();
+
+              if(amount.length == 0 || !$.isNumeric(amount)) {alert("Insert amount!"); return;}
+
+               var this_elem = $("#contribute_button");
+
+
+               var request = $.ajax({
+                    url: "/process",
+                    type: "POST",
+                    data: {
+                              action: "contribute",
+                              item : this_elem.data("id"),
+                              amount : amount
+                          },
+                    dataType: "html"
+                  });
+
+                  request.done(function(msgs) {
+                      msg = $.parseJSON(msgs);
+                      if(msg.status == 'ok'){
+                         alert("Thanks!");
+                         $("#chips_number").html("Chips: " + msg.chips);
+                         $("#contribute_button .contribute_amount").val('');
+                      } else {
+
+                         alert(msg.message); ;
+                      }
+                  });
+
+                  request.fail(function(jqXHR, textStatus) {
+                    this_elem.parent().children(".pledge_form").html('<p class="shadow">Fail! Try later!</p>'); ;
+                  });
+          });
+          */  ?>
+</script>
+
+<script type="text/javascript">
+
+    $("#amount").bind("keyup", function () {
+        //$(".dollars").html(parseFloat(parseInt($(this).val()) /));
+    });
+    /* contribute */
+    $(".acceptButton").click(function (e) {
+        e.preventDefault();
+        var request = $.ajax({
+            url: "/process",
+            type: "POST",
+            data: {
+                action: "purchasePerk",
+                item: $("#id_perk").val(),
+                pledge: $("#id_pledge").val(),
+                amount: $("#amount").val(),
+                anonymous: $("#anonymous").is(":checked"),
+            },
+            dataType: "html"
+        });
+
+        request.done(function (msgs) {
+            msg = $.parseJSON(msgs);
+            if (msg.status == 'ok') {
+
+                $("#chips_number").html("Chips: " + msg.chips);
+                alert("Thanks!");
+                window.location = '<?=$this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-view-frontend")?>';
+            } else {
+                alert(msg.message);
+            }
+        });
+
+        request.fail(function (jqXHR, textStatus) {
+            alert("Fail! Try later!");
+        });
+    });
+    <? /*
+    $(".perk").click(function(e){
+           if($(e.target).hasClass("case")) {
+                return true;
+           }
+
+        <? if(!$this->pledge_status) echo 'e.preventDefault();return false;'; ?>
+
+
+       if(!logged){
+           alert("You must be logged");
+       } else {
+           this_elem = $(this);
+             var request = $.ajax({
+                  url: "/process",
+                  type: "POST",
+                  data: {
+                            action: "purchasePerk",
+                            item : this_elem.data("id"),
+                            pledge : this_elem.data("pledge")
+                        },
+                  dataType: "html"
+                });
+
+                request.done(function(msgs) {
+                    msg = $.parseJSON(msgs);
+                    if(msg.status == 'ok'){
+                       alert("Thanks!");
+                       $("#chips_number").html("Chips: " + msg.chips);
+                    } else {
+                       alert(msg.message);
+                    }
+                });
+
+                request.fail(function(jqXHR, textStatus) {
+                  alert("Fail! Try later!");
+                });
+       }
+    });
+
+});    */ ?>
+</script>
+
+
+

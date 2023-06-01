@@ -1,0 +1,24 @@
+<?php if ($this->pageCount): ?>
+    <div class="pagination pagination-centered">
+        <ul class="left">
+            <!-- Previous page link -->
+            <?php if (isset($this->previous)): ?>
+                <li>
+                    <a href="<?php echo $this->url($this->route); ?>/<?php echo $this->previous; ?>">
+                        << Previous Post
+                    </a>
+                </li>
+            <?php endif; ?>
+
+        </ul>
+        <ul class="right">   <!-- Next page link -->
+            <?php if (isset($this->next)): ?>
+                <li>
+                    <a href="<?php echo $this->url($this->route); ?>/<?php echo $this->next; ?>"
+                       class="jscroll-next">
+                        Next Post >>
+                    </a>
+                </li>
+            <?php endif; ?></ul>
+    </div>
+<?php endif; ?>

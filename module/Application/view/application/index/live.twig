@@ -1,0 +1,37 @@
+{% extends 'layout/layout_base.twig' %}
+
+{% block content %}
+    <div class="row">
+        {% for performer in performers %}
+            <div class="col-md-3">
+                {{ performer.getUsername() }}
+                <img src="{{ performer.getAvatar() }}"
+                     alt="{{ performer.getUsername() }}"
+                     title="{{ performer.getUsermname() }}">
+
+                    <div class="girl-info text-center">
+
+                        {{ user(performer).buttons().profile() }}
+
+                        <div class="quote">{{ performer.getStatusProfile() }}</div>
+
+                        <div class="break-line"></div>
+                        <div class="b_btns">
+                            <span id="path_follow{{ performer.getId() }}" class="row">
+
+                                <div class="col-xs-6">
+                                    {{ user(performer).buttons().follow() }}
+                                </div>
+
+                                <div class="col-xs-6">
+                                    {{ user(performer).buttons().call() }}
+                                </div>
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

@@ -1,0 +1,31 @@
+<? $file =         "/files/photos/".$this->item->filename  ;
+    $disable =     "";
+    if($this->type == "image") {
+        if(isset($_SESSION["rate"]) && isset($_SESSION["rate"]["image"])) { 
+            if(in_array($this->item->id, $_SESSION["rate"]["image"])) $disable =  " disableRate"; 
+        }
+    }
+    if($this->type == "gallery") {
+        if(isset($_SESSION["rate"]) && isset($_SESSION["rate"]["gallery"])) { 
+            if(in_array($this->photo->id, $_SESSION["rate"]["gallery"])) $disable =  " disableRate"; 
+        }
+    }
+?>
+<div class="thumbnail with-caption col-lg-4">
+    <a class="a_cover" rel="group" href="<?=$file?>">
+        <img  src="<?=$file?>"> 
+    </a>              
+    <div class="right">         
+        <?  echo $this->partial('partials/items/like_buttons.phtml', array('id' => $this->item->id, "type" => "image")); ?>        
+    </div>    
+  
+    <div class="left">
+        <div class="stars<?=$disable?>" data-id="<?=$this->item->id?>" data-average="<?=$this->item->rating?>" data-extra="<?=($this->type)?>"></div>
+    </div>
+     <div class="stats center">
+         <a href="<?=$this->url(array("id_image"=> $this->item->id), "model-image-gallery")?>#disqus_thread"> Comments</a> 
+         | 
+         <a href="<?=$this->url(array("id_image"=> $this->item->id), "model-image-gallery")?>#reviews"><?=$this->item->total_active_reviews?> reviews</a>
+    </div>
+
+</div>

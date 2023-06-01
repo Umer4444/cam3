@@ -1,0 +1,15 @@
+<?php
+
+    $this->headScript()->deleteContainer();
+    echo $this->asset('head_bare_js');
+    echo $this->asset('head_store_js');
+
+    $this->headLink()->deleteContainer();
+    echo $this->asset('head_store_css');
+    echo $this->asset('head_bare_css');
+    echo $this->asset('head_app_css');
+
+    $domain = $this->cfg($this->zfcUserIdentity())->getConfigValue('domain/domain');
+
+?>
+<!--# include virtual="/admin/~store/<?=$this->params()->fromRoute('uri').'?websitecode='.str_replace(['.', '-'], '', $domain).'&domain='.$domain?>" -->

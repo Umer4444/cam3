@@ -1,0 +1,73 @@
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+
+    <h1 class="page-title">Edit Notes <?= ($this->params['id'] != "all" ? "for " . $this->params['name'] : "") ?></h1>
+
+    <form action="" method="post" id="form_moderator_notes_admin">
+        <div class="join-box-fields">
+            <?
+            switch ($this->params['type']) {
+                case 'model':
+                    if (count($this->models) > 1) {
+                        $users = $this->models->toArray();
+                    } else $users = array();
+                    break;
+                case 'moderator':
+                    if (count($this->moderators) > 1) {
+                        $users = $this->moderators->toArray();
+                    } else $users = array();
+                    break;
+                case 'user':
+                    if (count($this->users) > 1) {
+                        $users = $this->users->toArray();
+                    } else $users = array();
+                    break;
+            }
+
+            if (count($users) >= 1) {
+                foreach ($users as $user) {
+
+                    $notes = $this->notes[$user['id']];
+                    if ($notes) {
+                        $notes = $notes->toArray();
+                        $notes = $notes[0]['notes'];
+                    } else $notes = '';
+
+                    switch ($this->params['type']) {
+                        case 'model':
+                            $name = $user['first_name'] . " " . $user['name'];
+                            break;
+                        case 'moderator':
+                            $name = $user['username'];
+                            break;
+                        case 'user':
+                            $name = $user['username'];
+                            break;
+                    }
+                    echo '<div class="field">
+                        <label for="' . $user['id'] . '">Edit ' . $name . '\'s notes:</label>
+                        <div class="field_wrapper">';
+                    echo $this->formTextarea($user['id'], $notes, array('cols' => 30, 'rows' => 10));
+                    echo '</div></div>';
+                } ?>
+
+                <div class="join-box-fields-partial" style="float: none;">&nbsp;</div>
+
+                <?if ($this->acl->isAllowed($_SESSION['group'], $this->params['type'] . "-notes", "edit")) {
+                    ?>
+                    <div class="join-button">
+                        <input type="submit" name="save" value="Save notes" class="btn btn-success">
+                        <input type="hidden" name="save" value="Save notes">
+                    </div>
+
+                <? } ?>
+            <?
+            } else echo "No notes"
+            ?>
+        </div>
+
+
+    </form>
+
+</div>

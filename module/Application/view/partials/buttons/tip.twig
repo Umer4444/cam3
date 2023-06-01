@@ -1,0 +1,24 @@
+{% extends 'buttons/default' %}
+
+{% set hasCredit = zfcUserIdentity() and zfcUserIdentity().getCredit() > 30 %}
+
+{% block button_text %}Send Tip{% endblock button_text %}
+{% block button_class %}btn btn-info btn-block {{ not hasCredit ?: 'xeditable' }}{% endblock button_class %}
+
+{% block button_data %}
+    {% if hasCredit %}
+        data-type="select" data-pk="{{ user.getId() }}" data-title="Tip Amount" data-showbuttons="false"
+        data-url="{{ url('api.rpc.tip') }}" data-value="0"
+        data-source="[{value: 0, text: '-- Select --'},{value: 1, text: '$1'},{value: 3, text: '$3'},{value: 5, text: '$5'},{value: 10, text: '$10'},{value: 30, text: '$30'}]"
+    {% endif %}
+{% endblock button_data %}
+
+{% block button_href %}
+    {% if not hasCredit %}
+        {{ url('payment') }}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock button_href %}
+
+{% block button_javascript %}App.button.tip('{{ block('button_id') }}'{{ isContext == false ? '' : ', key, options' }}){% endblock button_javascript %}

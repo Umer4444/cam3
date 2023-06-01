@@ -1,0 +1,48 @@
+{#{{ dump(performer.getSettings()) }}#}
+{% set age = date('NOW').diff(performer.getBirthday()) %}
+<div class="col-lg-3 col-sm-6 col-md-3 col-xs-12  block-box ">
+    <div class="box-shadow cam-sharing phone-page">
+        <div class="sharing-name"><h3 class="text-left">{{ performer.getName() }}</h3>
+            <small>{{ age.y }} yrs</small>
+        </div>
+        <div class="sharing-img">
+            <img src="{{ performer.getAvatar() }}" alt="image" class="img-responsive">
+        </div>
+        <div class="text-center call_btn_wrp">
+            {{ user(performer).buttons().call() }}
+        </div>
+        <div class="call_larg_msg">
+            "Call me, im waiting for you..."
+        </div>
+        <div class="row player_wrp">
+            <div class="col-sm-3 col-xs-8 label text-right">
+                HEAR MY <br> VOICE
+            </div>
+            <div class="col-sm-9 col-xs-12">
+                <audio controls class="img-responsive center-block audio-top-fix">
+                    <source src="horse.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-6"><strong>$0,14</strong> min for call</div>
+                <div class="col-sm-6"><strong>$20</strong>/ monthly unlimited</div>
+            </div>
+        </div>
+        <div class="col-sm-12 form-group">
+            <div class="row">
+                <div class="col-sm-6"><strong>$0,2</strong> per text msg</div>
+                <div class="col-sm-6"><strong>$20</strong> Calls and text</div>
+            </div>
+        </div>
+
+        <div class="pull-left cam_btn">
+            {{ user(performer).buttons().profile() }}
+        </div>
+        <div class="pull-right cam_btn">
+            {#{{ user(performer).buttons().message() }}#}
+        </div>
+    </div>
+</div>

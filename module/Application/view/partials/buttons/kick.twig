@@ -1,0 +1,5 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Kick{% endblock button_text %}
+
+{% block button_javascript %}App.button.kick('{{ user.getId() }}'{{ isContext == false ? '' : ', key, options' }}){% endblock button_javascript %}

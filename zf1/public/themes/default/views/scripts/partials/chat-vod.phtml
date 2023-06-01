@@ -1,0 +1,14 @@
+<div id="vodContainer" class="col-md-6">
+    <div class="margin10">
+        <h2 class="page_title">Clips From This Model</h2>
+
+        <div class="clear"></div>
+        <?
+        if ($this->videos_for_sale) {
+            foreach ($this->videos_for_sale as $video) echo $this->partial('partials/video-small-item.phtml', array('video' => $video));
+        } else {
+            echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';
+        }
+        ?>
+    </div>
+</div>

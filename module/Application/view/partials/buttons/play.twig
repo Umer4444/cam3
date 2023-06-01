@@ -1,0 +1,67 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Play Games{% endblock button_text %}
+
+{% set id = random() %}
+
+{% block button_href_logged %}javascript:void(0);{% endblock button_href_logged %}
+
+{% block button_data %}
+    {% if zfcUserIdentity() %}
+        data-toggle="modal" data-target="#modal{{ id }}"
+    {% endif %}
+{% endblock button_data %}
+
+{% block button_append %}
+    {% if zfcUserIdentity() %}
+        <div class="modal fade modal-vertical-centered" id="modal{{ id }}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="play-page form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel panel-play">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#row1"> Board Game<span class="glyphicon glyphicon-minus pull-right"></span></a> </h4>
+                                    </div>
+                                    <div id="row1" class="panel-collapse collapse in ov-auto ">
+                                        <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box ">
+                                            <div class="play-box">
+                                                <div class="play-title">
+                                                    <h3><strong>Chess (${{ cfg(user).getConfigValue('play/chess') }})
+                                                        </strong></h3>
+                                                </div>
+                                                <div class="play-img">
+                                                    <a href="{{ url('play', {'action': 'chess', (constant('Application\\Mapper\\Injector::USER')): user.getId()}) }}">
+                                                        <img src="/assets/images/game/chess.jpg" alt="image" class="img-responsive">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box ">
+                                            <div class="play-box">
+                                                <div class="play-title">
+                                                    <h3><strong>Tic Tac Toe (${{ cfg(user).getConfigValue('play/tic-tac-toe') }})</strong></h3>
+                                                </div>
+                                                <div class="play-img"><a href="{{ url('play', {'action': 'tic-tac-toe', (constant('Application\\Mapper\\Injector::USER')): user.getId()}) }}"><img src="/assets/images/game/tic-tac-toe.jpg" alt="image" class="img-responsive"></a></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box ">
+                                                <div class="play-box">
+                                                    <div class="play-title">
+                                                        <h3><strong>Checkers (${{ cfg(user).getConfigValue('play/checkers') }})</strong></h3>
+                                                    </div>
+                                                    <div class="play-img"><a href="{{ url('play', {'action': 'checkers', (constant('Application\\Mapper\\Injector::USER')): user.getId()}) }}"><img src="/assets/images/game/checker.jpg" alt="image" class="img-responsive"></a></div>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock button_append %}
+

@@ -1,0 +1,25 @@
+<div class="event_div left">
+	<div class="event_div left">
+	    <h2>My <span class="highcolor">Events</span></h2>
+	    <div class="event_box">
+	        <?php if(isset($banners)){ ?>
+	            <ul id="events" class="jcarousel-skin-tango">
+	                <?php foreach ($banners as $banner) {?>
+	                    <li>
+	                        <?=$banner['content']?>
+	                    </li>
+	                <?php } ?>
+	            </ul>
+	        <?php } ?>
+	    </div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+$('#events').jcarousel({
+	wrap: 'circular',
+	visible: 1,
+	auto: 8
+});
+</script>

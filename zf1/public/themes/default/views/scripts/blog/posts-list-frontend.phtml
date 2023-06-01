@@ -1,0 +1,68 @@
+<div class="stats_box">
+    <div>lastest Activity</div>
+    <div>3 blog boards</div>
+    <div>23 likes</div>
+</div>
+
+<div class="stats_box">
+    <div>13 blog repost</div>
+</div>
+
+<div class="float-left" id="catfil">Category Filter</div>
+
+<? echo $this->partial("blog/blog-categories-menu-bs3.phtml", array("categories" => $this->categories, "id_model" => $this->id_model, "params" => $this->params)); ?>
+
+<?php
+
+$type = array();
+$type[] = "public";
+if (Auth::isUser()) $type[] = "members";
+if (Auth::isModel()) $type[] = "performers";
+if (Auth::isLogged()) $type[] = "everyone";
+
+
+//$this->posts = $this->loadModel("blog_posts")->getAllPosts($type, $this->id_model, true, true, $this->id_category);
+
+
+$i = 0;
+if ($this->posts) {
+foreach ($this->posts as $this->article) {
+
+    $i++;
+
+    $types = (explode(',', $this->article->type));
+    $chips = (explode(',', $this->article->chips));
+    $dates = (explode(',', $this->article->date));
+
+
+    $post_chips = array_search('everyone', $types);
+    $post_chips = (!is_null($post_chips) ? $chips[$post_chips] : null);
+
+    if (!$post_chips || $post_chips == 0) {
+        if (Auth::isUser()) {
+            $post_chips = array_search('members', $types);
+
+            if ($types)
+                $post_chips = $chips[$post_chips];
+
+        } elseif (Auth::isModel()) {
+            $post_chips = array_search('model', $types);
+            if ($post_chips)
+                $post_chips = $chips[$post_chips];
+        }
+    }
+
+    $this->post_chips = $post_chips;
+    ?>
+    <?
+    if ($i == 1)
+        echo $this->partial("blog/blog-list-item-big-new.phtml", $this);
+    else
+        echo $this->partial("blog/blog-list-item-small-new.phtml", $this);
+
+
+    ?>
+
+<?php } ?>
+<?php } ?>
+

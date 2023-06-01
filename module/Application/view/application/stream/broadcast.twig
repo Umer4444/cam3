@@ -1,0 +1,5 @@
+{% extends 'layout/bare' %}
+
+{% block content %}
+    {{ stream(user).setWidth(params().fromRoute('width')).setHeight(params().fromRoute('height')).getBroadcast() }}
+{% endblock %}

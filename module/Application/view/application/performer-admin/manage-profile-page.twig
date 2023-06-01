@@ -1,0 +1,213 @@
+{% extends 'layout/backend' %}
+
+{% block containerClass %}container{% endblock %}
+
+{% block content %}
+
+    <div class="content col-sm-8">
+        <div class="profile-main-content">
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'performer/profile/blocks' with {admin: true, user: zfcUserIdentity()} %}
+                </div>
+            </div>
+            <div class="row">
+                <br/>
+                <div class="col-md-12">
+                    <button type="button" id="addBlock" class="btn btn-default btn-lg pull-right">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add block
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        var widgetTemplate = '<div class="grid-stack-item" data-type="text" data-group="profile" data-context="{{ serviceLocator().get('cfg.'~user().getUser().getId()).getContextKey()~'.'~user().getUser().getId() }}">\
+                <div class="grid-stack-item-content">\
+                    <div class="panel panel-default">\
+                        <div class="panel-heading">\
+                            <a class="glyphicon glyphicon-pencil" href="javascript:;"></a>\
+                            <span class="glyphicon glyphicon glyphicon-text-size pull-right"></span>\
+                        </div>\
+                        <div class="panel-body" style="background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.7) 100%)"></div>\
+                            <div class="panel-footer hide">\
+                                <div class="row">\
+                                    <div class="col-md-7">\
+                                        <div class="input-group">\
+                                            <span class="input-group-addon">Background</span>\
+                                            <input type="text" id="file" value=""\
+                                                   placeholder="Leave empty for none" class="form-control"/>\
+                                            <span class="input-group-btn">\
+                                                <a href="javascript:;" class="btn btn-default">Pick file</a>\
+                                            </span>\
+                                        </div>\
+                                    </div>\
+                                    <div class="col-md-5">\
+                                        <button type="button" class="btn btn-danger">Delete</button>\
+                                        <button type="button" class="btn btn-warning">Cancel</button>\
+                                        <button type="button" class="btn btn-success">Save</button>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                    </div>\
+                </div>\
+            </div>';
+
+        var options = {
+            always_show_resize_handle: true,
+            animate: true,
+            cell_height: 70
+        };
+
+        var backupPositions = [];
+        var temporaryStopSaving = false;
+
+        function getBlocksOrder() {
+            return _.map($('.grid-stack .grid-stack-item:visible'), function (el) {
+                el = $(el);
+                var node = el.data('_gridstack_node');
+                return {
+                    id: el.attr('id'),
+                    file: el.data('file'),
+                    x: node.x,
+                    y: node.y,
+                    width: node.width,
+                    height: node.height,
+                    locked: node.locked
+                };
+            });
+        }
+
+        function saveBlocks() {
+
+            if (temporaryStopSaving) {
+                return true;
+            }
+
+            App.saveResourceValue(JSON.stringify(getBlocksOrder()), 'profile_settings', 'profile_blocks')
+
+        }
+
+        var grid = $('.grid-stack').gridstack(options).on('change', saveBlocks).data('gridstack');
+
+        $('#addBlock').on('click', function(){
+            var label = prompt("Block name");
+            if (label != null) {
+                name = label.toLowerCase().replace(/ /g,'_').replace(/[^\w_]+/g,'');
+                el = $(widgetTemplate);
+                el.find('.panel-heading').append(label);
+                el.attr('id', name);
+                grid.add_widget(el, 0, 0, 12, 2, true);
+                enableEdit();
+                App.saveResourceValue('', 'profile', name, label, el.data('context'), saveBlocks);
+            }
+        });
+
+        function enableEdit() {
+
+            $('a.glyphicon.glyphicon-pencil').on('click', function(){
+
+                var item = $(this).closest('.grid-stack-item');
+
+                backupPositions = getBlocksOrder;
+
+                grid.resize(item, null, item.data('_gridstack_node').height + 3);
+                grid.movable('.grid-stack-item', false).resizable('.grid-stack-item', false);
+
+                if (item.data('type') == 'text') {
+                    App.enableTinyMCE($(this).parent().parent().find('div.panel-body'));
+                }
+
+                item.find('.panel-footer').toggleClass('hide');
+                $('a.glyphicon.glyphicon-pencil').hide();
+                $('#addBlock').hide();
+                item.find(':text').val(item.data('file'));
+
+            });
+
+            $('.panel-footer .btn-warning').on('click', function(){
+                resetBlockState(this);
+            });
+
+            $('.panel-footer .btn-danger').on('click', function(){
+                if (confirm('Are you sure you want to remove this block ?')) {
+                    resetBlockState(this);
+                    el = $(this).closest('.grid-stack-item');
+                    grid.remove_widget(el);
+                    App.removeResource('profile', el.attr('id'), undefined,  saveBlocks);
+                }
+            });
+
+            $('.panel-footer .btn-success').on('click', function(){
+                var item = $(this).parents('.grid-stack-item');
+                item.data('file', item.find(':text').val());
+                resetBlockState(this);
+                if (item.data('type') == 'text') {
+                    item.find('.panel-body').css('background', 'linear-gradient(to bottom, rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.7) 100%), url(' + item.data('file') + ') no-repeat right top');
+                    var value = item.find('.panel-body').html();
+                }
+                else {
+                    var value = item.data('file');
+                    item.find('.panel-body').html('<div class="flowplayer" data-splash="true" style="height: 100px"><video><source type="video/mp4" src="'+item.data('file')+'"></video></div>');
+                }
+
+                App.saveResourceValue(value, item.data('group'), item.attr('id'), undefined, item.data('context') ? item.data('context') : undefined);
+
+            });
+
+            $('.panel-footer .btn-default').on('click', function(){
+
+                var bgText = $(this).parent().parent().find(':text');
+                var isVideo = bgText.closest('div.grid-stack-item').data('type') == 'video';
+                moxman.browse({
+                    view: 'thumbs',
+                    extensions: (isVideo ? 'mp4,flv' : 'jpg,gif,png'),
+                    no_host: true,
+                    rootpath: '/Home/' + (isVideo ? '{{ constant('Application\\Entity\\User::FOLDER_PROFILE') }}' : '{{ constant('Application\\Entity\\User::FOLDER_BACKGROUNDS') }}'),
+                    oninsert: function(result) {
+                        bgText.val(result.focusedFile.url);
+                    },
+                    upload_auto_close: true,
+                    filelist_context_menu: 'view edit download remove',
+                    filelist_utils_toolbar: 'refresh viewmode sort filter',
+                    filelist_main_toolbar: 'upload',
+                    leftpanel: false,
+                    title: 'File Manager',
+                    multiple: false
+                });
+
+            });
+
+        }
+        enableEdit();
+
+        function resetBlockState(object) {
+
+            object = $(object);
+            var item = object.closest('.grid-stack-item');
+            grid.movable('.grid-stack-item[data-gs-no-move!="true"]', true).resizable('.grid-stack-item[data-gs-no-resize!="true"]', true);
+
+            // restore position/size
+            temporaryStopSaving = true;
+            _.each(backupPositions, function(node) {
+                el = $('#'+node.id)
+                grid.move(el, node.x, node.y);
+                grid.resize(el, node.width, node.height);
+            });
+            temporaryStopSaving = false;
+            saveBlocks();
+
+            $(':tinymce').tinymce().remove();
+            item.find('.panel-footer').toggleClass('hide').unbind('click');
+            $('a.glyphicon.glyphicon-pencil').show();
+            $('#addBlock').show();
+
+            return item;
+
+        }
+
+    </script>
+
+{% endblock content %}

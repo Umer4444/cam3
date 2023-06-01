@@ -1,0 +1,52 @@
+<?
+$page_title = "New category";
+
+$this->headTitle($page_title);
+
+$createdby = array("model_" . user()->id => user()->screen_name);
+if ($this->moderator)
+    $createdby["moderator_" . $this->moderator->id_moderator] = ($this->moderator->screen_name ? $this->moderator->screen_name : $this->moderator->username);
+
+?>
+
+<div class="model_content">
+    <? echo $this->partial("partials/model-submenu.phtml", array("type" => "blog-controller", "params" => $this->params)); ?>
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+
+        <h1 class="page-title"><?= $page_title ?></h1>
+
+        <form method="post" enctype="multipart/form-data">
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="title">Category title</label>
+
+                    <div class="field_wrapper">
+                        <input type="text" name="title" id="title" maxlength="255">
+                    </div>
+                </div>
+
+
+                <div class="field">
+                    <label for="parent_id">Parent Category</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formSelect("parent_id", null, null, $this->categories) ?>
+                    </div>
+                </div>
+
+
+                <div class="field">
+                    <div class="field_wrapper">
+                        <input type="submit" name="save" id="save" value="Save category" class="btn btn-success">
+                    </div>
+                </div>
+                <br>
+
+            </div>
+
+        </form>
+        <br/>
+
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="row separator">
+    <div class="col-md-12">
+        {% for resource in media %}
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <div class="content-block" id="play-block">
+                    <div class="play-page form-group">
+                        <div class="row row-no-margin">
+                            <div class="col-sm-12">
+                                <div class="panel panel-play">
+                                    <div class="panel-heading">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion"
+                                           href="#row{{ resource.getResource().getId() }}">
+                                            <img src="/assets/images/social/{{ resource.getResource().getName() }}.png" width="42px"
+                                                 title="{{ resource.getResource().getLabel() }}" class="pull-left">
+                                            <h2 class="panel-title">
+                                                {{ resource.getResource().getLabel() }}
+                                                <span class="glyphicon glyphicon-minus pull-right"></span>
+                                            </h2>
+                                        </a>
+                                    </div>
+                                    <div class="play-box margin-10" id="social-solo">
+                                        <div id="row{{ resource.getResource().getId() }}" class="panel-collapse collapse in ov-auto ">
+                                            <div class="col-md-12 block-box ">
+                                                {% set partial = "solo/"~resource.getResource().getName() %}
+                                                {{ partial(partial, resource) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

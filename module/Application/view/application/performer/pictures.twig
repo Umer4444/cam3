@@ -1,0 +1,39 @@
+{% extends 'layout/profile' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>{{ user.getDisplayName() }}'s Albums</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% set albums = user.getAlbums().slice(0, 9) %}
+        {% if albums|length %}
+            {% for album in albums %}
+                {% include 'album/item' %}
+            {% endfor %}
+        {% else %}
+            There are no albums here !
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>{{ user.getDisplayName() }}'s Photos</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% set pictures = user.getPhotos().slice(0, 9) %}
+        {% if pictures|length %}
+            {% for image in pictures %}
+                {% include 'image/item' %}
+            {% endfor %}
+        {% else %}
+            There are no pictures here !
+        {% endif %}
+    </div>
+
+{% endblock content %}

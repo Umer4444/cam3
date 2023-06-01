@@ -1,0 +1,50 @@
+<?=$this->notice?>
+<?         
+if(count($this->albums)){   ?>
+<div class="row">
+   <h2 class="title">Galleries</h2>  
+</div>
+
+<div class="row">
+
+
+    <?   
+    $k = 0;                                                           
+    foreach($this->albums as $this->album){
+        if($k%3 == 0 ) echo '</div><div class="row">';
+        $k++;
+        echo $this->partial('partials/items/album.phtml',$this);    
+    }    ?>
+    </div>
+<? } ?>
+    
+    <div class="row">
+        <div class="row">
+            <h2 class="title">Recent photos</h2>  
+        </div>
+        <? if ($this->paginator) { 
+            $k = 0; 
+            foreach($this->paginator as $photo) {
+                
+                if($k%3 == 0 ) echo '</div><div class="row">';
+                $k++;
+                   
+                echo $this->partial('partials/items/picture.phtml', array("item" => $photo, "type" => "image"));
+
+                 } 
+                 
+             
+        } else {
+            echo '<p> No recent photos</p>';
+        }?>
+ </div>
+ <div class="row">
+    
+<? if ($this->paginator) echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml'); ?>
+</div>
+<?             echo $this->partial('partials/items/fancybox2.phtml',array("div" => "")); ?>
+<?             echo $this->partial('partials/items/rating_script.phtml',array("size" => "big", "div" => ".stars")); ?>
+<?             echo $this->partial('partials/items/like_script.phtml', array("")); ?>  
+<?             echo $this->partial('partials/items/comments_count_script.phtml', array("")); ?>  
+
+

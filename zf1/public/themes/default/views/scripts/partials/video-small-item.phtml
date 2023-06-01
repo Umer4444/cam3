@@ -1,0 +1,33 @@
+<?     $disable = "";
+if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["video"]))
+    if (in_array($this->video->id, $_SESSION["rate"]["video"])) $disable = " disableRate";   ?>
+
+<div class="video-small-box">
+    <div class="video-small-box-head">
+        <a <?= ($this->type == 'chat' ? ' target="_top" ' : '') ?>
+            target="_top" href="<?= $this->url(array("id" => $this->video->id, "name" => $this->video->title), "video") ?>">
+            <?= $this->video->title ?>
+        </a>
+    </div>
+    <div class="video">
+        <div class="video-small-thumb">
+            <a href="<?= $this->url(array("id" => $this->video->id, "name" => $this->video->title), "video") ?>"><img
+                    alt="" width="190" height="145" src="<?= $this->video->getCover() ?>"></a>
+
+            <div class="video-stats"><?= $this->video->getDuration('semi') ?> | <?= $this->video->views ?> Views</div>
+            <div class="rating">
+                <div class="stars<?= $disable ?>" data-id="<?= $this->video->id ?>"
+                     data-average="<?= $this->video->rating ?>" data-extra="video"></div>
+                 <span class="video-reviews">
+                     <a href="<?= $this->url(array("id" => $this->video->id, "name" => $this->video->title), "video") ?>#reviews"
+                        target="_top"><?= $this->video->total_active_reviews ?> reviews</a>
+                 </span> 
+                 <span class="video-comments">
+                     <a href="<?= $this->url(array("id" => $this->video->id, "name" => $this->video->title), "video") ?>#disqus_thread"
+                        target="_top">Comments</a>
+                 </span>
+            </div>
+        </div>
+    </div>
+</div>
+

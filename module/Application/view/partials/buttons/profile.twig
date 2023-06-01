@@ -1,0 +1,5 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}View My Profile{% endblock button_text %}
+{% block button_class %}btn btn-default btn-lg{% endblock button_class %}
+{% block button_href %}{{ user(user).url('performer/profile') }}{% endblock button_href %}

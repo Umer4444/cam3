@@ -1,0 +1,38 @@
+<?
+$action_url = "";
+if ($this->type == "blog-article")
+    $action_url = $this->url(array("id_model" => $this->article->id_model, "name" => $this->article->screen_name, "id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-moderate-moderator-backend");
+elseif ($this->type == "pledge")
+    $action_url = $this->url(array("id_model" => $this->pledge->id_model, "name" => $this->pledge->model_screen_name, "id_pledge" => $this->pledge->id), "pledge-moderate-moderator-backend");
+elseif ($this->type == "banner") {
+    $action_url = $this->url(array("id_model" => $this->params["id_model"], "name" => $this->params["name"]), "banner-moderate-moderator-backend", true);
+}
+?>
+<div class="moderationBar">
+    <form method="post" action="<?= $action_url ?>">
+
+        <? switch ($this->type):
+            case "blog-article-OLD":
+                ?>
+                <a class="acceptButton"
+                   href="<?= $this->url(array("name" => $this->article->screen_name, "id_model" => $this->article->id_model, "profile_type" => "blog", "title" => slug($this->article->title), "id_item" => $this->article->id, "type_action" => "post"), "model-profile4") ?>/do/accept">Accept</a>
+                <a class="denyButton"
+                   href="<?= $this->url(array("name" => $this->article->screen_name, "id_model" => $this->article->id_model, "profile_type" => "blog", "title" => slug($this->article->title), "id_item" => $this->article->id, "type_action" => "post"), "model-profile4") ?>/do/deny">Deny</a>
+                <? break; ?>
+
+            <?
+            default: ?>
+                <input type="submit" class="acceptButton button" value="Accept"
+                       name="acceptButton<?= ($this->type == "perks" ? "Perk" : "") ?>"/>
+                <input type="submit" class="denyButton button" value="Deny"
+                       name="denyButton<?= ($this->type == "perks" ? "Perk" : "") ?>"/>
+                <input type="hidden" name="multiple_select<?= ($this->type == "perks" ? "Perk" : "") ?>"
+                       id="multiple_select<?= ($this->type == "perks" ? "Perk" : "") ?>">
+
+
+            <? break; ?>
+            <? endswitch ?>
+
+
+    </form>
+</div>

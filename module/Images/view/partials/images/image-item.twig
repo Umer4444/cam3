@@ -1,0 +1,31 @@
+<div class="col-md-4 image-content">
+    {% set url = object(image).toUrl() %}
+    <div class="padding-10 margin-10 generic-border">
+        <h1 class="no-margin padding-10 margin-bottom-10 generic-border pink-background">
+            <a href="{{ url }}">{{ image.getCaption() }}</a>
+        </h1>
+        <div class="with-caption album-item">
+            <a href="{{ url }}">
+                <img src="{{ image.getAlbum()
+                and buy(image.getAlbum()).isPurchasable()
+                and buy(image.getAlbum()).isPurchased() ? image : image.getFilename(false) }}" class="img-responsive"/>
+            </a>
+        </div>
+        <div class="row row-no-margin">
+            <div class="stats center pure-white margin-top-10 generic-border pink-background">
+                <div class="col-lg-6 margin-top-10">
+                    <div class="rating-video pull-left padding-left-10">
+                        Views : {{ video.interaction.views }}
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="rating-video pull-right rating-custom-margins">
+                        <div class="right">
+                            {{ likes(image) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

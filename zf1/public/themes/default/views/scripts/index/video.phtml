@@ -1,0 +1,300 @@
+<?php
+
+$this->headTitle($this->video->title . ' - Video');
+
+$buttons = Zend_Registry::get('service_manager')->get('ViewHelperManager')->get('buttons');
+$buy = $buttons->buy($this->video->entity, $_SERVER['REQUEST_URI'], $this->video->id);
+
+?>
+<div class="row">
+    <div class="col-md-12">
+
+        <h2 class="page-title purple"><?= $this->video->title ?>
+            - <?= $this->video->screen_name ?></h2>
+        <?= $this->notice ?>
+    </div>
+    <div class="col-md-6">
+        <div class="player_box">
+
+            <?php if ($buy->isPurchased()) { ?>
+
+            <a id="player"></a>
+            <script language="JavaScript">
+                flashembed("player", "/scripts/player/flowplayer-3.2.11.swf", {
+                    config: {
+                        clip: {
+                            url: '<?=$this->video->getVideoFile()?>',
+                            autoPlay: false,
+                            autoBuffering: true
+                        }
+                    }
+                });
+            </script>
+
+        <?php } else { ?>
+
+            <div id="player">
+                <img src="<?= $this->video->getCover() ?>" border="0" width="500" height="372">
+            </div>
+
+        <?php } ?>
+
+        <?php echo $buy; ?>
+
+    </div>
+    </div>
+    <div class="col-md-6">
+        <div class="video_info_box">
+
+        <?php
+        if (!$captures = $this->video->getCaptures()) {
+            echo "No captures..yet";
+        }
+        foreach ($this->video->getCaptures() as $capture) {  ?>
+
+            <div class="video_thumbs left"><img src="<?= $capture['cover'] ?>" border="0" width="124" height="91"></div>
+
+        <?php } ?>
+
+        <div class="clear"></div>
+
+        <p><?= $this->video->description ?></p>
+
+        <p class="tags"><b>Tags:</b>
+            <?php
+            $tags = explode(',', $this->video->tags);
+            $i = 0;
+            foreach ($tags as $tag) {
+                $i++;
+                echo '<a href="#">' . strtolower(trim($tag)) . '</a>';
+                if ($i < count($tags)) echo ', ';
+            }
+            ?>
+        </p>
+
+        <p class="tags"><b>Cast:</b> <a
+                href="<?= $this->url(array("profile_type" => "profile", "id_model" => $this->video->user, "name" => $this->video->screen_name), "model-profile") ?>"><?= $this->video->screen_name ?></a>
+        </p>
+
+        <p class="tags"><b>Categories:</b>
+            <?php
+            $i = 0;
+            foreach ($this->categories as $tag) {
+                $i++;
+                echo '<a href="#">' . strtolower(trim($tag['name'])) . '</a>';
+                if ($i < count($this->categories)) echo ', ';
+            }
+            ?>
+        </p>
+
+        <p>Added: <?= $this->video->getDateAdded('full') ?></p>
+
+        <p>Duration: <?= $this->video->getDuration() ?> minutes</p>
+
+        <p>Views: <?= $this->video->views ?></p>
+
+        <p>Rate:
+
+        <div class="stars<?= $disable ?>" data-id="<?= $this->video->id ?>" data-average="<?= $this->video->rating ?>"
+             data-extra="video"></div>
+        <?php echo $this->partial('partials/rating-script.phtml', array('size' => "big", "div" => "")); ?>
+        </p>
+
+        <p>Like:
+            <?php echo $this->partial('partials/like-html.phtml', array("id" => $this->video->id, "type" => "video")); ?>
+            <?php echo $this->partial('partials/like-script.phtml', array()); ?>
+            <?php /* report */ ?>
+            <span class="report tooltip top" title="Report this" data-type="video"
+                  data-id="<?= $this->video->id ?>"></span>
+            <?php /* </ report */ ?>
+        </p>
+
+        <br>
+    </div>
+    </div>
+    <div class="col-md-12">
+        <?php if (Auth::isModerator() && (user()->id == 0 || user()->id == $this->video->assigned_to)) { ?>
+        <br>
+        <form action="" method="post">
+            <?php if ($this->video->active != 1) { ?>
+
+                <input type="submit" value="approve" name="approve_video"
+                       class="btn button-round-small blue"/>
+
+            <?php } else { ?>
+
+                <input type="submit" value="deny" name="deny_video" class="btn button-round-small purple"/>
+
+            <?php } ?>
+        </form>
+    <?php } ?>
+    </div>
+    <div class="col-md-12">
+        <div id="tabs" class="padding-bot-20">
+            <ul>
+                <li><a href="#more_videos">More Clips From <?= $this->video->screen_name ?></a></li>
+                <li><a href="#disqus_thread">Comments</a></li>
+                <li><a href="#reviews"><?= $this->video->total_active_reviews ?> Reviews</a></li>
+            </ul>
+            <div id="reviews">
+                <?= $this->notice ?>
+
+                <?php if (Auth::isLogged()) {
+                    echo $this->partial('partials/review-add.phtml', array("id" => $this->video->id, "type" => "video"));
+                } ?>
+                <div class="reviews-items">
+
+                    <?php if ($this->reviews_pending) { ?>
+
+                        <?php foreach ($this->reviews_pending as $this->review) {
+
+                            echo $this->partial('partials/review-item.phtml', array
+                                (
+                                    'review' => $this->review,
+                                    'pending' => 'pending',
+                                    'users' => $this->users,
+                                    'model' => $this->model)
+                            );
+                        }
+                    }
+                    ?>
+                    <?php if ($this->reviews) { ?>
+                        <?php foreach ($this->reviews as $this->review) {
+                            echo $this->partial('partials/review-item.phtml', $this);
+                        } ?>
+                    <?php } else { ?>
+                        <p> No reviews. Write the first review</p>
+                    <?php } ?>
+                </div>
+            </div>
+            <div id="disqus_thread">
+                <?= $this->commentCustom->__invoke() ?></div>
+            <div id="more_videos">
+
+                <?php  //testpush
+                if ($this->more_videos) {
+                    foreach ($this->more_videos as $video) echo $this->partial('partials/video-small-item.phtml', array('video' => $video));
+                } else {
+                    echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';
+                }
+                ?>
+                <div class="clear"></div>
+
+                <h2 class="section_title">Related Clips</h2>
+                <?php
+                if ($this->related_videos) {
+                    foreach ($this->related_videos as $video) echo $this->partial('partials/video-small-item.phtml', array('video' => $video));
+                } else {
+                    echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';
+                }
+                ?>
+                <div class="clear"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    $(function () {
+        $("#tabs").tabs();
+    });
+
+    $(document).ready(function () {
+        $("#review_button").click(function () {
+            $("#add_review").toggle();
+        });
+    });
+
+    // review forms
+    function editReview(type, id, active) {
+        if (active == 1) {
+
+            var review = $('#review_' + id + ' textarea').val();
+        } else {
+
+            var review = $('#review_' + id + ' textarea').val().replace(' --- pending for moderation', '');
+
+        }
+        $.ajax({
+            type: "POST",
+            url: "/process",
+            data: {
+                action: "editReview",
+                type: type,
+                id: id,
+                active: active,
+                review: review
+                // maybe some other params
+            },
+            success: function () {
+                switch (type) {
+                    case 'edit' :
+                        editForm("edit", id, "removeform", active);
+                        $("#review_" + id).removeClass("inactive");
+                        alert("Review saved");
+                        break;
+                    case "delete" :
+                        $("#review_" + id).remove();
+                        alert("Review deleted");
+                        break;
+                }
+            },
+            error: function () {
+                alert("Review not saved. There was an error, try again later");
+            }
+        }).done(function (msg) {
+            // update your status
+        });
+    }
+
+    function editForm(type, id, action, active) {
+
+        switch (type) {
+            case "delete":
+                editReview(type, id, active);
+                break;
+
+            case "edit":
+                console.log(active);
+                if (action == "makeform") {
+                    if (active == 1) {
+
+                        var reviewText = $("#review_" + id + " .review").text();
+
+                    } else {
+
+                        var reviewText = $("#review_" + id + " .review").text().replace(' --- pending for moderation', '');
+                    }
+
+
+                    var textarea = '<textarea name="editreview">' + reviewText + '</textarea> <input type="submit" value="Save" class="button-round-small green" onclick="javascript:editReview(\'edit\', ' + id + ',' + active + ')" name="edit_review">';
+                    $("#review_" + id + " .edit").attr("onclick", "editForm('edit', " + id + ", 'removeform' ," + active + "); return false;").text("cancel edit");
+                    //<a href="" onClick="editForm(\'edit\', '+id+', \'deleteform\'); return false;">cancel edit</a>
+                    $("#review_" + id + " .review").html("");
+                    $("#review_" + id + " .review").html(textarea);
+                }
+                if (action == "removeform") {
+                    if (active == 1) {
+
+                        var text = $("#review_" + id + " .review textarea").val();
+
+                    } else {
+
+                        var text = $("#review_" + id + " .review textarea").val() + ' --- pending for moderation';
+
+                    }
+
+
+                    $("#review_" + id + " .review").html("");
+                    $("#review_" + id + " .review").html(text);
+                    $("#review_" + id + " .edit").attr("onclick", "editForm('edit', " + id + ", 'makeform', " + active + "); return false;").text("edit");
+                }
+                break;
+        }
+    }
+
+</script>
+

@@ -1,0 +1,76 @@
+<?
+    $user = Zend_Registry::get('service_manager')->get('zfcuser_auth_service')->getIdentity();
+?>
+
+<form action="" method="post" id="form_rule_<?= ($this->rule ? "edit" : "add") ?>">
+
+
+    <div class="join-box-fields rule">
+        <br>
+        <?
+        if ($this->rule) echo '<input type="hidden" value="' . $this->rule->id . '" name="id">';
+        echo '<input type="hidden" value="' . $this->params['type'] . '" name="type">';
+
+        echo '<div class="field">';
+        echo '<label for="title">Title</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('title', ($this->rule->title ? $this->rule->title : null));
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="field">';
+        echo '<label for="free_chat">Free chat</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('free_chat', ($this->rule->free_chat ? $this->rule->free_chat : null));
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="field">';
+        echo '<label for="paid_chat">Paid chats</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('paid_chat', ($this->rule->paid_chat ? $this->rule->paid_chat : null));
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="field">';
+        echo '<label for="videos">Videos</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('videos', ($this->rule->videos ? $this->rule->videos : null));
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="field">';
+        echo '<label for="photos">Photos</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('photos', ($this->rule->photos ? $this->rule->photos : null));
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="field">';
+        echo '<label for="fine">Fine</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('fine', ($this->rule->fine ? $this->rule->fine : null));
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="field">';
+        echo '<label for="fine_text">Additional penalties</label>';
+        echo '<div class="field_wrapper">';
+        echo $this->formText('fine_text', ($this->rule->fine_text ? $this->rule->fine_text : null));
+        echo '</div>';
+        echo '</div>';
+
+        ?>
+    </div>
+
+    <br>
+    <? if ($user && $user->hasAdminRole()) { ?>
+        <div class="join-button">
+            <input type="submit" name="<?= ($this->rule ? "save" : "save_new") ?>" value="Save" class="btn btn-success"
+                   onclick="javascript: return $('form').valid();">
+            <input type="hidden" name="<?= ($this->rule ? "save" : "save_new") ?>" value="Save">
+        </div>
+    <? } ?>
+
+
+</form>

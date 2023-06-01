@@ -1,0 +1,64 @@
+{% extends 'layout/frontend' %}
+
+{% block container %}
+    <div class="container">
+        <div class="main-content">
+            <div class="search_bar visible-xs">
+                <form class="form-search form-inline">
+                    <input type="text" class="form-control input-sm" placeholder="Search">
+                </form>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                        <div class="profile_cover">
+                            <div>
+                                <img src="{{ photos(user.getId(), 'Cover') }}" alt="profile_pic" class="img-responsive">
+                            </div>
+                        </div>
+                        <div class="profile-tab">
+                            <div class="profile-tabs" role="tabpanel" data-example-id="togglable-tabs">
+                                <div class="profile-btn">
+                                    {{ user().buttons().follow() }}
+                                    {{ user().buttons().favorite() }}
+                                    <a href="#" class="">SEND GIFT</a>
+                                    <a href="#" class="chat">CHAT WITH {{ user.getUsername() }}</a>
+                                </div>
+                                </div>
+                                <div id="pagetitle" class="profile-tab">
+                                    <div class="profile-tabs" role="tabpanel" data-example-id="togglable-tabs">
+                                        <div class="nav nav-tabs tab_prof" id="myTab">
+                                            <div class="profile-pic">
+                                                <img {{ user().getContextInnerTag() }} src="{{ user.getAvatar() }}" width="220" height="190">
+                                            </div>
+                                            <div class="profile_name" style="">
+                                                <h3>{{ user.getDisplayName() }}</h3>
+                                                <small>
+                                                    | {{ user.getAge() }}yrs
+                                                    <span class="theme-color"></span>
+                                                </small>
+                                            </div>
+                                            {% block profileNavigation %}
+                                                {{ navigation('user-profile').menu().setPartial('user/profile/navigation') | raw }}
+                                            {% endblock profileNavigation %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-4 col-xs-12">
+                                {% include 'user/profile/left' %}
+                            </div>
+                            <div class="col-lg-9 col-sm-8 col-xs-12">
+                                <div class="profile-main-content full-width" id="profile-content">
+                                    {% block content %}
+                                        {{ content | raw }}
+                                    {% endblock content %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock container %}

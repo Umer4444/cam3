@@ -1,0 +1,205 @@
+{#{% extends 'layout/frontend' %}#}
+
+{#{% block content %}#}
+    {#&#123;&#35;I dont think this will be necessary&#35;&#125;#}
+{#{% if toUser is not null %}#}
+    {#{% set sendTo = true %}#}
+{#{% endif %}#}
+    {#{% include 'messages/tab-messages' with {'user' : user, 'action': 'compose'} %}#}
+
+
+    {#<p>Create your new message with the form below.</p>#}
+    {#{% do form.prepare() %}#}
+    {#{% do form.setAction('#') %}#}
+    {#{{ form().openTag(form) |raw }}#}
+
+    {#<div class="join-box-fields">#}
+
+        {#<div class="field">#}
+            {#<label for="sendTo">{{ form.get('sendTo').getAttributes()['placeholder']|raw }}</label>#}
+
+            {#<div class="field_wrapper">#}
+
+                {#{{ formRow(form.get('sendTo'))|raw }}#}
+
+                {#{{ formRow(form.get('sendToId'))|raw }}#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="field">#}
+            {#<label for="subject">{{ form.get('subject').getAttributes()['placeholder']|raw }}</label>#}
+
+            {#<div class="field_wrapper">#}
+
+                {#{{ formRow(form.get('subject'))|raw }}#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="field">#}
+            {#<label for="message">{{ form.get('message').getAttributes()['placeholder']|raw }}</label>#}
+
+            {#<div class="field_wrapper">#}
+
+                {#{{ formRow(form.get('message'))|raw }}#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="field">#}
+            {#<label for="tip">{{ form.get('tip').getAttributes()['placeholder']|raw }}</label>#}
+
+            {#<div class="field_wrapper">#}
+
+                {#{{ formRow(form.get('tip'))|raw }}#}
+            {#</div>#}
+        {#</div>#}
+
+
+        {#{{ formRow(form.get('submit'))|raw }}#}
+
+
+        {#{{ form().closeTag(form)|raw }}#}
+    {#</div>#}
+    {#{% set tempArray ="[ {" %}#}
+{#{% set friends = user.getFriends().toArray() %}#}
+  {#{% for friend in friends %}#}
+      {#{% set tempArray = tempArray ~ "label : '" ~ friend.getFriend().getDisplayName() ~ "', value: '" ~ friend.getFriend().getId() %}#}
+      {#{% if friends|length != loop.index %}#}
+          {#{% set tempArray = tempArray ~ "'}, {" %}#}
+      {#{% endif %}#}
+  {#{% endfor %}#}
+{#{% set tempArray = tempArray ~ "'}]" %}#}
+    {#<script type="text/javascript">#}
+        {#$(document).ready(function() {#}
+            {#var form = $('#validation-form');#}
+            {#form.validate();#}
+            {#form.submit(function(e) {#}
+
+                {#e.preventDefault();#}
+                {#e.stopPropagation();#}
+                {#var formData = $(this).serializeArray();#}
+
+                {#if (formData[1].value == '') {#}
+                    {#$('#sendto').addClass('text-danger');#}
+                    {#return;#}
+                {#}#}
+
+                {#var data = {#}
+                    {#'senderType' : '{{ user().getUser().getRoles()[0].getRoleId() }}',#}
+                    {#'receiverType' : '{{ toUser.getRoles()[0].getRoleId() }}',#}
+                    {#'subject' : formData[2].value,#}
+                    {#'body' : formData[3].value,#}
+                    {#'sendDate' : new Date($.now()),#}
+                    {#'sender' : '{{ user().getUser().getId() }}',#}
+                    {#'receiver' : '{{ toUser.getId() }}',#}
+                    {#'type' : 'message',#}
+                    {#'tip' : formData[4].value#}
+                {#};#}
+
+                {#$.ajax({#}
+                    {#url : "{{ url('api.rest.doctrine.message')}}",#}
+                    {#type: "POST",#}
+                    {#data : data,#}
+                    {#success: function(data, textStatus, jqXHR)#}
+                    {#{#}
+                        {#//blablabla, we will do something here, not now.#}
+                    {#},#}
+                    {#error: function (jqXHR, textStatus, errorThrown)#}
+                    {#{#}
+
+                    {#}#}
+
+                {#});#}
+
+            {#});#}
+
+            {#$("#sendto").autocomplete({#}
+                {#source: {{ tempArray|raw }},#}
+                {#select: function(event, ui) {#}
+                    {#$('#sendtoid').val(ui.item.value);#}
+                    {#event.preventDefault();#}
+                    {#$("#sendto").val(ui.item.label); },#}
+
+                {#focus: function(event, ui) {#}
+                    {#event.preventDefault();#}
+                    {#$("#sendto").val(ui.item.label);}#}
+            {#});#}
+
+
+        {#});#}
+
+    {#</script>#}
+{#{% endblock %}#}
+
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    {% if toUser is not null %}
+        {% set sendTo = true %}
+    {% endif %}
+    {% include 'messages/tab-messages' with {'user' : user, 'action': 'compose'} %}
+
+
+    <p>Create your new message with the form below.</p>
+    {% set form = newInstance('Application\\Form\\MessageForm', user().getUser().getId()) %}
+    {% do form.prepare() %}
+
+    {{ form().openTag(form) |raw }}
+
+
+    <div class="join-box-fields">
+        <div class="field">
+            <label for="sendTo">{{ form.get('sendTo').getAttributes()['placeholder']|raw }}</label>
+
+            <div class="field_wrapper">
+
+                {{ formRow(form.get('sendTo'))|raw }}
+            </div>
+        </div>
+        <div class="field">
+            <label for="sendTo">{{ form.get('subject').getAttributes()['placeholder']|raw }}</label>
+
+            <div class="field_wrapper">
+
+                {{ formRow(form.get('subject'))|raw }}
+            </div>
+        </div>
+        <div class="field">
+            <label for="sendTo">{{ form.get('message').getAttributes()['placeholder']|raw }}</label>
+
+            <div class="field_wrapper">
+
+                {{ formRow(form.get('message'))|raw }}
+            </div>
+        </div>
+        <div class="field">
+            <label for="sendTo">{{ form.get('tip').getAttributes()['placeholder']|raw }}</label>
+
+            <div class="field_wrapper">
+
+                {{ formRow(form.get('tip'))|raw }}
+            </div>
+        </div>
+
+
+        {{ formRow(form.get('submit'))|raw }}
+
+
+        {{ form().closeTag(form)|raw }}
+    </div>
+    {% set tempArray ="[ {" %}
+    {% set friends = user.getFriends().toArray() %}
+    {% for friend in friends %}
+        {% set tempArray = tempArray ~ "label : '" ~ friend.getFriend().getDisplayName() ~ "', value: '" ~ friend.getFriend().getId() %}
+        {% if friends|length != loop.index %}
+            {% set tempArray = tempArray ~ "'}, {" %}
+        {% endif %}
+    {% endfor %}
+    {% set tempArray = tempArray ~ "'}]" %}
+    {{ dump(tempArray) }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $("#sendto").autocomplete({
+                source: ['{{ tempArray|raw }}']
+            });
+        });
+
+    </script>
+{% endblock %}

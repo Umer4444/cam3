@@ -1,0 +1,12 @@
+<? $route_name = Zend_Controller_Front::getInstance()->getRouter()->getCurrentRouteName(); ?>
+
+<a class="<?= ($route_name == "blog-performer-backend") ? 'selected' : '' ?>"
+   href="<?= $this->url(array(), "blog-performer-backend") ?>">Posts list</a>
+<a class="<?= ($route_name == "blog-post-add-performer-backend") ? 'selected' : '' ?>"
+   href="<?= $this->url(array(), "blog-post-add-performer-backend") ?>">New blog post</a>
+<a class="<?= ($route_name == "blog-category-performer-backend") ? 'selected' : '' ?>"
+   href="<?= $this->url(array(), "blog-category-performer-backend") ?>">Categories list</a>
+<a class="<?= ($route_name == "blog-category-add-performer-backend") ? 'selected' : '' ?>"
+   href="<?= $this->url(array(), "blog-category-add-performer-backend") ?>">New category</a>
+    
+     

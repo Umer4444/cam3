@@ -1,0 +1,21 @@
+<?
+$title = 'Blog posts';
+$this->headTitle($title);
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "model",
+        "acl" => $this->acl,
+        "user" => $this->model));
+
+?>
+
+<? if ($this->article->status != 1 /*&& $this->article->status != 0*/ && (Auth::isModerator() && (user()->id == 0 || user()->id == $this->article->id_moderator))) { ?>
+    <? echo $this->partial("partials/moderation-bar.phtml", $this); ?>
+<? } ?>
+
+<?= $this->notice ?>
+
+<div class="page-content round-corners">
+    <?php echo $this->partial("blog/post-view-item.phtml", $this); ?>
+</div>

@@ -1,0 +1,61 @@
+<a id="review_button" class="button-round-small blue right" style="color:white">Add review</a>
+<div class="clear"></div>
+<br/>
+<div id="add_review" style="display:none;">
+    <form action="" method="post" id="reviewadd">
+        <textarea id="new_review" name="new_review"></textarea>
+        <input type="submit" name="add_review" id="submit" class="button-round-small green" value="Save"/>
+        <br/>
+        <hr/>
+        <br/>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $('#reviewadd').submit(function (e) {
+        $('#submit').attr('disabled', true);
+        e.preventDefault();
+
+
+        $.ajax({
+            type: "POST",
+            url: "/processAjax",
+            data: {
+                'action': 'review',
+                'item_type': '<?=$this->type?>',
+                'item': '<?=$this->id?>',
+                'review': $('#new_review').val()
+            },
+            dataType: 'json',
+            //"option=" + option + "&item=" + item + "&item_type=" + item_type,
+
+            success: function (json_data) {
+                var reviewj = json_data.review;
+
+                var string = '<table class="review_table active" id="review_ajax">';
+                string += '<tr>';
+                string += '<td>';
+                string += reviewj.user;
+                string += '</td>';
+                string += '<td>';
+                string += '<a id="date">';
+                string += ' A few moments ago..';
+                string += '</a>';
+                string += '</td></tr>';
+                string += '<tr>';
+                string += '<td align="top"><a href="#">';
+                string += '<img width="40" height="40" src="' + reviewj.avatar + '"/>';
+                string += '</a>';
+                string += '</td>';
+                string += '<td class="review">' + reviewj.review + ' --- pending for moderation</td>';
+                string += '</tr></table>';
+
+                $('#reviews').first().before(string);
+                $('#add_review').val('').hide();
+                $('#review_button').hide();
+            }
+        });
+    });
+
+
+</script>

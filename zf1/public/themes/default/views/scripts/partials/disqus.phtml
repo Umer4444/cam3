@@ -1,0 +1,59 @@
+<?php
+$base_url = ((!empty($_SERVER['HTTPS'])) ? "https://" . $_SERVER['SERVER_NAME'] : "http://" . $_SERVER['SERVER_NAME']);
+if (Auth::isLogged()) {
+    $data = array(
+        "id" => user()->id,
+        "username" => user()->username ? user()->username : user()->screen_name,
+        "email" => user()->email,
+        //http://dev.xexposed.com/user/profile/15/user1
+        "url" => $base_url . user()->profile_url,
+        "avatar" => $base_url . "" . user()->user_photo
+        //"avatar" => "http://dev.xexposed.com/files/user/a7/b8/88/18/4c7665ee815752c6f2a2cb4f506d3fd2.jpg"
+    );
+
+    $message = base64_encode(json_encode($data));
+    $timestamp = time();
+    $hmac = dsq_hmacsha1($message . ' ' . $timestamp, config()->disqus->secretkey);
+}
+?>
+
+<?php    $url = (!empty($_SERVER['HTTPS'])) ? "https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] : "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+?>
+
+<script type="text/javascript">
+
+    var disqus_config = function () {
+        <? if(Auth::isLogged()) { ?>
+        this.page.remote_auth_s3 = "<?php echo "$message $hmac $timestamp"; ?>";
+        <? } ?>
+        this.page.api_key = "<?php echo config()->disqus->publickey; ?>";
+
+        this.sso = {
+            name: "Xexposed",
+            button: "http://xexposed.com/themes/default/images/button-view-small-purple-login.png",
+            icon: "http://xexposed.com/images/icons/favicon.ico",
+            url: "http://xexposed.com/login/disqus",
+            logout: "http://xexposed.com/logout",
+            width: "800",
+            height: "400"
+        };
+
+    }
+
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = '<?=config()->disqus_shortname?>'; // required: replace example with your forum shortname
+    var disqus_identifier = '<?=$this->identifier?>';
+    var disqus_title = '<?=($this->title)?>';
+    var disqus_url = '<?=($url)?>';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>

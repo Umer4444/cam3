@@ -1,0 +1,73 @@
+<?
+$title = $this->model->screen_name . "'s Blog";
+
+if (isset($this->params["id_category"]))
+    $title = $this->params["title"] . ' | ' . $title;
+
+$this->headTitle($title);
+//get more stuff about the model
+
+$this->country = $this->loadModel("countries")->find($this->_data['model']->country)->current();
+$this->info_fields = $this->loadModel("model_info")->getInfoByModel($this->id_model);
+$this->rates_fields = $this->loadModel("model_rates")->getRatesByModel($this->model->id);
+$this->isFollowing = Auth::isUser() ? $this->loadModel("followers")->isFollowing($this->model->id) : '';
+$this->profile_type = $this->params->profile_type;
+
+$userFavoritesTable = $this->loadModel("user_favorites");
+$this->nr_favorite = $userFavoritesTable->fetchRow($userFavoritesTable->select()->from("user_favorites", "count(id_user) as count")->where("id_model=?", $this->model->id))->count;
+
+$folowersTable = $this->loadModel("followers");
+$this->nr_follow = $folowersTable->fetchRow($folowersTable->select()->from("followers", "count(id_user) as count")->where("id_follower=?", $this->model->id))->count;
+
+$this->nr_friends = $userFavoritesTable->fetchRow($userFavoritesTable->select()->from("user_favorites", "count(id_user) as count")->where("id_model=?", $this->model->id))->count;
+
+foreach ($this->info_fields as $item) {
+    $model_info[$item->field] = $item->value;
+}
+
+?>
+
+
+    <div id="pagetitle" class="content col-sm-12">
+        <span class="modname-title"><?= $this->model->screen_name ?></span>
+        | <?= $this->model->birthday ? date('Y', time()) - substr($this->model->birthday, 0, 4) . 'yrs' : '' ?> -
+        <span class="kind-user">Performer</span>
+        <? echo $this->partial('partials/model-profile-menu.phtml',
+            array("active" => $this->params['controller'],
+                "isFollowing" => $this->isFollowing,
+                'model' => $this->model,
+                "favorite" => $this->favorite,
+                "nr_favorite" => $this->nr_favorite,
+                "nr_friends" => $this->nr_friends,
+                "nr_follow" => $this->nr_follow,
+                "nr_isfollowing" => $this->nr_isfollowing,
+            )); ?>
+
+    </div>
+
+    <aside class="sidebar col-sm-4">
+        <? echo $this->partial('partials/model-profile-left.phtml', array('model' => $this->model, 'info_fields' => $this->info_fields, 'country' => $this->country, 'model_info' => $model_info, 'rates_fields' => $this->rates_fields, "favorite" => $this->favorite)); ?>
+    </aside>
+
+    <div class="content col-sm-8">
+
+        <!--<div style="width: 604px;height:143px;margin: 0 auto;background: #ea292a;"></div>-->
+        <?
+        
+        switch ($this->params["action"]) {
+
+
+            case "postsList":
+                echo $this->partial('blog/posts-list-frontend.phtml', $this);
+                break;
+            case "postView":
+                echo $this->partial('blog/post-view-item.phtml', $this);
+                break;
+
+        }
+        ?>
+        <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+
+

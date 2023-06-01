@@ -1,0 +1,49 @@
+
+<?  
+        switch($this->profile_type){
+            case "profile":
+                echo $this->partial('partials/model-profile-profile.phtml',array('model' => $this->model,'model_info' => $model_info, 'info_fields' => $info_fields));
+            break;
+            
+            case "wall":
+                echo $this->partial('partials/model-profile-wall.phtml',$this);    
+            break;
+            
+            case "pictures":
+                $albumsTable = $this->model('albums');
+                $this->_data['albums'] = $albumsTable->getAlbums($this->id_model,true, $active = 1, $parent_id = 0);
+                
+                $photosTable = $this->model("photos");
+                $this->_data['photos'] = $photosTable->recentPhotos($this->id_model);
+                echo $this->partial('partials/model-profile-pictures.phtml',$this);      
+            break;
+            
+            case "videos":
+            
+                $videoTable = $this->model("videos");
+                $this->_data['videos'] =  $videoTable->getVideos($id_model,'vod',null,'added desc',null, null, null, null);
+              
+               // echo $this->partial('partials/model-profile-videos.phtml', $this); 
+            break;
+            
+            case "offers":
+                echo $this->partial('partials/model-profile-offers.phtml',array('model' => $this->model));    
+            break;
+            
+            case "blog":
+                echo $this->partial('partials/model-profile-blog.phtml',$this);    
+            break;
+            
+            case "schedule":
+                echo $this->partial('partials/model-profile-schedule.phtml',$this);    
+            break;
+            
+            case "special-requests":
+                echo $this->partial('partials/model-profile-special-requests.phtml', $this);
+            break;  
+            
+            case "special-request":
+                echo $this->partial('partials/model-profile-special-request.phtml',array('model' => $this->model,'special_request' => $this->special_request,'notice' => $this->notice));
+            break;           
+        }
+?>

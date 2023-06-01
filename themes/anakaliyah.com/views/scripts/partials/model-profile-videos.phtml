@@ -1,0 +1,21 @@
+
+
+<div class="row">
+    <? if ($this->videos) { 
+        $k = 0;      
+        foreach($this->videos as $item) {    
+            if($k%3 == 0 ) echo '</div><div class="row">';
+            $k++;
+               
+            echo $this->partial('partials/items/video.phtml', array("item" => $item, "type" => "video"));
+
+             } 
+    }?>
+ </div>
+ 
+<? //             echo $this->partial('partials/items/fancybox2.phtml',array()); ?>
+<?  //           echo $this->partial('partials/items/rating_script.phtml',array("size"=>"big", "div"=>".stars")); ?>
+<?             echo $this->partial('partials/items/comments_count_script.phtml', array("")); ?>
+
+
+

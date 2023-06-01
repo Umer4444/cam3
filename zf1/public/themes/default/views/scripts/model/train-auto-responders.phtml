@@ -1,0 +1,72 @@
+<? $this->headTitle('Train Auto Responders - Settings');; ?>
+
+<script src="/scripts/jquery.autocomplete.js"></script>
+<div class="model_content">
+
+    <?= $this->notice ?>
+
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Train Auto Responders</h1>
+        <small style="color:red; padding: 5px;">* to delete question or answer, leave the field empty and save it!
+        </small>
+        <a onclick="App.autoresponders.addNewQuestionForm();" id="add_new_question_form" class="add_new_question_form btn btn-success"
+           title="Add a new question" href="javascript:;">Add New Question</a>
+
+        <div id="add_new_question_form_mark"></div>
+
+        <? foreach ($this->paginator as $row) {
+
+            $i++;
+            ?>
+
+            <form class="form_autoresponders" action="" method="">
+                <br>
+
+                <div class="join-box-fields">
+                    <div class="field">
+                        <label for="question-<?= $row['id_question'] ?>">Question</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('question-' . $row['id_question'], $row['question'], array('id' => 'question-' . $row['id_question'], 'class' => 'ss_field')) ?>
+                        </div>
+                        <a onclick="App.autoresponders.editAutoResponders('question-<?= $row['id_question'] ?>','<?= $row['id_question'] ?>')"
+                           href="javascript:;" class="savelink question-<?= $row['id_question'] ?> btn btn-success">Save</a>
+                    </div>
+
+                    <?
+                    $j = 0;
+                    foreach ($row['answers'] as $answer) {
+
+                        $j++;
+                        ?>
+
+                        <div class="field">
+                            <label for=""><?= $j == 1 ? 'Auto Response' : '&nbsp;' ?></label>
+
+                            <div class="field_wrapper">
+                                <?= $this->formText('answer-' . $answer['id'], $answer['message'], array('id' => 'answer-' . $answer['id'], 'class' => 'ss_field')) ?>
+                            </div>
+                            <a onclick="App.autoresponders.editAutoResponders('answer-<?= $answer['id'] ?>','<?= $row['id_question'] ?>')"
+                               href="javascript:;" class="savelink answer-<?= $answer['id'] ?> btn btn-primary">Save</a>
+                        </div>
+
+                    <? } ?>
+
+                    <a onclick='App.autoresponders.addNewAnswerField(<?= $row['id_question'] ?>)'
+                       id='add_new_answer-<?= $row['id_question'] ?>' class="add_new_answer btn btn-default" title="Add a new response"
+                       href="javascript:;">Add Answer</a>
+                </div>
+
+                <input type="hidden" name="id_question" value="<?= $row['id_question'] ?>">
+
+            </form>
+            <?
+
+        }
+
+        echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+        ?>
+
+    </div>
+</div>

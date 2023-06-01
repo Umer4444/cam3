@@ -1,0 +1,8 @@
+{% block button %}
+{
+    "name": "{% block button_text %}Button{% endblock button_text %}",
+    "data": "{% filter replace({'"': '\\"', '\n': ''}) %}{% block button_data %}{% endblock button_data %} data-href='{% spaceless %}{{ block('button_href') }}{% endspaceless %}'{% endfilter %}",
+    "className": "{% block button_id %}{{ block('button_id') }}{% endblock button_id %}",
+    "callback": "function(key, options) {{ '{' }}{% block button_javascript %}App.button.default(['{{ block('button_id') }}', key, options]);location.href = $('.{{ block('button_id') }}').data('href');{% endblock button_javascript %}{{ ';;;}"' }}
+}
+{% endblock button %}

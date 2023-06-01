@@ -1,0 +1,30 @@
+<h1>An error occurred</h1>
+<h2> {{ message }}</h2>
+{% if display_exceptions %}
+    <h2>Additional information:</h2>
+    {% set exp = (exception) %}
+    !!!!!eroareeeeee!!!!!!!<br/>
+    <pre class="prettyprint linenums">{{ exp }}</pre><br/>!!!!!!!!!!!!!!!!!!!!!!
+    {% if exception %}
+
+        {% for ex in exception %}
+            <h2>Additional information:</h2>
+
+            <dl>
+                <dt>File:</dt>
+                <dd>
+                    <pre class="prettyprint linenums">{{ ex.getFile() }}{{ ex.getLine() }}</pre>
+                </dd>
+                <dt>Message:</dt>
+                <dd>
+                    <pre class="prettyprint linenums">{{ ex.getMessage() }}</pre>
+                </dd>
+                <dt>Stack trace:</dt>
+                <dd>
+                    <pre class="prettyprint linenums">{{ ex.getTraceAsString() }}</pre>
+                </dd>
+            </dl>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+

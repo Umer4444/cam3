@@ -1,0 +1,43 @@
+<?
+$modelStatus = $this->model->getModelStatus($this->model->id);
+$isFollowing = $this->model->isFollowing();
+$rates = $this->model->getModelRates();
+
+if ($modelStatus['id_status'] == 0) {
+    $ribbon_css = 'offline';
+} else {
+    $ribbon_css = 'high-def';
+}
+?>
+<div class="girl-box-small <?= $ribbon_css ?>">
+    <div class="girl-box-head box-bg status_<?= $modelStatus['id_status'] ?>">
+        <? if ($modelStatus['id_status'] != 0) { ?>
+            <a title="Watch "
+               href="<?= $this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name), "watch") ?>"> <?= $modelStatus['status'] ?> </a>
+        <? } else { ?>
+            <span><?= $modelStatus['status'] ?></span>
+        <? } ?>
+    </div>
+
+    <div class="girl">
+        <? if ($this->show_favorite_btn == 1) { ?>
+            <a href="javascript:;" onclick="App.user.my_favorites.remove_my_favorites(<?= $this->model->id ?>)"><img
+                    id="favorites_<?= $this->model->id ?>" class="remove" src="/images/remove_favorite.png"
+                    title="Remove from favorites!" style="margin-top: 0px; margin-bottom: -5px; border: none;"></a>
+        <? } ?>
+
+        <span class="name"><a title="View <?= $this->model->screen_name ?> profile"
+                              href="<?= $this->url(array("profile_type" => "profile", "id_model" => $this->model->id, "name" => $this->model->screen_name), "model-profile") ?>"><?= $this->model->screen_name ?></a></span>
+        <span
+            class="details"><?= $this->model->birthday ? date('Y', time()) - substr($this->model->birthday, 0, 4) : '' ?>
+            <span class="years">yrs</span></span>
+
+        <div class="avatar">
+            <div class="avatar-ribbon"></div>
+            <a title="View <?= $this->model->screen_name ?> profile"
+               href="<?= $this->url(array("profile_type" => "profile", "id_model" => $this->model->id, "name" => $this->model->screen_name), "model-profile") ?>">
+                <img alt="<?= $this->model->screen_name ?> cover picture" src="<?= $this->model->getCover() ?>"
+                     style="width: 190px;"></a>
+        </div>
+    </div>
+</div>

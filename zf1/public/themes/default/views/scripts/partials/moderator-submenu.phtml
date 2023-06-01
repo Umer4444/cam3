@@ -1,0 +1,261 @@
+<div class="page-content round-corners">
+    <div class="moderator_submenu">
+        <?
+        if ($this->params['name']) echo '<span>' . $this->params['name'] . "'s: </span>";
+        switch ($this->type) {
+            case "user":
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-account-settings", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'AccountSettings' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "edit"), "manage-user-account") ?>">Edit
+                        account</a>
+                <?
+                }
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-settings", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'Settings' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "edit"), "manage-user") ?>">Edit
+                        profile</a>
+                <?
+                }
+
+                if ($this->acl->isAllowed($_SESSION['group'], "manage-user-chips", "edit")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == 'manageChips' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("user_type" => 'user', "id" => $this->params['id'], "name" => $this->params['name']), "manage-chips") ?>"
+                       title="Manage User Chips">Manage Chips</a>
+
+                <?
+                }
+
+                if ($this->acl->isAllowed($_SESSION['group'], "user-settings", "edit")) {
+                    switch ($this->user->state) {
+                        case 1:
+                            $type = 'active';
+                            break;
+                        case 0:
+                            $type = 'pending';
+                            break;
+                        case -1:
+                            $type = 'denied';
+                            break;
+                    }
+                    if ($type == 'denied' || $type == 'pending') {
+                        ?>
+                        <a class="image" class="left"
+                           href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "approve"), "manage-user") ?>"><img
+                                border="0" title="Approve user" alt="Approve" src="/images/icons/checked.png"></a>
+                    <?
+                    }
+                    if ($type == 'active' || $type == 'pending') {
+                        ?>
+                        <a onclick="return confirm('Are you sure you want to delete this user account?')" class="image"
+                           href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "deny"), "manage-user") ?>"><img
+                                border="0" title="Deny user" alt="Deny" src="/images/icons/disable.png"></a>
+                    <?
+                    }
+                    if ($type == 'denied') {
+                        ?>
+                        <a onclick="return confirm('Are you sure you want to delete this user account?')" class="image"
+                           href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "delete"), "manage-user") ?>"><img
+                                border="0" title="Delete user" alt="Delete" src="/images/icons/delete.png"></a>
+                    <?
+                    }
+                }
+
+                break;
+            case "moderator":
+
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-account-settings", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'AccountSettings' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "edit"), "manage-moderator-account") ?>">Edit
+                        account</a>
+                <?
+                }
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-settings", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'Settings' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "edit"), "manage-moderator") ?>">Edit
+                        profile</a>
+
+                <?
+                }
+
+                if ($this->acl->isAllowed($_SESSION['group'], "moderator-settings", "edit")) {
+                    switch ($this->user->active) {
+                        case 1:
+                            $type = 'active';
+                            break;
+                        case 0:
+                            $type = 'pending';
+                            break;
+                        case -1:
+                            $type = 'denied';
+                            break;
+
+                    }
+                    if ($_SESSION["user"]["id"] != $this->params['id']) {
+                        if ($type == 'denied' || $type == 'pending') {
+                            ?>
+                            <a class="image" class="left"
+                               href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "approve"), "manage-moderator") ?>"><img
+                                    border="0" title="Approve moderator" alt="Approve" src="/images/icons/checked.png"></a>
+                        <?
+                        }
+                        if ($type == 'active' || $type == 'pending') {
+                            ?>
+                            <a onclick="return confirm('Are you sure you want to deny this moderator account?')"
+                               class="image"
+                               href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "deny"), "manage-moderator") ?>"><img
+                                    border="0" title="Deny moderator" alt="Deny" src="/images/icons/disable.png"></a>
+                        <?
+                        }
+                        if ($type == 'denied') {
+                            ?>
+                            <a onclick="return confirm('Are you sure you want to delete this moderator account?')"
+                               class="image"
+                               href="<?= $this->url(array("id" => $this->params['id'], "name" => $this->params['name'], "manage" => "delete"), "manage-moderator") ?>"><img
+                                    border="0" title="Delete moderator" alt="Delete" src="/images/icons/delete.png"></a>
+                        <?
+                        }
+                    }
+                }
+
+                break;
+
+            case "model":
+                //moderator view menu on model editiong
+                if (isset($this->params["id"]))
+                    $id_user = $this->params["id"];
+                elseif (isset($this->params["id_model"]))
+                    $id_user = $this->params["id_model"];
+
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-account-settings", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'AccountSettings' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $id_user, "name" => $this->params['name'], "manage" => "edit"), "manage-model-account", true) ?>">Account</a>
+                <?
+                }
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-settings", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'Settings' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $id_user, "name" => $this->params['name'], "manage" => "edit"), "manage-model", true) ?>">Profile</a>
+                <?
+                }
+
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-rates", "view")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == $this->type . 'Rates' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("id" => $id_user, "name" => $this->params['name'], "manage" => "edit"), "manage-model-rates", true) ?>">Rates</a>
+                <?
+                }
+                if ($this->acl->isAllowed($_SESSION['group'], $this->type . "-notes", "edit")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == 'manageNotes' && $this->params['id'] != 'all' && $this->params['type'] == 'model' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("type" => 'model', "id" => $id_user, "name" => $this->params['name'], "manage" => "edit"), "manage-notes", true) ?>"
+                       title="Notes">Notes</a>
+                <?
+                }
+                /* */
+                if ($this->acl->isAllowed($_SESSION['group'], "model-payments-info", "edit")) {
+                    ?>
+                    <? /*  <a class="<?=$this->params['action']=='paymentsInfo' && $id_user !='all' && $this->params['type']=='model'? 'selected':''?>" href="" title="Notes">Payment Info</a> */ ?>
+                <?
+                }
+                /* */
+                if ($this->acl->isAllowed($_SESSION['group'], "manage-model-chips", "edit")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == 'manageChips' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("user_type" => 'model', "id" => $id_user, "name" => $this->params['name']), "manage-chips", true) ?>"
+                       title="Manage Model Chips">Chips</a>
+                <? } ?>
+
+                <a class="<?= $this->params['controller'] == 'banner' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("id_model" => $id_user, "name" => $this->params['name']), "banner-list-moderator-backend", true) ?>"
+                   title="Manage Banners">Banners</a>
+
+                <a class="<?= $this->params['controller'] == 'blog' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("id_model" => $id_user, "name" => $this->params["name"]), "blog-list-moderator-backend", true) ?>"
+                   title="Manage Blog">Blog</a>
+                <? /* <a class="<?=$this->params['action']=='model-blog'? 'selected':''?>" href="<?=$this->url(array( "id_model" =>  $id_user, "name" => $this->params["name"], "action_type" => "list") , "manage-blog-list")?>" title="Manage Blog">Blog</a> */ ?>
+
+                <a class="<?= $this->params['controller'] == 'pledge' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("id_model" => $id_user, "name" => $this->params["name"], "action_type" => "list"), "pledge-list-moderator-backend", true) ?>"
+                   title="Manage Pledges">Pledge</a>
+
+
+
+                <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "edit")) {
+                switch ($this->user->active) {
+                    case 1:
+                        $type = 'active';
+                        break;
+                    case 0:
+                        $type = 'pending';
+                        break;
+                    case -1:
+                        $type = 'denied';
+                        break;
+
+                }
+                if ($type == 'denied' || $type == 'pending') {
+                    ?>
+                    <a class="image"
+                       href="<?= $this->url(array("id" => $id_user, "name" => $this->params['name'], "manage" => "approve"), "manage-model") ?>"><img
+                            border="0" title="Approve model" alt="Approve" src="/images/icons/checked.png"></a>
+                <?
+                }
+                if ($type == 'active' || $type == 'pending') {
+                    ?>
+                    <a onclick="return confirm('Are you sure you want to deny this model account?')" class="image"
+                       href="<?= $this->url(array("id" => $id_user, "name" => $this->params['name'], "manage" => "deny"), "manage-model") ?>"><img
+                            border="0" title="Deny model" alt="Deny" src="/images/icons/disable.png"></a>
+                <?
+                }
+                if ($type == 'denied') {
+                    ?>
+                    <a onclick="return confirm('Are you sure you want to delete this model account?')" class="image"
+                       href="<?= $this->url(array("id" => $id_user, "name" => $this->params['name'], "manage" => "delete"), "manage-model") ?>"><img
+                            border="0" title="Delete model" alt="Delete" src="/images/icons/delete.png"></a>
+                <?
+                }
+            }
+
+                break;
+            case 'development':
+
+
+                if ($this->acl->isAllowed($_SESSION['group'], "development-pages", "edit")) {
+                    ?>
+                    <a class="<?= $this->params['action'] == 'development' && $this->params['add'] == 'add' ? 'selected' : '' ?>"
+                       href="<?= $this->url(array("add" => "add"), "development-pages-add") ?>"
+                       title="Add Development Page">Add Development Page</a>
+                <?
+                }
+
+                if ($this->acl->isAllowed($_SESSION['group'], "development-pages", "edit") && !empty($this->page)) {
+                    ?>
+                    <a class="image"
+                       onclick="javascript: return confirm('Are you sure you want to delete this tutorial?');"
+                       href="<?= $this->url(array("manage" => 'delete', "page" => $this->page), "development-pages-manage") ?>"
+                       title="Delete Development Page"><img border="0" title="Delete Development Page" alt="Delete"
+                                                            src="/images/icons/delete.png"></a>
+                <?
+                }
+
+                break;
+
+            case "notifications":
+                ?>
+                <a class="<?= $this->params['action'] == 'notifications' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "moderator-notifications") ?>">Notifications</a>
+                <a class="<?= $this->params['action'] == 'notificationSettings' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "moderator-notifications-set") ?>">Notification Mail Settings</a>
+                <? break;
+        }
+
+        ?>
+    </div>
+
+</div>

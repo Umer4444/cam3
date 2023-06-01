@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>Tic Tac Toe</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link href="/node/play/tic-tac-toe/css/app.css" rel="stylesheet", type="text/css">
+		<script data-main="/node/play/tic-tac-toe/js/main" src="/node/play/tic-tac-toe/js/lib/require-2.1.5.js"></script>
+        <script type="text/javascript">
+            var players = {
+                initiatorId: '<%- initiatorId %>',
+                initiatorUsername: '<%- initiatorUsername %>',
+                opponentId: '<%- opponentId %>',
+                opponentUsername: '<%- opponentUsername %>',
+                game: '<%- game %>'
+            };
+        </script>
+	</head>
+	<body id="board-view">
+	</body>
+</html>

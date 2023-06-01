@@ -1,0 +1,45 @@
+{% block blog_item %}
+
+    {% set url = url('blog/view', {(constant('Application\\Mapper\\Injector::BLOG_SLUG')): blog.getSlug() }) %}
+
+    <div class="col-md-3">
+        <div class="post margin-10 item-small-height">
+            <a href="{{ url }}">
+                <h1 class="padding-10 no-background blog-title">{{ blog.getTitle() }}</h1>
+            </a>
+            {{ blog.getPostedOn().format('h:i a l, F Y') }}
+            <br>
+            <div>
+                <a class="catname col-sm-6" href="{{ url('blog/filters', {category: blog.getCategory(), categoryId: blog.getId()}) }}">
+                    {{ blog.getCategory() }}
+                </a>
+            </div>
+            <div class="text-right col-sm-6">
+                {% include 'tags' with {'tags' : blog.getTags(), 'route': 'blog/filters'} %}
+            </div>
+            <div class="post_picture_big">
+                <a href="{{ url }}">
+                    <img src="{{ blog.getSmallCover() }}" class="img-responsive">
+                </a>
+                <div class="blog-post-stats">
+                    {{ blog.getInteraction().getLikes() }} Likes · {{ blog.getInteraction().getDislikes() }} Dislike
+                </div>
+            </div>
+            <p class="post-text text-justify">
+                {{ blog.getContent()|striptags|slice(0, 100) }} ...
+            </p>
+
+            <p class="text-right read-more margin-top-10">
+                <a href="{{ url }}">Read more...</a>
+            </p>
+            {% block postedBy %}
+                <hr>
+                <div class="reposted">
+                    <img class="profilepic2" src="{{ blog.getUser().getAvatar() }}">
+                    Posted by <a href="{{ user(blog.getUser()).url('performer/profile') }}">{{ blog.getUser() }}</a>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+
+{% endblock blog_item %}

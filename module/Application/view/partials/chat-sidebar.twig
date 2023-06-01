@@ -1,0 +1,61 @@
+<div class="chat-container col-sm-2 ">
+    <div class="left right right_side">
+        <div class="row row-chat-fix">
+            <div class="topbar slaide-arrow-right" style="margin-top: 25px">
+                <div class="image right_collapse">
+                    <img class="img-responsive" src="/assets/images/ng4.png" style="padding: 5px 0 5px 8px;">
+                </div>
+            </div>
+            <div role="tabpanel" class="tab_class" {% if chat != 'open' %} style="display:none" {% endif %}>
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#">
+                            {#<i class="fa fa-home"></i>#}
+                            Chat
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane" id="home" style="display: block">
+                        <ul>
+                            <li class="heading"> Users  </li>
+                            {% for friend in zfcUserIdentity().getFriends() %}
+                                <li>
+                                    <img src="{{ friend.getFriend().getAvatar() }}" class="chat-img-thumb">
+                                    <div class="name">
+                                        <a data-username="{{ friend.getFriend() }}"
+                                           data-id="{{ friend.getFriend().getId() }}"
+                                           data-type="im"
+                                           href="javascript:void(0)">{{ friend.getFriend() }}
+                                        </a>
+                                    </div>
+                                    <div class="mob">
+                                        <img src="/assets/images/device.png">
+                                    </div>
+                                </li>
+                            {% endfor %}
+                            {#<li class="heading"> Recent  </li>#}
+                            {% for friend in zfcUserIdentity().getFriends() %}
+                                <li>
+                                    <img src="{{ friend.getFriend().getAvatar() }}" class="chat-img-thumb">
+                                    <div class="name">
+                                        <a data-username="{{ friend.getFriend() }}"
+                                           data-id="{{ friend.getFriend().getId() }}"
+                                           data-type="im"
+                                           href="javascript:void(0)">{{ friend.getFriend() }}
+                                        </a>
+                                        </div> <div class="mob"><img src="/assets/images/device.png">
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

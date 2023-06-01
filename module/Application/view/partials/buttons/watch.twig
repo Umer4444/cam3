@@ -1,0 +1,5 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}{{ user.isOnline() or isContext ? 'Watch' : 'Currently Offline' }}{% endblock button_text %}
+{% block button_class %}btn btn-lg btn-block btn-{{ user.isOnline() ? 'success' : 'warning' }}{% endblock button_class %}
+{% block button_href %}{{ url('performer/profile', {'action': 'watch', 'name': user.getDisplayName(), (constant('Application\\Mapper\\Injector::USER')): user.getId()}) }}{% endblock button_href %}

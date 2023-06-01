@@ -1,0 +1,64 @@
+<? // $cycle = $this->cycle(array("dark","light"))->next();
+
+$role = $row->getSenderId()->getRoles()[0]->getRoleId();
+$user = $row->getSenderId();
+
+$profile_url = $this->url('solo/profile', array('username' => $row->getSenderId()->getUsername()));
+
+//$reply_url = $this->url(array("message_action"=>"compose"),"messages");
+$reply_url = $this->url('solo/messages', array('type' => 'compose'));
+
+$chips = 'chips_color';
+
+if (!$user->getAvatar()) {
+
+    $avatar = '/images/user_default.png';
+} else {
+    $avatar = $user->getAvatar();
+
+}
+?>
+<?php if ($role == 'performer') $role = 'model'; ?>
+<?php if ($role == 'super_admin') $role = 'moderator'; ?>
+
+<tr class="<?= $role ?>_message ">
+
+    <td class="center" width="50">
+        <input type="checkbox" class="case" value="<?= $row->getId() ?>" id="<?= $row->getId() ?>"/>
+    </td>
+    <td class="center" width="250">
+        <img class="left" width="48" src="<?= $avatar ?>" alt="<?= $user->getUsername() ?> cover picture">
+        <div class="message_info">
+            <a target="_blank" href="<?= $profile_url ?>"><?= ucfirst($user->getUsername()) ?></a>
+            <div class="timestamp">
+                <?= date('F d,Y', $row->getSendDate()) ?>
+            </div>
+        </div>
+    </td>
+    <td class="<?= ($row->getRead() == 1 ? 'read' : '') ?>">
+        <div class="subject">
+            <a href="<?= $this->url(
+                'solo/messages/slug',
+                array(
+                    'type' => $type,
+                    'slug' => $this->slugify($row->getSubject()) . '-' . $row->getId()
+                )
+            ) ?>"><?= $row->getSubject() ?></a></div><?= strip_tags($row->getBody()) ?></td>
+    <td class="center" title="tip" width="35">
+        Tip: <?= $row->getTip() ?>
+    </td>
+    <td class="center" width="50">
+        <form method="post" action="<?= $reply_url ?>">
+            <?
+
+            if ($messageAction == "inbox") { ?>
+                <input type="submit" class="btn btn-purple" name="reply" value="Reply"/>
+            <? } ?>
+            <input type="hidden" value="<?= $user->getUsername() ?>" name="username"/>
+            <input type="hidden" value="<?= $user->getId() ?>" name="userid"/>
+            <input type="hidden" value="<?= $role ?>" name="usertype"/>
+
+        </form>
+    </td>
+
+</tr>

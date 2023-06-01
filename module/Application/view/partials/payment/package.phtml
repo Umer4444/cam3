@@ -1,0 +1,15 @@
+<div class="package-container">
+    <div class="upper-bar">
+        <div class="triangle-left"></div>
+        <div class="package-name"><?=$this->package?></div>
+        <div class="triangle-right"></div>
+    </div>
+    <div class="package">
+        <div class="top-bar"></div>
+        <div class="chips-bar">
+            <p class="chips-number">$<?=number_format($this->package->getAmount(), 0)?></p>
+            <p class="bonus">Bonus: <?=number_format($this->package->getBonus(), 0)?>%</p>
+        </div>
+        <div class="bottom-bar"><input type="button" class="buy-chips" data-value="<?=$this->package->getId()?>" value="Buy"/></div>
+    </div>
+</div>

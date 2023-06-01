@@ -1,0 +1,64 @@
+{% extends 'layout/backend' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6">
+
+            {% if form.has('type') %}
+
+                {{ form().openTag(form) }}
+                    {{ formRow(form.get('type')) }}
+                    {{ formRow(form.get('title')) }}
+                    {{ formRow(form.get('submit')) }}<br/>
+                {{ form().closeTag() }}
+
+            {% else %}
+
+                <br/>
+
+                <b>Clip name: </b>{{ title }}<br/>
+                <b>Clip type: </b>{{ type }}<br/>
+
+                <script type="text/javascript">
+
+                    function onSaveSuccess(name, duration){
+                        location.href='{{ url('zfcadmin/crud/default', {action: 'update', controller: 'video' }) }}'
+                    };
+
+                    function onBroadcasterReady()
+                    {
+                        recorder = swfobject.getObjectById('recorder');
+                        recorder.addNotificationListener('SESSIONSAVESUCCESS', 'onSaveSuccess');
+                    }
+
+                    swfobject.addLoadEvent(function(){
+
+                        var flashvars = {
+                            'scriptLocation': '{{ user().url('stream/config', {type: 'record'})|trim('/') }}'
+                        };
+
+                        var params = {
+                            'base': '/recorder/swf/'
+                        };
+
+                        var attributes = {
+                            'id': 'recorder',
+                            'name': 'recorder'
+                        };
+
+                        swfobject.embedSWF('/recorder/swf/QuickCapture.swf', 'recorderHolder', '640', '480', '9.0.124', false,
+                                flashvars, params, attributes);
+
+                    });
+
+                </script>
+                <div id="recorderHolder"></div>
+
+            {% endif %}
+
+        </div>
+        <div class="col-md-6"></div>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% block blog_item %}
+
+    {% set url = url('blog/view', {(constant('Application\\Mapper\\Injector::BLOG_SLUG')): blog.getSlug() }) %}
+
+    <div class="col-md-6">
+        <div class="row row-no-margin">
+            <div class="post margin-10 item-big-height">
+                <div class="col-sm-6">
+                    <a href="{{ url }}">
+                        <h1 class="padding-10 no-background blog-title">{{ blog.getTitle() }}</h1>
+                    </a>
+                    {{ blog.getPostedOn().format('h:i a l, F Y') }}
+                </div>
+                <div class="col-sm-6 text-right">
+                    <a class="catname" href="{{ url('blog/filters', {category: blog.getCategory(), categoryId: blog.getId()}) }}">{{ blog.getCategory() }}</a>
+                    <br>
+                    {% include 'tags' with {'tags' : blog.getTags(), 'route': 'blog/filters'} %}
+                </div>
+                <div class="post_picture_big">
+                    <div class="item-big-image">
+                        <a href="{{ url }}">
+                            <img src="{{ blog.getBigCover() }}" class="img-responsive">
+                        </a>
+                    </div>
+                    <div class="blog-post-stats">
+                        {{ blog.getInteraction().getLikes() }} Likes · {{ blog.getInteraction().getDislikes() }} Dislike
+                    </div>
+                </div>
+                <p class="post-text text-justify">
+                    {{ blog.getContent()|striptags|slice(0,100) }} ...
+                </p>
+                <p class="text-right read-more">
+                    <a href="{{ url }}">Read More &gt;</a>
+                </p>
+                {% block postedBy %}
+                    <hr>
+                    <div class="reposted">
+                        <img class="profilepic2" src="{{ blog.getUser().getAvatar() }}">
+                        Posted by <a href="{{ user(blog.getUser()).url('performer/profile') }}">{{ blog.getUser() }}</a>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+{% endblock blog_item %}

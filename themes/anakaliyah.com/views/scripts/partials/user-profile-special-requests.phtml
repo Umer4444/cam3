@@ -1,0 +1,43 @@
+<?php
+    //$this->model();
+?>
+<div class="row">
+<h2 class="title left">Special Requests</h2> <a href="<?=$this->url(array("profile_type" => "special-requests"), "theme-special-requests")?>" class="btn btn-purple pull-right">New request</a>
+</div>
+
+<div class="row">
+    <table class="table" cellpadding="5" cellspacing="1" >
+    <tr class="table_header">
+        <?/*<th>Model</th>*/?>
+        <th>Item</th>
+        <th>Added</th>
+        <th class="center">Offer</th>
+        <th class="center">Counter<br>Offer</th>
+        <th>Terms</th>
+        <th>Status</th>
+    </tr>
+    <tr>
+        <?if(!count($this->paginator)) echo '<td colspan="100" class="center"><br>You do not have any special request</td>'; ?>
+        
+        <?foreach($this->paginator as $row){
+
+           
+            
+            echo '<tr >';
+           // echo '<td><a href="'.$this->url(array("profile_type" => "special-requests", "id_model" => $row['id_model'], "name" => $row['screen_name']), "model-profile").'">'.ucfirst($row['screen_name']).'</a></td>';
+            echo '<td><a href="'.$this->url(array("profile_type" => "special-request", "id_special_request" => $row['id']), "theme-special-request").'">'.ucfirst($row['item']).'</a></td>';
+            echo '<td>'. date('d-m-Y',$row['added']).'</td>';
+            echo '<td class="center">'.$row['offer'].'</td>';
+            echo '<td class="center '.($row['counter_offer']>0?'counter_offer':'').'">'.$row['counter_offer'].'</td>';
+            echo '<td class="terms">'.$row['terms'].'</td>';
+            echo '<td class="center">'.($row['status'] == 0 ? "pending" : ($row["status"] == 1 ? "done" : "declined")) .'</td>';
+            echo '</tr>';
+        }
+        ?>
+    </tr>
+    </table>
+
+<?
+    echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+?>
+</div>

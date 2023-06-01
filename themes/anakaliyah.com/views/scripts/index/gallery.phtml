@@ -1,0 +1,332 @@
+
+<? $this->headTitle($this->album->name.' by '.$this->model->screen_name);  ?>
+
+<div class="row">
+   <h2 class="title"><?=$this->album->name .' by ' . $this->model->screen_name?></h2>
+    <?=$this->notice?>
+</div>
+<?
+    if(Auth::isModel() && $this->album->id_model == $_SESSION['user']['id']) $this->album->password_required = 0;
+    
+    if($this->album->password_required == 1 && (!$this->user_access && !in_array($this->album->id,$_SESSION['user_access']['album'])) ){    
+?>      <div class="join-box">
+        
+        
+        
+        <p>To view this gallery is required to type the password.<br><br></p>
+        
+        <form action="<?=$this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name,"action_type"=>"pass_req"), "model-profile-gallery2")?>" method="post">
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="gallery_password">Gallery password</label>
+                    <div class="field_wrapper">
+                        <input type="password" id="gallery_password" name="gallery_password" tabindex="11">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="clear"></div>
+            <div class="join-button">
+                <br>
+                <input type="submit" name="submit" value="submit" id="submit" class="green-button">
+            </div>
+        </form>
+    </div>
+        
+<?        
+    } else {  
+        if(count($this->subalbums)){ 
+
+            ?>
+           <div class="row">
+
+
+        <?   
+        $k = 0;                                                           
+        foreach($this->subalbums as $this->album){
+            if($k%3 == 0 ) echo '</div><div class="row">';
+            $k++;
+            echo $this->partial('partials/items/album.phtml',$this);    
+        }    ?>
+       </div>
+    <? }
+
+  if(!count($this->photos)) {
+            echo '<br><br><br><br><center>There are no photos available at this time. Please check back later. </center><br><br><br><br><br>';
+        }else{  ?>
+           <div class="row">
+            <? if ($this->photos) { 
+                $k = 0; 
+                foreach($this->photos as $photo) {
+                    
+                    if($k%3 == 0 ) echo '</div><div class="row">';
+                    $k++;
+                       
+                    echo $this->partial('partials/items/picture.phtml', array("item" => $photo, "type" => "image"));
+
+                     } 
+                }?>
+            </div>
+        <? } ?>
+<? } ?>
+
+ 
+<?  echo $this->partial('partials/items/fancybox2.phtml',array("div" => "")); ?>
+<?  echo $this->partial('partials/items/rating_script.phtml',array("size" => "big", "div" => ".stars")); ?>
+<?  echo $this->partial('partials/items/rating_script.phtml',array("size" => "big", "div" => ".albumStars", "color" => "black")); ?>
+
+
+<?php echo $this->partial('partials/fancy-box.phtml', array("element" =>  null)); ?>
+
+
+
+
+
+
+
+
+
+
+<?  /*
+
+    $model_info = array();
+    foreach($this->info_fields as $item){
+       $model_info[$item->field] = $item->value;
+    } 
+    
+
+?>
+
+<div class="page-profile">
+    
+    <div class="page-profile-top">
+        <h1><?=$this->model->screen_name?> | <?=$this->model->birthday?date('Y',time())-substr($this->model->birthday,0,4).'yrs':''?></h1> 
+        
+        <div class="model_profile_menu"> <? echo $this->partial('partials/model-profile-menu.phtml',array("active" => $this->profile_type,"isFollowing" => $this->isFollowing,'model' => $this->model)); ?></div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="model-profile-left">
+        <? echo $this->partial('partials/model-profile-left.phtml',array('model' => $this->model,'info_fields' => $this->info_fields,'country' => $this->country, 'model_info' => $model_info,'rates_fields' => $this->rates_fields,"favorite" => $this->favorite)); ?>
+    </div>
+
+    <div class="model-profile-content">
+
+    <h2 class="page_title">
+        <?=$this->album->name?> <span class="small_title_text">updated about <?=getTimeDifferenceInWords($this->album->updated)?></span>
+        
+        <?if(Auth::isModel() && $_SESSION['user']['id'] == $this->album->id_model){ ?>
+        <a onclick='return confirm("Are you sure you want to delete this album?")' href="<?=$this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name, "action_type"=>"delete"), "model-profile-gallery2")?>">
+            <span style="float:right;font-size:12px;color:blue;padding-top:15px;">delete</span>
+        </a>
+        <?}?>
+    </h2>
+    <?php if($this->previous) { ?>
+        <a href="<?=$this->previous?>" class="button-round-small blue left" >Back</a>
+        <div class="clear"></div>
+    <?php } ?> 
+
+<?
+    if(Auth::isModel() && $this->album->id_model == $_SESSION['user']['id']) $this->album->password_required = 0;
+    
+    if($this->album->password_required == 1 && (!$this->user_access && !in_array($this->album->id,$_SESSION['user_access']['album'])) ){    
+?>   
+    <div class="join-box">
+        
+        
+        
+        <p>To view this gallery is required to type the password.<br><br></p>
+        
+        <form action="<?=$this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name,"action_type"=>"pass_req"), "model-profile-gallery2")?>" method="post">
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="gallery_password">Gallery password</label>
+                    <div class="field_wrapper">
+                        <input type="password" id="gallery_password" name="gallery_password" tabindex="11">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="clear"></div>
+            <div class="join-button">
+                <br>
+                <input type="submit" name="submit" value="submit" id="submit" class="green-button">
+            </div>
+        </form>
+    </div>
+        
+<?        
+    } else {  if(count($this->subalbums)){ 
+
+        foreach($this->subalbums as $this->album){
+            echo $this->partial('partials/album-item.phtml',$this);    
+        }
+        echo '<div class="clear"></div>';
+    }
+?>
+      
+    <?  if(!count($this->photos)) {
+            echo '<br><br><br><br><center>There are no photos available at this time. Please check back later. </center><br><br><br><br><br>';
+        }else{    
+            foreach($this->photos as $this->photo){
+                echo $this->partial('partials/photo-item.phtml',$this);    
+            }
+        }
+    
+?>
+        <div class="clear"></div>  
+
+        <hr/>
+           
+       <br/>
+
+        
+        
+         <div id="stars_big" style="float:right;" data-id="<?=$this->album->id?>" data-average="<?=$this->album->rating?>" data-extra="image"></div>
+         <?  echo $this->partial('partials/rating-script.phtml',array('size' => "big", "div" => "#stars_big")); ?>
+         
+        <div style="float:left; position: relative">
+           <? echo  $this->partial('partials/like-html.phtml',array("id"=>$this->album->id, "type"=>"gallery"));?>
+           <?  echo $this->partial('partials/like-script.phtml',array()); ?>
+        </div>  
+        <div class="clear"></div> 
+
+        <br>      
+                <div id="tabs">
+             <ul>
+                <li><a href="#disqus_thread">Comments</a></li>
+                <li><a href="#reviews"><?=$this->album->total_active_reviews?> Reviews</a></li>
+              </ul>
+            <div id="reviews">
+            
+                <?=$this->notice?>
+                
+                <? if(Auth::isLogged()) { 
+                    echo $this->partial('partials/review-add.phtml');
+                } ?>
+                <? if($this->reviews) { ?>
+                    <? foreach($this->reviews as $this->review) { 
+                        echo $this->partial('partials/review-item.phtml',$this); 
+                    } ?>
+                <? } else { ?>
+                    <p> No reviews. Write the first review</p>
+                <? } ?>
+            </div>             
+            <div id="disqus_thread"></div>
+        </div>
+          
+ 
+          <? echo $this->partial('partials/disqus.phtml', array("title" => $this->album->name, "identifier" =>  'gallery'.$this->album->id)); ?> 
+
+
+        
+<? } //end if else password gallery ?>        
+        
+        
+    </div>
+    <div class="clear"></div>
+</div>
+<script>
+    $(function() {
+        $( "#tabs" ).tabs();
+        });
+
+        $(document).ready(function(){
+                $("#review_button").click(function(){
+                        $("#add_review").toggle();
+                });
+    });
+
+</script>
+
+   
+<script type="text/javascript">
+//rating stars
+  $(document).ready(function(){
+    $(".stars").each(function(){         
+        if($(this).hasClass("disableRate")){ disabled = true;
+        } else { disabled = false; }        
+        $(this).jRating({
+            phpPath: '/process',
+            action: 'rating',
+            isDisabled: disabled,
+            bigStarsPath : '/scripts/jrating/icons/stars.png', // path of the icon stars.png
+            smallStarsPath : '/scripts/jrating/icons/small.png', // path of the icon small.png  
+            type:'small', // type of the rate.. can be set to 'small' or 'big'
+            length : 5, // nb of stars
+            decimalLength : 0, // number of decimal in the rate
+            step: true, //fil stats full
+            rateMax: 5
+        });
+      });
+  }) ;
+</script>
+
+
+
+<script>
+// review forms
+function editReview(type, id){
+      $.ajax({
+          type: "POST",
+          url: "/process",
+          data: {
+             action: "editReview", 
+             type: type,
+             id: id,
+             review: $('#review_'+id+' textarea').val(),             
+             // may be some other params
+          },
+          success: function(){
+              switch (type) {
+                  case 'edit' :
+                        editForm("edit", id, "removeform");
+                        $("#review_"+id).removeClass("inactive");
+                        alert("Review saved");
+                  break;
+                  case "delete" :                        
+                        $("#review_"+id).remove();                        
+                        alert("Review deleted");
+                  break;
+              }              
+          },
+          error: function (){
+              alert("Review not saved. There was an error, try again later");
+          }
+      }).done(function( msg ) {
+          // update your status
+      });
+}
+
+function editForm(type, id, action){
+    
+    switch (type) {
+        case "delete":
+            editReview(type, id);
+        break;
+        
+        case "edit": 
+            if(action == "makeform"){
+                var reviewText = $("#review_"+id+" .review").text();
+                
+                var textarea = '<textarea name="editreview">'+reviewText+'</textarea> <input type="submit" value="Save" class="button-round-small green" onclick="javascript:editReview(\'edit\', '+id+')" name="edit_review">';
+                $("#review_"+id+" .edit").attr("onclick", "editForm('edit', "+id+", 'removeform'); return false;").text("cancel edit");                
+                //<a href="" onClick="editForm(\'edit\', '+id+', \'deleteform\'); return false;">cancel edit</a>
+                $("#review_"+id+" .review").html("");                
+                $("#review_"+id+" .review").html(textarea);                
+            } 
+            if(action == "removeform"){
+                var text = $("#review_"+id+" .review textarea").val();
+                $("#review_"+id+" .review").html("");                
+                $("#review_"+id+" .review").html(text);
+                $("#review_"+id+" .edit").attr("onclick", "editForm('edit', "+id+", 'makeform'); return false;").text("edit");  
+            }
+        break; 
+    }
+}
+
+
+
+</script>
+
+*/ ?>

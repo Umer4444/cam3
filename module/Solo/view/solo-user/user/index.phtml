@@ -1,0 +1,33 @@
+<?= $this->partial('solo/dashboard/partial/tab-menu'); ?>
+<div class="row row-no-margin padding-10">
+    <div class="custom-avatar">
+        <?php echo $this->gravatar($this->zfcUserIdentity()->getEmail()) ?>
+    </div>
+    <h3>Hello, <?php echo $this->zfcUserDisplayName() ?>!</h3>
+    <a href="<?php echo $this->url('zfcuser/logout') ?>">[Sign Out]</a>
+
+    <div class="clear"></div>
+</div>
+<!--<div class="row row-no-margin padding-10">-->
+<!--    <div class="col-md-12">-->
+<!--        <a href="--><?//= $this->url("zfcuser/edit") ?><!--" class="btn btn-magenta">Edit account</a>-->
+<!--    </div>-->
+<!--</div>-->
+<div class="row row-no-margin padding-10">
+    <div class="col-md-12">
+            <dl>
+                <?php
+                if($this->userSettings) {
+                    foreach ($this->userSettings as $setting) {
+                        if ($setting['entity'] && $setting['value']) {
+                            echo '<dt>' . $setting['label'] . '</dt>' . '<dd>' . $this->settingEntities[$setting['key']] . '</dd>';
+                        } else
+                            echo '<dt>' . $setting['label'] . '</dt>' . '<dd>' . $setting['value'] . '</dd>';
+                    }
+                } ?>
+
+            </dl>
+    </div>
+</div>
+
+

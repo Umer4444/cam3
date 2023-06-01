@@ -1,0 +1,18 @@
+<div class="col-sm-5 form-group">
+    <div class="pull-left">Select Your timezone</div>
+    <div class="col-sm-8">
+        <select class="form-control input-sm pull-left col-sm-4" style="float:left;" onchange="getFilters(this.value)">
+            <option>Select Your Timezone Here</option>
+            <option id="est" value="EST">Est</option>
+            <option id="pst" value="PST">Pst</option>
+            <option id="ist" value="IST">Ist</option>
+        </select>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function getFilters(filter){
+    window.location = "/calendar/"+ filter +"";
+}
+</script>

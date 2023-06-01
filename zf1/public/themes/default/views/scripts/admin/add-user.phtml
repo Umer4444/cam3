@@ -1,0 +1,60 @@
+<?php $this->headTitle('Add New User'); ?>
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title">Add New User</h1>
+
+    <form action="" method="post" id="form_add_user">
+        <div class="join-box-fields">
+
+            <div class="field">
+                <label for="username">Username</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('username', '') ?>
+                </div>
+
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('email', '', array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="password">New Password</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formPassword('password', '', array('autocomplete' => 'off')) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="confirm_password">Confirm Password</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formPassword('confirm_password', '', array('autocomplete' => 'off')) ?>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "add-user", "edit")) { ?>
+            <div class="join-button">
+                <input type="submit" name="save" value="Add" class="btn btn-success">
+                <input type="hidden" name="save" value="Add">
+            </div>
+        <? } ?>
+        <br/>
+
+        <div class="model_notice">
+            *This information is for administration use only and will not be shared
+        </div>
+
+        <br/>
+    </form>
+
+</div>

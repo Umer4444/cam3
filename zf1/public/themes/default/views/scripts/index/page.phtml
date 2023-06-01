@@ -1,0 +1,32 @@
+<?
+$this->headTitle($this->page_content->title);
+?>
+
+<div class="page-content">
+    <?
+    echo "<h1 class='page-title'>" . $this->page_content->title . "</h1>";
+
+    if ($this->page_content->page == 'faq') {//content + script for accordition
+        ?>
+        <div id="accordion">
+            <? echo $this->page_content->content; ?>
+        </div>
+        <script type="text/javascript">
+
+            var options = {
+                header: 'h2',
+                autoHeight: false
+            };
+
+            $(document).ready(function () {
+                $("#accordion").accordion(options);
+            });
+
+        </script>
+    <?
+    } else {
+        echo $this->page_content->content;
+    }
+    ?>
+</div>
+

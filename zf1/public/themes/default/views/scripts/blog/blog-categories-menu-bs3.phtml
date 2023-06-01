@@ -1,0 +1,21 @@
+<select class="form-control cat-filter">
+    <?
+    foreach ($this->categories as $k => $v) {
+        echo '<option
+>';
+        if ($this->params["controller"] == "blog") {
+            if ($k == 0)
+                echo '<a href="' . $this->url(array("id_model" => $this->id_model, "name" => $this->params["name"]), "blog-list-frontend") . '">' . $v . '</a>';
+            else
+                echo '<a href="' . $this->url(array("name" => $this->params["name"], "id_model" => $this->id_model, "title" => slug($v), "id_category" => $k), "blog-category-frontend") . '">' . $v . '</a>';
+        } elseif ($this->params["controller"] == "admin") {
+            if ($k == 0)
+                echo '<a href="' . $this->url(array("profile_type" => "blog", "id_model" => $this->id_model, "name" => $this->params->name), "model-profile") . '">' . $v . '</a>';
+            else
+                echo '<a href="' . $this->url(array("name" => $this->params->name, "id_model" => $this->id_model, "profile_type" => "blog", "title" => slug($v), "id_item" => $k, "type_action" => "category"), "model-profile4") . '">' . $v . '</a>';
+        }
+        echo '</option>';
+    }
+    ?>
+</select>
+

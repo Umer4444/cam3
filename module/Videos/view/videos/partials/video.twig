@@ -1,0 +1,37 @@
+{% if videos|length == 0 %}
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert">
+            No videos uploaded yet!
+        </div>
+    </div>
+{% else %}
+    {% for video in videos %}
+        <div class="col-md-3 video thumbnail with-caption">
+            {% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+            {% set url = url('videos/video', {(constant('Application\\Mapper\\Injector::VIDEO')) : video.getId(), 'slug' : slug}) %}
+
+            <a href="{{ url }}">
+                <span class="span3 play_button"></span>
+                <img src="{{ video.getCover() }}"/>
+
+                <div class="title center">
+                    <h2>{{ video.getTitle() | slice(0, 14) }}...</h2>
+                </div>
+                {% set price = video.getCost() %}
+                <div class="video-type {{ price > 0 ? 'free' : '' }}">{{ price > 0 ? 'Free Preview' : '' }}</div>
+                <div class="video-price">{{ not price > 0 ?: price ~ ' $' }}</div>
+                <div class="video-quote">{{ video.getDescription() }}</div>
+            </a>
+
+            <div class="clear"></div>
+
+            <div class="stats center">
+                {% set difference = date('NOW').diff(date(date('NOW').getTimestamp() + video.getDuration())) %}
+                <span class="time">{{ difference.format('%H:%M:%S') }}</span> | {{ video.getViews() }} Views | <a
+                        href="{{ url }}#disqus_thread">Comments</a>
+                |
+                <a href="{{ url }}#reviews"> Reviews</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

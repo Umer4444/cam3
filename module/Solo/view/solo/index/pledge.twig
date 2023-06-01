@@ -1,0 +1,48 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="solo-margin-15">My <span class="highcolor">Pledges</span></h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {% if pledges %}
+                {% set counter = 0 %}
+                {% for friend in pledges %}
+                    {% set position = friend.getPosition() %}
+                    {% set pledge = friend.getUser() %}
+                    {% if position >= 0 %}
+                        <div class="col-md-3 col-md-3-solo">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="highcolor">{{ pledge.getUsername()|slice(0, 10) }}</span>
+                                </div>
+                                <div class="modal-body">
+
+                                    <a href="{{ url('solo/profile', {'username' : pledge.getUsername()}) }}"
+                                       title="{{ pledge.getUsername() }}">
+                                        {% if pledge.getAvatar() is null %}
+                                            <img class="solo-friends-image" src="/assets/themes/anakaliyah  .com/assets/images/user_default.png"
+                                                 title="{{ pledge.getUsername() }}"/>
+                                        {% else %}
+                                            <img src="{{ pledge.getAvatar() }}"
+                                                 title="{{ pledge.getUsername }}"/>
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        {% if counter == 0 %}
+                            No pledges are selected!
+                        {% endif %}
+                        {% set counter = counter + 1 %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                No pledge are selected!
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

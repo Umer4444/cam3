@@ -1,0 +1,271 @@
+<?php
+$serviceLocator = Zend_Registry::get('service_manager');
+$viewHelperManager = $serviceLocator->get('ViewHelperManager');
+$eventCalendarHelper = $viewHelperManager->get('eventCalendar');
+
+$this->headTitle('Schedule Events');
+
+$hours = array('' => 'hour');
+for ($i = 0; $i < 24; $i++) $hours[$i] = $i;
+
+$minutes = array('' => 'min');
+for ($i = 0; $i < 60; $i++)
+    if ($i < 10) $minutes["0" . $i] = "0" . $i;
+    else $minutes["" . $i] = "" . $i;
+
+    $thumbs = [];
+    foreach ($this->model->photos as $photo) {
+
+        $thumbs[] = array(
+            'text' => $photo->getType(),
+            'value' => $photo->getFilename(false),
+            'selected'=> false,
+            'imageSrc'=> $photo->getFilename(false)
+        );
+    }
+?>
+
+<script type="text/javascript">
+
+    function editCalEvent(id_item) {
+
+        date_atr = $('#item_' + id_item + ' .eventTitle').attr('date_atr');
+        date_h_atr = $('#item_' + id_item + ' .eventTitle').attr('date_h_atr');
+        date_m_atr = $('#item_' + id_item + ' .eventTitle').attr('date_m_atr');
+
+        date_h_to_atr = $('#item_' + id_item + ' .eventTitle').attr('date_h_to_atr');
+        date_m_to_atr = $('#item_' + id_item + ' .eventTitle').attr('date_m_to_atr');
+        type = $('#item_' + id_item).attr('class');
+        title = $('#item_' + id_item + ' .eventTitle').html();
+        desc = $('#item_' + id_item + ' .eventDesc span').html();
+
+        $('#to_date').val(date_atr);
+        $('#hour').val(date_h_atr);
+        $('#minute').val(date_m_atr);
+
+        $('#end_hour').val(date_h_to_atr);
+        $('#end_minute').val(date_m_to_atr);
+
+        $('#type').val(type);
+        $('#title').val(title);
+        $('#description').val(desc);
+
+        $('#save_edit_btn').val('Edit');
+        $('#delete_btn').css('display', 'block');
+        $('#id_item').val(id_item);
+
+    }
+
+</script>
+<div class="model_content row">
+
+    <div class="page-content round-corners col-sm-12">
+
+        <h1 class="page-title">Schedule Events</h1>
+        <br><?= $this->notice ?><br>
+
+        <div class="row">
+<!--            <div class="col-md-3">-->
+<!--                <div class="manage_calendar">-->
+<!--                    --><?php //echo $eventCalendarHelper($this->user->id); ?>
+<!--                </div>-->
+<!--            </div>-->
+            <div class="col-md-12">
+                <div class="manage_calendar_events">
+
+                    <form action="" method="post" class="form-inline" id="messages_compose">
+
+                        <!-- BOOTSTRAP 3 FORM !!!  -->
+<!--                        <div class="container" id="events-admin-fix">-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-md-2">-->
+<!--                                    <label>Start Date</label>-->
+<!--                                </div>-->
+<!--                                <div class='col-md-7'>-->
+<!--                                    <div class="form-group">-->
+<!--                                        <div class='input-group dat' id='startDate'>-->
+<!--                                            <input type='text' class="form-control col-md-8" />-->
+<!--                                            <span class="input-group-addon">-->
+<!--                                                <span class="glyphicon glyphicon-calendar"></span>-->
+<!--                                            </span>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-md-2">-->
+<!--                                    <label>Start Date</label>-->
+<!--                                </div>-->
+<!--                                <div class='col-md-7'>-->
+<!--                                    <div class="form-group">-->
+<!--                                        <div class='input-group dat' id='endDate'>-->
+<!--                                            <input type='text' class="form-control col-md-8" />-->
+<!--                                            <span class="input-group-addon">-->
+<!--                                                <span class="glyphicon glyphicon-calendar"></span>-->
+<!--                                            </span>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-md-2">-->
+<!--                                    <label>Title</label>-->
+<!--                                </div>-->
+<!--                                <div class='col-md-7'>-->
+<!--                                    <div class="form-group">-->
+<!--                                        <div class='input-group dat'>-->
+<!--                                            <input type='text' class="form-control col-md-8" />-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="row">-->
+<!--                                <div class="col-md-2">-->
+<!--                                    <label>Description</label>-->
+<!--                                </div>-->
+<!--                                <div class='col-md-7'>-->
+<!--                                    <div class="form-group">-->
+<!--                                        <div class='input-group dat'>-->
+<!--                                            <textarea class="form-control col-md-8"></textarea>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="join-box-fields">
+                            <div class="field form-group">
+                                <label for="to_date">Start Date</label>
+
+                                <div class="field_wrapper ">
+                                    <?= $this->formText('date', date('m/d/Y'), array("class" => "small_tfield_date")) ?>
+
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <?= $this->formSelect('hour', null, array("title" => "start hour"), $hours) ?> :
+                                    <?= $this->formSelect('minute', null, array("title" => "start minute"), $minutes) ?>
+
+                                    &nbsp;&nbsp; - &nbsp;&nbsp;
+
+                                    <?= $this->formSelect('end_hour', null, array("title" => "end hour"), $hours) ?> :
+                                    <?= $this->formSelect('end_minute', null, array("title" => "end minute"), $minutes) ?>
+
+                                </div>
+                            </div>
+
+                            <div class="field form-group">
+                                <label for="to_date">End Date</label>
+
+                                <div class="field_wrapper ">
+                                    <?= $this->formText('to_date', date('m/d/Y'), array("class" => "small_tfield_date")) ?>
+
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <?= $this->formSelect('hour', null, array("title" => "start hour"), $hours) ?> :
+                                    <?= $this->formSelect('minute', null, array("title" => "start minute"), $minutes) ?>
+
+                                    &nbsp;&nbsp; - &nbsp;&nbsp;
+
+                                    <?= $this->formSelect('end_hour', null, array("title" => "end hour"), $hours) ?> :
+                                    <?= $this->formSelect('end_minute', null, array("title" => "end minute"), $minutes) ?>
+
+                                </div>
+                            </div>
+
+                            <div class="field ">
+                                <label for="type">Type</label>
+
+                                <div class="field_wrapper">
+                                    <?= $this->formSelect('type', null, null, array(
+                                        "standard" => "Standard Free Chat",
+                                        "premier" => "Premier Show ",
+                                        "show" => "Show",
+                                        "picture" => "Picture Set Release",
+                                        "blog" => "Blog Update",
+                                        "clip" => "Clip Release",
+                                        "other" => "Other Event"
+                                    )) ?>
+                                </div>
+                            </div>
+
+                            <div class="field ">
+                                <label for="thumb">Event Image</label>
+                                <input id="thumb" type="hidden" name="thumb" value="">
+                                <div class="field_wrapper">
+                                    <div id="demoBasic"></div>
+                                </div>
+                            </div>
+
+                            <div class="field" id="fieldDays">
+                                <label for="day">Weekdays</label>
+
+                                <div class="field_wrapper">
+                                    <?= $this->formSelect('day', null,
+                                            array(
+                                                "multiple" => "multiple"
+                                            ),
+                                            array(
+                                                'monday' => 'monday',
+                                                'tuesday' => 'tuesday',
+                                                'wednesday' => 'wednesday',
+                                                'thursday' => 'thursday',
+                                                'friday' => 'friday',
+                                                'saturday' => 'saturday',
+                                                'sunday' => 'sunday'
+                                            )
+                                        )
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="title">Title</label>
+
+                                <div class="field_wrapper">
+                                    <?= $this->formText('title', null) ?>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="description">Description</label>
+
+                                <div class="field_wrapper">
+                                    <?= $this->formTextarea('description', null, array('cols' => 30, 'rows' => 6)) ?>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="join-button">
+                            <input type="submit" name="save" value="Save" class="btn btn-success" id="save_edit_btn">
+                            <input type="submit" name="save" value="Delete" class="btn btn-success" id="delete_btn"
+                                   style="display: none;">
+                            <input type="hidden" name="id_item" id="id_item" value="">
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="clear"></div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    var ddData= <?php echo json_encode($thumbs); ?>;
+
+    $('#demoBasic').ddslick({
+        data: ddData,
+        width: 220,
+        imagePosition: "left",
+        selectText: "Please select event image",
+        onSelected: function (data) {
+            $('#thumb').val($('img.dd-selected-image').attr('src'));
+        }
+    });
+
+</script>

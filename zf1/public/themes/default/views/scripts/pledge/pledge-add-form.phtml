@@ -1,0 +1,314 @@
+<?php if ($this->pledge->id) { ?>
+
+    <img src="<?= $this->pledge->photo_cover_big ?>" width="100" height="100"/>
+
+<? } ?>
+<form method="post" id="pledgeAdd" enctype="multipart/form-data" role="form" class="form-horizontal col-md-8 col-md-offset-2">
+    <div class="join-box-fields">
+
+        <div class="form-group">
+            <label for="pledge_type">Type</label>
+
+            <div class="col-sm-12">
+                <?= $this->formSelect("pledge_type", null, null,
+                    array(
+                        "fundraise" => "Fundraise",
+                        "project" => "Project",
+                        "request" => "Request"
+                    )
+                ) ?>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Title</label>
+
+            <div class="col-sm-12">
+                <?= $this->formText("title", $this->pledge->title) ?>
+            </div>
+        </div>
+
+        <div class="field hide_request form-group">
+            <label for="funding_type">Funding Type</label>
+
+            <div class="col-sm-12">
+                <?= $this->formSelect("funding_type", null, null, array("fixed" => "Fixed", "flexible" => "Flexible")) ?>
+            </div>
+        </div>
+
+        <div class="field hide_request form-group">
+            <label for="full_image">Pledge cover</label>
+
+            <div class="col-sm-12">
+                <input type="file" name="cover_photo" id="cover_photo">
+            </div>
+        </div>
+        <? /*
+                <div class="field hide_request">
+                    <label for="galleries">Pledge galleries</label>
+                    <div class="col-sm-12">
+                        <?=$this->formSelect("galleries", null, null, $this->albums) ?>
+                        <small> * You can select from previously added galleries</small>
+                    </div>
+                </div>
+                 */
+        ?>
+        <div class="field hide_request form-group">
+            <label for="video">Pledge video</label>
+
+            <div class="col-sm-12">
+<!--                todo add default value here-->
+                <?= $this->formSelect("video", null, null, $this->videos) ?>
+                <small> * You can select from previously added videos</small>
+            </div>
+        </div>
+
+        <div class="field hide_request form-group">
+            <label for="category">Category</label>
+
+            <div class="col-sm-12">
+                <?= $this->formSelect("category", $this->pledge->id_category, null, $this->categories) ?>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="goal_amount">Goal amount</label>
+
+            <div class="clearFix"></div>
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <div class="input-group-addon">$</div>
+                    <?= $this->formText("goal_amount", ($this->pledge->goal_amount)) ?>
+                    <!--<div class="input-group-addon">
+                        <span class="chips_amount">
+                            (Chips: <?/*= ($this->pledge->goal_amount ? (int)$this->pledge->goal_amount : 0) */?>)
+                        </span>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="multiple_field hide_request form-group">
+            <label for="start_date">Start Date</label>
+
+            <div class="clearFix"></div>
+            <div class="col-sm-4">
+                <?= $this->formText("start_date",  ($this->pledge->start_date ? date("m/d/Y H:m", $this->pledge->start_date) : "")) ?>
+            </div>
+        </div>
+
+        <div class="multiple_field hide_request">
+            <div class="form-group">
+                <label for="duration_type">Duration Type</label>
+                <div class="clearFix"></div>
+                <div class="col-sm-4">
+                    <?= $this->formSelect("duration_type", $this->pledge->duration_type, null, array("until" => "Fixed End Date", "days" => "Days Number")) ?>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration</label>
+                <div class="clearFix"></div>
+                <div class="col-sm-4">
+                    <?= $this->formText("duration", ($this->pledge->duration_type == 'days' ? $this->pledge->duration_days : ($this->pledge->end_date ? date("m/d/Y H:i", $this->pledge->end_date) : ""))) ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tags">Content</label>
+
+            <div class="col-sm-12">
+                <textarea name="content" id="content" class="content" cols="30"
+                          rows="40"><?= $this->pledge->content ?></textarea>
+            </div>
+        </div>
+
+        <?= $this->partial("partials/editor.phtml") ?>
+        <br>
+
+
+        <div class="form-group">
+            <div class="col-sm-12">
+                <br/>
+                <?php if (Auth::isModerator()) { ?>
+                    <button type="submit"
+                            name="save_unfinished"
+                            id="save_unfinished"
+                            value="Save"
+                            class="btn btn-success btn-lg"
+                        >
+                        Save
+                        </button>
+                <?php } else { ?>
+                    <button type="submit" name="save_unfinished" id="save_unfinished" value="Save unfinished"
+                           class="btn btn-success btn-lg"
+                        >
+                        Save unfinished
+                    </button>
+                    <button type="submit"
+                            name="save_moderation"
+                            id="save_moderation"
+                            value="Submit for moderation"
+                           class="btn btn-success btn-lg">
+                        Submit for moderation
+                    </button>
+                <?php } ?>
+            </div>
+        </div>
+        <br>
+
+    </div>
+
+</form>
+
+<link rel="stylesheet" media="all" type="text/css" href="/scripts/Timepicker/jquery-ui-timepicker-addon.css"/>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-sliderAccess.js"></script>
+
+
+<link type="text/css" rel="stylesheet" media="screen" href="/themes/default/css/uploadify.css">
+<script type="text/javascript" src="/scripts/jquery.uploadify-3.1.min.js"></script>
+
+<script>
+
+    $(function () {
+        window.onbeforeunload = false;
+        if ($("#duration_type").val() != "days")
+            $("#duration").datetimepicker();
+
+
+        $("#start_date").datetimepicker();
+
+        $("#duration_type").change(function () {
+            $("#duration").val('');
+            if ($(this).val() == "days")
+                $("#duration").datetimepicker("destroy");
+            else
+                $("#duration").datetimepicker();
+        });
+
+
+        $(".monthDate").datepicker({
+            dateFormat: 'MM yy',
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+
+            onClose: function (dateText, inst) {
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).val($.datepicker.formatDate('MM yy', new Date(year, month, 1)));
+            }
+        });
+
+        $(".monthDate").focus(function () {
+            $(".ui-datepicker-calendar").hide();
+            $(".ui-datepicker-buttonpane").hide();
+            $("#ui-datepicker-div").position({
+                my: "center top",
+                at: "center bottom",
+                of: $(this)
+            });
+        });
+
+
+        $("#offer_amount").change(function () {
+            if ($(this).val() == 0)
+                $(".hide_offer").hide();
+            else
+                $(".hide_offer").show();
+        });
+        $("#pledge_type").change(function () {
+            if ($(this).val() == 'request')
+                $(".hide_request").hide();
+            else
+                $(".hide_request").show();
+        });
+
+        $("#goal_amount").change(function () {
+            if ($.isNumeric($(this).val())) {
+                var chips = (parseFloat($(this).val()) + parseFloat(($(this).val() * <?=(($_SESSION["user"]["rep_share"] ? (100-$_SESSION["user"]["rep_share"]) : 0))?> / 100)));
+                //chips = chips + parseFloat(chips*<?=($_SESSION["user"]["rep_share"] ? (100-$_SESSION["user"]["rep_share"]) : 0)?> / 100);
+                $(".chips_amount").html('  (Chips: ' + parseInt(chips) + ')');
+            } else {
+                alert("Goal amount must be a number");
+            }
+        });
+        $("#offer_amount").change(function () {
+            if (!$.isNumeric($(this).val())) {
+                alert("Offer amount must be a number");
+            }
+        });
+    });
+
+
+    /*upload photos */
+
+    function submitForm(str) {
+        if ($("#title").val() == "") {
+            alert("Add pledge title!");
+            return false;
+        }
+        if ($(".uploadify-queue-item").length == 0)
+            $("#pledgeAdd").submit();
+
+        var _fdata = $("#pledgeAdd").formParams();
+        _fdata.total_photos = $(".uploadify-queue-item").length;
+        _fdata.timestamp = $("#timestamp").val();
+        _fdata.token = $("#token").val();
+        _fdata.PHPSESSID = '<?=session_id(); ?>';
+        delete _fdata.save_unfinished;
+        delete _fdata.save_moderation;
+        window.formdata = _fdata;
+        eval("_fdata." + str + " = true;");
+
+        <? /* var _fdata = {
+                 'title': $("#title").val(),
+                 'description': $("#description").val(),
+                 'tags': $("#tags").val(),
+                 'type': $("#type").val(),
+                 'sizeLimit' : parseInt(1*1024*1024*1024),
+                 'total_photos': $(".uploadify-queue-item").length,
+                 'timestamp' : '<?php echo $timestamp;?>',
+                 'token'     : '<?php echo md5('unique_salt_pw.ro2013' . $timestamp);?>'
+         };    */   ?>
+        //$('#upload_photos').uploadify('settings','formData', _fdata);
+        $('#upload_photos').uploadify('upload', '*');
+        window.onbeforeunload = false;
+    }
+
+    /*    $(function() {
+     return_url = '/model/<?=($this->params["action"])?>/<?=($this->params["type"] == "edit" ? ($this->pledge->id.'/edit') : 'add')?>';
+     $('#upload_photos').uploadify({
+     'swf'           : '/scripts/uploadify-3.2.1/uploadify.swf',
+     'uploader'      : return_url,
+     'method'        : 'post',
+     'fileTypeExts'  : '*.gif; *.jpg; *.png; *.jpeg;',
+     'fileTypeDesc'  : 'Images',
+     'auto'          : false ,
+     'uploadLimit'   : 10,
+     'buttonText'    : "Select photos",
+     'fileObjName'   : "upload_photos",
+     'onQueueComplete' : function(queueData) {
+     //RELOAD PAGE
+     location.href = '/model/pledges/list';
+     },
+     'onUploadStart' : function(){
+     $('#upload_photos').uploadify('settings','formData', window.formdata);
+     }
+     });
+
+
+     $('#save_moderation').bind("click", function(e){
+
+     e.preventDefault();
+     submitForm('save_moderation');
+     });
+     $('#save_unfinished').bind("click", function(e){
+     e.preventDefault();
+     submitForm('save_unfinished');
+     });
+     });*/
+
+</script>

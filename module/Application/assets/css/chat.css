@@ -1,0 +1,26 @@
+#main-chat-screen {
+	padding: 10px 0px;
+	min-height: 550px;
+}
+#main-chat-screen ul {
+	margin-top: 5px;
+	padding: 0px;
+}
+#conversation {
+	font-size: 18px;
+	margin: 0px;
+	height: 600px;
+	overflow: auto;
+	border: 1px solid #e3e3e3;
+	margin-bottom: 5px;
+	padding: 3px;
+	background-size: contain !important;
+}
+
+.final {
+	font-color: #000;
+}
+
+.interim {
+	font-color: #f00;
+}

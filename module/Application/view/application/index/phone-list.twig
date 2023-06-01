@@ -1,0 +1,7 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    {% for performer in performers %}
+        {% include 'Phone' %}
+    {% endfor %}
+{% endblock content %}

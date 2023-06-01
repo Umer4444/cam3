@@ -1,0 +1,118 @@
+<script src="/scripts/flowplayer-3.2.6.min.js"></script>
+
+<div class="row">
+
+    <div class="col-lg-8">
+        <h2 class="title">ABOUT <span class="highcolor">ME</span></h2>
+        <br>
+
+        <div class="row">
+            <div class="col-lg-6">
+
+
+                 <h3>Bio</h3>
+                <div class="player_box" style="height: 250px;">
+                        <a id="player_bio" ></a>
+                        <script language="JavaScript">
+                        flashembed("player_bio", "/scripts/player/flowplayer-3.2.11.swf", {
+                            config: {
+                                clip: {
+                                    /*url: '/files/videos/_anakaliyah_com/bioflv.flv',*/
+                                    url: '/files/videos/<?=$this->model->bio_video?>',
+                                    autoPlay: false,
+                                    autoBuffering: true
+                                }
+                            }
+                        });
+                        </script>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h3>Interests & Hobbies</h3>
+                <div class="player_box" style="height: 250px;">
+                        <a id="player_interest" ></a>
+                        <script language="JavaScript">
+                        flashembed("player_interest", "/scripts/player/flowplayer-3.2.11.swf", {
+                            config: {
+                                clip: {
+                                    url: '/files/videos/_anakaliyah_com/interest_hobbies.mp4',
+                                    autoPlay: false,
+                                    autoBuffering: true
+                                }
+                            }
+                        });
+                        </script>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-6">
+
+                 <h3>Private Show Do</h3>
+                <div class="player_box" style="height: 250px;">
+                        <a id="player_private_do" ></a>
+                        <script language="JavaScript">
+                        flashembed("player_private_do", "/scripts/player/flowplayer-3.2.11.swf", {
+                            config: {
+                                clip: {
+                                    url: '/files/videos/_anakaliyah_com/private_show _doflv.flv',
+                                    autoPlay: false,
+                                    autoBuffering: true
+                                }
+                            }
+                        });
+                        </script>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <h3>Room Rules</h3>
+                <div class="player_box" style="height: 250px;">
+                        <a id="player_rules" ></a>
+                        <script language="JavaScript">
+                        flashembed("player_rules", "/scripts/player/flowplayer-3.2.11.swf", {
+                            config: {
+                                clip: {
+                                    url: '/files/videos/_anakaliyah_com/room_rules.mp4',
+                                    autoPlay: false,
+                                    autoBuffering: true
+                                }
+                            }
+                        });
+                        </script>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+
+                 <h3>Turn Offs</h3>
+                <div class="player_box" style="height: 250px;">
+                        <a id="player_turnoff" ></a>
+                        <script language="JavaScript">
+                        flashembed("player_turnoff", "/scripts/player/flowplayer-3.2.11.swf", {
+                            config: {
+                                clip: {
+                                    url: '/files/videos/_anakaliyah_com/turn_offsflv.flv',
+                                    autoPlay: false,
+                                    autoBuffering: true
+                                }
+                            }
+                        });
+                        </script>
+                </div>
+            </div>
+            <div class="col-lg-6">
+
+            </div>
+        </div>
+
+    </div>
+    <div class="col-lg-4">
+        <? echo $this->partial("partials/side-bar.phtml", $this); ?>
+    </div>
+</div>

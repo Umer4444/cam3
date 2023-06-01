@@ -1,0 +1,157 @@
+<? $this->headTitle('Signup'); ?>
+
+<?
+        $years = array(''=>'year');
+        for($i=date('Y')-18;$i>=1950;$i--) $years[$i] = $i;
+        
+        $months = array(''=>'month');
+        for($i=1;$i<=12;$i++) {
+            $months[$i] = date("F", mktime(0, 0, 0, $i, 10));
+        }
+        
+        $days = array(''=>'day');
+        for($i=1;$i<=31;$i++) $days[$i] = str_pad((int) $i,2,"0",STR_PAD_LEFT);
+/*        
+        $countries = array(''=>' -- ');
+        foreach($this->countries as $c){
+            $countries[$c->id] = substr($c['name'],0,35);
+        }
+            */
+        $countries = $this->countries;
+        
+        $timezones = array();
+        foreach($this->timezones as $t) {
+            $timezones[$t->id] = substr($t['name'],0,37);
+        }
+
+    
+?>
+
+<div role="" class="row">
+        <h2 class="title">Join Us Now!</h2>
+
+
+            
+            <?=$this->notice?>
+        
+            <form autocomplete="off" action="/signup/" method="post" class="form-horizontal" id="form_signup">
+                <? /*
+                <div class="join-box-fields">
+                    
+                    <div class="field">
+                        <label for="user_name">Username</label>
+                        <div class="field_wrapper">
+                            <?=$this->formText('username', '', array())?>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Email Address</label>
+                        <div class="field_wrapper">
+                            <input type="text" value="" id="email" name="email">
+                        </div>
+                    </div>   
+                    <div class="field">
+                        <label for="confirm_email">Confirm Email Address</label>
+                        <div class="field_wrapper">
+                            <input type="text" value="" id="confirm_email" name="confirm_email">
+                        </div>
+                    </div>  
+                                     
+                    <div class="field">
+                        <label for="user_password">Password</label>
+                        <div class="field_wrapper">
+                            <input type="password" value="" id="password" name="password">
+                        </div>
+                    </div>                    
+                    <div class="field">
+                        <label for="confirm_password">Confirm Password</label>
+                        <div class="field_wrapper">
+                            <input type="password" value="" id="confirm_password" name="confirm_password">
+                        </div>
+                    </div>   
+                    
+                    <div class="field">
+                        <label for="referral_code">Referral code</label>
+                        <div class="field_wrapper">
+                            <input type="text" value="" id="referral_code" name="referral_code">
+                        </div>
+                    </div>
+                     
+                     
+                    <div class="field">
+                        <label for="">Birthday</label> 
+                        <div class="field_wrapper">
+                            <?=$this->formSelect('birthday_year', 'year', null, $years) ?>
+                            <?=$this->formSelect('birthday_month', 'month', null, $months) ?>
+                            <?=$this->formSelect('birthday_day', 'day', null, $days) ?>
+                            
+                            <div id="Birth"></div>
+                        </div>
+                    </div> 
+                                  
+                    <div class="field">
+                    <label for="country">Country</label> 
+                        <div class="field_wrapper">
+                            <?=$this->formSelect('country', '', null, $countries) ?>
+                        </div>
+                    </div> 
+                     
+                    <div class="field">
+                    <label for="timezone">Timezone</label> 
+                        <div class="field_wrapper">
+                            <?=$this->formSelect('timezone', '', null, $timezones) ?>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="clear"></div>
+                <br>
+               
+                
+                <div class="join-button">
+                    <input type="submit" value="Join Now" name="joinnow" class="green-button">
+                </div>
+                */ ?>
+            <?
+                 echo form_field(array("type" => "text", "name" => "username", "value" => "", "label" => "Username"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>                 
+            <?
+                 echo form_field(array("type" => "text", "name" => "email", "value" => "", "label" => "Email"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>                 
+            <?
+                 echo form_field(array("type" => "text", "name" => "confirm_email", "value" => "", "label" => "Confirm email address"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>                 
+            <?
+                 echo form_field(array("type" => "password", "name" => "password", "value" => "", "label" => "Password"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>                  
+            <?
+                 echo form_field(array("type" => "password", "name" => "confirm_password", "value" => "", "label" => "Confirm password"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>                 
+            <?
+                 echo form_field(array("type" => "text", "name" => "referral_code", "value" => "", "label" => "Referal code"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>                
+            <?
+                 echo form_field(array("type" => "select", "name" => "birthday_year", "value" => "", "label" => "Birthday"), $attr = array("class" => "col-lg-5"), $years, $icon = "");
+             ?>                
+            <?
+                 echo form_field(array("type" => "select", "name" => "birthday_month", "value" => "", "label" => " "), $attr = array("class" => "col-lg-5"), $months, $icon = "");
+             ?>                 
+            <?
+                 echo form_field(array("type" => "select", "name" => "birthday_day", "value" => "", "label" => " "), $attr = array("class" => "col-lg-5"), $days, $icon = "");
+             ?>                
+            <?
+                 echo form_field(array("type" => "select", "name" => "country", "value" => "", "label" => "Country"), $attr = array("class" => "col-lg-5"), $countries, $icon = "");
+             ?>               
+            <?
+                 echo form_field(array("type" => "select", "name" => "timezone", "value" => "", "label" => "Timezone"), $attr = array("class" => "col-lg-5"), $timezones, $icon = "");
+             ?>               
+            <?
+                 echo form_field(array("type" => "submit", "name" => "joinnow", "value" => "Join now", "label" => " "), $attr = array("class" => "btn btn-purple"), $timezones, $icon = "");
+             ?> 
+              <p>Please visit <a style="color: #ff00ff;" href='https://epoch.com' target=_blank>EPOCH.COM</a>, our authorized sales agent.</p>
+             
+            </form>
+        </div>
+    </div>

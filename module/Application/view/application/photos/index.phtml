@@ -1,0 +1,146 @@
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse">
+            <form class="navbar-form navbar-right">
+                <div class="form-group">
+                    <select id="selectFilter" class="form-control">
+                        <option <?= ($this->selectedFilter == 'all' ? 'selected' : '') ?> value="all">
+                            All
+                        </option>
+                        <option <?= ($this->selectedFilter == 'approved' ? 'selected' : '') ?> value="approved">
+                            Approved
+                        </option>
+                        <option <?= ($this->selectedFilter == 'denied' ? 'selected' : '') ?> value="denied">
+                            Denied
+                        </option>
+                        <option <?= ($this->selectedFilter == 'pending' ? 'selected' : '') ?> value="pending">
+                            Pending
+                        </option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-success" disabled">Save</button>
+            </form>
+            <p class="navbar-text navbar-right">Filter by </p>
+        </div>
+    </div>
+</nav>
+
+<h3 class="pull-left">Manage Photos</h3>
+<form method="POST" id="photos-form" class="form-horizontal">
+
+    <?
+    if (!count($items)) {
+        echo 'No photos here !';
+    }
+    else {
+
+
+        /**
+         * pass in :
+         * $photo
+         *
+         * @var mixed
+         */
+        foreach ($items as $this->photo) {
+            $disable = "";
+
+            if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["image"])) {
+                if (in_array($this->photo->id, $_SESSION["rate"]["image"])) $disable = " disableRate";
+            }
+            ?>
+
+            <div class="item-box" id="item_<?= $this->photo['p_id'] ?>">
+                <div class="item">
+                    <div class="item-thumb">
+                        <a class="a_cover"
+                           data-fancybox-group="group"
+                           rel="group"
+                           href="<?= $this->photo['p_filename'] ?>"
+                           data-id="<?= $this->photo['p_id'] ?>"
+                           data-type="image"
+                           data-caption="<?= $this->photo['p_caption'] ?> | <?= $this->ago($this->photo['p_added']) ?>  by <a class='tooltip'
+                             title='View profile' href='#'>
+                                           <?= $this->photo['m_displayName'] ?>
+                                        </a>
+                        ">
+                            <img alt="<?= $this->photo['p_caption'] ?>"
+                                 title="<?= $this->photo['p_caption'] ?>  | <?= $this->ago($this->photo['p_added']) ?>  ago by <?= $this->photo['m_displayName'] ?>"
+                                 id="img_<?= $this->photo['p_id'] ?>"
+                                 src="<?= $this->getPhotoThumb($this->photo['p_filename'], 't') ?>">
+                        </a>
+                    </div>
+
+                    <?= $this->partial(
+                        'partials/moderate-items',
+                        array(
+                            'item' => array(
+                                "id" => $this->photo['p_id'],
+                                'active' => $this->photo['p_active'],
+                                "type" => "photo",
+                                "resource" => "manage-photos"
+                            )
+                        )
+                    ) ?>
+
+                    <div class="clear"></div>
+                </div>
+
+            </div>
+        <?php
+        }
+
+    }
+
+    ?>
+</form>
+<div class="clear"></div>
+
+<input type="hidden" name="denied" id="denied"/>
+<input type="hidden" name="approved" id="approved"/>
+<input type="hidden" name="pending" id="pending"/>
+
+
+<?php // add at the end of the file after the table
+    echo $this->paginationControl(
+        // the paginator object
+        $this->paginator,
+        // the scrolling style; see http://zf2.readthedocs.org/en/release-2.1.4/modules/zend.paginator.usage.html#rendering-pages-with-view-scripts
+        'sliding',
+        // the partial to use to render the control
+        array('partials/paginator.phtml', 'Photos'),
+        // the route to link to when a user clicks a control link
+        array(
+            'route' => 'zfcadmin/manage-photos',
+            'routeParams' => array(
+                'selectedFilter' => $this->selectedFilter,
+            )
+        )
+);
+?>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#selectFilter").on("change", function(){
+            window.location = '<?=$this->url('zfcadmin/manage-photos')?>/' + $(this).val();
+        });
+
+
+        /**
+         *
+         */
+        submitItemsForModeration('<?=$this->url('zfcadmin/manage-photos/change-status')?>');
+
+        /**
+         *  init buttons group
+         */
+         initModerationButtons();
+
+        /**
+         * init fancy box with moderation buttons
+         */
+
+        initFancyboxWithModeration();
+
+    });
+</script>

@@ -1,0 +1,172 @@
+
+    <div id="chatContainer">
+
+        <div id="chatTopBar" class="rounded">
+            <span class="count" data-type="timer"></span>
+        </div>
+        <div id="chatLineHolder"></div>
+
+        <div id="chatUsers" class="rounded"></div>
+
+        <div id="chatBottomBar" class="rounded">
+            <div class="tip"></div>
+            <div class="tipEmoticons"></div>
+            <?=$this->formSelect("quotes", 0, null,$this->quotes); ?>
+            <form id="submitForm" method="post" action="" <?=(Auth::isLogged() ? 'style="display: block;"' : 'style="display: none;"')?>>
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <textarea id="chatText" rows="1" name="chatText" class="rounded" maxlength="255" data-id="<?= $this->model->id ?>"></textarea>
+                        </td>
+                        <td style="width: 90px; text-align: center;">
+                            <input type="hidden" name="model_id" value="<?=$this->model->id?>">
+                            <input type="hidden" name="user_id" value="model_<?=$this->model->id?>">
+
+                            <input type="button" class="fontButton" id="fontButton"/>
+                            <input type="button" class="smileyButton" id="smileyButton"/>
+                        </td>
+                        <td style="width: 95px;">
+                            <input type="submit" class="blueButton" value="Submit" />
+                        </td>
+                    </tr>
+                </table>
+
+            </form>
+
+        </div>
+        <div id="emoticonsContainer" class="rounded balloon-pop">
+            <div class="smiley">
+                <img src='/images/emoticons/smile.png' id="smile" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/neutral.png' id="neutral" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/frown.png' id="frown" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/wink.png' id="wink" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/lol.png' id="lol" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/biggrin.png' id="grin" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/tongue.png' id="tongue" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/triste.png' id="sad" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/oh.png' id="surprised" class="insert_emoticon">
+            </div>
+            <div class="smiley">
+                <img src='/images/emoticons/confused.png' id="confused" class="insert_emoticon">
+            </div>
+        </div>
+        <?php //if (Auth::isLogged()) { ?>
+            <?php
+                $styles = (array)json_decode((user()->chat_font ? user()->chat_font : array())) ;
+                $user_chat_id = (Auth::isUser() ? 'user_' : (Auth::isModel() ? 'model_' : '')) . (Auth::isLogged() ? user()->id : 'guest');
+            ?>
+
+            <div id="fontStyleContainer" class="rounded balloon-pop sb_wrapper" style="top: 330px">
+                <form id="fontStyleForm">
+                    <div class="sb_dropdown">
+                        <input type="hidden" name="user_id"
+                               value="<?= $user_chat_id?>"/>
+                        <input type="hidden" name="user_name" value="<?= (Auth::isLogged() ? user()->display_name : "guest") ?>"/>
+                        <ul class="font_name">
+                            <li><strong>Font</strong></li>
+                            <li>
+                                <input type="radio" name="font" class="case" value="comic"
+                                       id="font_comic"<?= (isset($styles["fontName"]) && $styles["fontName"] = 'Comic Sans' ? ' checked' : '') ?>/>
+                                <label for="font_comic">Comic</label>
+                            </li>
+                            <li>
+                                <input type="radio" name="font" class="case" value="courier"
+                                       id="font_courier"<?= (isset($styles["fontName"]) && $styles["fontName"] = 'Courier New' ? ' checked' : '') ?>/>
+                                <label for="font_courier">Courier</label>
+                            </li>
+                            <li>
+                                <input type="radio" name="font" class="case" value="arial"
+                                       id="font_arial"<?= (isset($styles["fontName"]) && $styles["fontName"] = 'Arial' ? ' checked' : '') ?>/>
+                                <label for="font_arial">Arial</label>
+                            </li>
+                        </ul>
+                        <ul class="color">
+                            <li><strong>Color</strong></li>
+                            <li>
+                                <input type="color" name="color"
+                                       value="<?= (isset($styles["color"]) ? trim($styles["color"]) : '#ff0000'); ?>"
+                                       id="color">
+                            </li>
+                        </ul>
+                        <ul class="style">
+                            <li><strong>Style</strong></li>
+                            <li>
+                                <input type="checkbox" name="fontWeight" class="case" value="bold"
+                                       id="bold" <?= (isset($styles["fontWeight"]) ? ' checked' : '') ?>>
+                                <label for="bold"><strong>B</strong></label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="fontItalic" class="case" value="italic"
+                                       id="italic" <?= (isset($styles["fontItalic"]) ? ' checked' : '') ?>>
+                                <label for="italic"><i>I</i></label>
+                            </li>
+                        </ul>
+
+
+                        <ul class="save-btn">
+                            <li>&nbsp;</li>
+                            <li>
+
+                                <button type="button" class="button small btn btn-magenta" id="save-font-btn"
+                                        onClick="App.chat.saveStyles()">Save
+                                </button>
+                            </li>
+                        </ul>
+
+
+                        <div class="clear"></div>
+
+                    </div>
+                </form>
+            </div>
+        <?php //} ?>
+    </div>
+    <div class="broadcast_content_half" id="chat_status" style="float: right;">
+       <div class="wrapper">
+       <?  $content = '';
+            $content .= '<div class="requestContainer">';
+            $type = $_SESSION['user_chat'][$this->model->id]['chat_type'] ? $_SESSION['user_chat'][$this->model->id]['chat_type'] : $this->model->chat_type;
+            $chat_types = array("private", "vip", "group", "3D");
+            $chat_modes = array("spy", "show");
+
+            if(in_array($type, $chat_types)) $type_rate = $type."_chat";
+            elseif(in_array($type, $chat_modes)) $type_rate = $type."_mode";
+            else $type_rate = $type;
+
+            $content .= '<div id="chat_logo" '.($_SESSION['user_chat'][$this->model->id] && ($type != 'normal') ? 'class="private"' : '').'><img id="img_logo" src="'.$this->theme("images/".$type_rate.".png").'" alt="'.$type.'"><span id="chat_label">'.ucwords(str_replace("_", " ", $type_rate)).'</span></div>';
+
+            if($_SESSION['user_chat'][$this->model->id]){ $content .= '<div id="stop_chat_div"><input type="button" id="stop_chat" value="Stop!" />
+                            </div>';
+            $content .= '<script>$("#stop_chat").css("visibility", "visible");</script>';
+            }
+
+
+            $content .= '</div>';
+            echo $content;
+            ?>
+       </div>
+    </div>
+
+    <script>
+        $(function(){
+            $("#quotes").on("change", function(){
+                $("#chatText").val($('#quotes :selected').text());
+            });
+        })
+    </script>

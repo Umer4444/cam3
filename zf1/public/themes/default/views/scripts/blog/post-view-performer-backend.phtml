@@ -1,0 +1,7 @@
+<div class="model_content">
+    <? echo $this->partial("partials/model-submenu.phtml", array("type" => "blog-controller", $this)); ?>
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+        <?php echo $this->partial("blog/post-view-item.phtml", $this); ?>
+    </div>
+</div>

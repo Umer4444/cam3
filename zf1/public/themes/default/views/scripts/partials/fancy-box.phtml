@@ -1,0 +1,32 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("<?=($this->element) ? $this->element : 'a[rel=group]'?>").fancybox({
+            'transitionIn ': 'none',
+            'transitionOut': 'none',
+            'type'         : 'image',
+            'titlePosition': 'over',
+            'resize'       : 'Auto',
+            'autoScale'         : true,
+            'titleFormat': function (title, currentArray, currentIndex, currentOpts) {
+                title = $(currentArray[currentIndex]).data("caption");
+                return '<span id="fancybox-title-over">' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; |&nbsp; ' + title : '') + '</span>';
+            },
+            "onComplete": function (currentArray, currentIndex, currentOpts) {
+
+                //call view item script for recording view
+                type = $(currentArray[currentIndex]).data("type");
+                id = $(currentArray[currentIndex]).data("id");
+
+                if (typeof type != "undefined" && typeof id != "undefined") {
+
+                    if (type.length > 0 && Math.floor(id) == id && $.isNumeric(id) && type == 'image') {
+                        viewItem(id, "image");
+                    }
+                }
+
+
+
+            }
+        });
+    });
+</script>

@@ -1,0 +1,115 @@
+<?php
+
+// we need this as function so we can pass it to node
+if (!function_exists('getDB')) {
+    function getDB() {
+        return array(
+            'database' => 'camclients',
+            'username' => 'root',
+            'password' => 'root',
+            'hostname' => getenv(getenv('PREFIX').'_MYSQL_PORT_3306_TCP_ADDR'),
+            'options' => array(\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'")
+        );
+    }
+}
+
+$dbParams = getDB();
+
+return array(
+    'email_settings' => array(
+        'default_email_sender' => 'debug@perfectweb.ro',
+        'default_email_receiver' => 'debug@perfectweb.ro'
+    ),
+    'router' => array(
+        'routes' => array(
+            'store-domain' => array(
+                'options' => array(
+                    'route' => ':subdomain.camclients.com.local',
+                ),
+            ),
+        ),
+    ),
+    'view_manager' => array(
+        'display_not_found_reason' => true,
+        'display_exceptions' => true,
+    ),
+    'zenddevelopertools' => array(
+        'profiler' => array(
+            'enabled' => true,
+        ),
+        'toolbar' => array(
+            'enabled' => true,
+        ),
+    ),
+    'bjyauthorize' => array(
+        'unauthorized_strategy' => \BjyAuthorize\View\UnauthorizedStrategy::class,
+    ),
+    'service_manager' => array(
+        'factories' => array(
+            'Zend\Db\Adapter\Adapter' => function ($sm) use ($dbParams) {
+                $adapter = new \Zend\Db\Adapter\Adapter(array(
+                    'driver' => 'pdo',
+                    'dsn' => 'mysql:dbname=' . $dbParams['database'] . ';host=' . $dbParams['hostname'],
+                    'database' => $dbParams['database'],
+                    'username' => $dbParams['username'],
+                    'password' => $dbParams['password'],
+                    'hostname' => $dbParams['hostname'],
+                ));
+
+                if (php_sapi_name() == 'cli') {
+                    $logger = new Zend\Log\Logger();
+                    // write queries profiling info to stdout in CLI mode
+                    $writer = new Zend\Log\Writer\Stream('php://output');
+                    $logger->addWriter($writer, Zend\Log\Logger::DEBUG);
+                }
+
+                if (isset($dbParams['options']) && is_array($dbParams['options'])) {
+                    $options = $dbParams['options'];
+                } else {
+                    $options = array();
+                }
+
+                /* \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter($adapter);
+                * -  use in app as \Zend\Db\TableGateway\Feature\GlobalAdapterFeature::getStaticAdapter()
+                */
+                return $adapter;
+            },
+	    ),
+    ),
+    'db' => array(
+        'adapters' => array(
+            'adapter' => array(
+                'driver' => 'pdo',
+                'dsn' => "mysql:dbname={$dbParams['database']};host={$dbParams['hostname']}",
+                'username' => $dbParams['username'],
+                'password' => $dbParams['password'],
+                'driver_options' => (isset($dbParams['options']) && is_array($dbParams['options']) ? $dbParams['options'] : array()),
+            ),
+        ),
+    ),
+    'zfctwig' => array(
+        'environment_options' => [
+            'debug' => true
+        ],
+        'extensions' => array(
+            'debug' => 'Twig_Extension_Debug'
+        ),
+    ),
+    'doctrine' => array(
+        'connection' => array(
+            'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => array(
+                    'host' => $dbParams['hostname'],
+                    'port' => '3306',
+                    'user' => $dbParams['username'],
+                    'password' => $dbParams['password'],
+                    'dbname' => $dbParams['database'],
+                ),
+                'doctrine_type_mappings' => array(
+                    'enum' => 'string'
+                ),
+            ),
+        ),
+    ),
+);

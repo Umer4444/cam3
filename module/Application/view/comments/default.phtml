@@ -1,0 +1,265 @@
+<?php if (count($this->comments)) : ?>
+<div class="media messages-container media-grid">
+    <div>
+        <?php foreach ($this->comments as $comment) : ?>
+            <?php
+            if ($comment->getParent()) {
+                continue;
+            }
+            $pending = false;
+            $user = $this->zfcUserIdentity();
+            if (
+                $comment->getVisible() == \Application\Repository\RbCommentsRepository::pending &&
+                $this->zfcUserIdentity() &&
+                $this->zfcUserIdentity()->getUsername() == $comment->getAuthor()
+
+            ) {
+                $pending = true;
+            } elseif ((!$this->zfcUserIdentity()) ||
+                ($this->zfcUserIdentity() && $this->zfcUserIdentity()->getUsername() != $comment->getAuthor())
+                && $comment->getVisible() == \Application\Repository\RbCommentsRepository::pending
+            ) {
+                continue;
+            }
+        ?>
+        <div class="row row-no-margin margin-top-10">
+            <div class="col-md-1">
+               <?php
+                    if($this->gravatar)  {
+                        echo $this->gravatar(
+                            $comment->getContact(),
+                            array('img_size' => '48'),
+                            array('class' => 'rb-comment-avatar')
+                        );
+                    } else {
+                        echo "<img src='/assets/themes/anakaliyah.com/assets/images/user_default.png' width='60' class='media-object'/>";
+                    }
+                ?>
+            </div>
+            <div class="col-md-10 col-md-offset-1">
+                <div class="panel panel-default">
+                    <div class="panel-heading panel-heading-white">
+                        <div class="pull-right">
+                            <small class="text-muted"><?php echo $comment->getPublished()->format('Y-m-d H:m'); ?></small>
+                        </div>
+                        <a href="#"><?php echo $comment->getAuthor(); if($pending) { ?> - Pending for approval <?php } ?></a>
+                    </div>
+                    <div class="panel-body padding-comment">
+                        <div class="row">
+                            <span class="col-xs-11"><?php echo nl2br($this->escapeHtml($comment->getContent())) ?></span>
+                            <span class="col-xs-1"><a class="reply" data-id="<?=$comment->getId()?>">reply</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <?php if (isset($this->children[$comment->getId()])) {
+                foreach($this->children[$comment->getId()] as $child) {
+                    $pending = false;
+                    $user = $this->zfcUserIdentity();
+                    if (
+                        $child->getVisible() == \Application\Repository\RbCommentsRepository::pending &&
+                        $this->zfcUserIdentity() &&
+                        $this->zfcUserIdentity()->getUsername() == $child->getAuthor()
+
+                    ) {
+                        $pending = true;
+                    } elseif ((!$this->zfcUserIdentity()) ||
+                        ($this->zfcUserIdentity() && $this->zfcUserIdentity()->getUsername() != $child->getAuthor())
+                        && $child->getVisible() == \Application\Repository\RbCommentsRepository::pending
+                    ) {
+                        continue;
+                    }
+                    ?>
+                    <div class="row">
+                        <div class="col-md-1 col-md-offset-1">
+                            <a href="#">
+                                <?php
+                                if ($this->gravatar) {
+                                    echo $this->gravatar(
+                                        $child->getContact(),
+                                        array('img_size' => '48'),
+                                        array('class' => 'rb-comment-avatar')
+                                    );
+                                } else {
+
+                                    echo "<img src='/assets/themes/anakaliyah.com/assets/images/user_default.png' width='60' class='media-object'/>";
+
+                                }
+                                ?>
+
+                            </a>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="panel panel-default">
+                                <div class="panel-heading panel-heading-white">
+                                    <div class="pull-right">
+                                        <small
+                                            class="text-muted"><?php echo $child->getPublished()->format('Y-m-d H:m'); ?></small>
+                                    </div>
+                                    <a href="#"><?php echo $child->getAuthor(); if($pending) { ?> - Pending for approval <?php } ?></a>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <span class="col-xs-11"><?php echo nl2br($this->escapeHtml($child->getContent())) ?></span>
+                                        <span class="col-xs-1"><a class="reply" data-id="<?=$comment->getId()?>">reply</a></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+               <?php }
+            } ?>
+        <?php endforeach ?>
+    </div>
+</div>
+<?php endif ?>
+
+<div class="row row-no-margin">
+<?php
+    $this->form->prepare();
+    $this->form->setAttributes(array('class' => 'form form-vertical col-sm-12', 'role' => 'form'));
+    echo $this->form()->openTag($this->form);
+    echo $this->formHidden($this->form->get('id'));
+    echo $this->formHidden($this->form->get('parent_id'));
+    echo $this->formHidden($this->form->get('csrf'));
+    echo $this->formHidden($this->form->get('thread')->setValue($this->thread));
+    echo $this->formHidden($this->form->get('uri')->setValue($this->uri));
+?>
+
+<?php if(!$this->zfc_user) : ?>
+
+<div class="row row-no-margin">
+    <?php
+        $authorErrorClass = isset($this->validationResults->author) ? 'rb-form-danger' : '';
+        $author = $this->form->get('author');
+        $author->setAttributes(array(
+            'class' => 'rb-form-input ' . $authorErrorClass,
+        ));
+
+        echo $this->formRow($author);
+    ?>
+
+    <?php if (isset($this->validationResults->author)) : ?>
+        <p>
+            <?php
+            foreach ((array) $this->validationResults->author as $validationResult) {
+                echo $validationResult . '<br>';
+            }
+            ?>
+        </p>
+    <?php endif ?>
+    <span class="glyphicon glyphicon-remove-sign"></span>
+</div>
+<div class="row row-no-margin">
+    <?php
+    $contactErrorClass = isset($this->validationResults->contact) ? 'rb-form-danger' : '';
+    $contact = $this->form->get('contact');
+    $contact->setAttributes(array(
+        'class' => 'rb-form-input ' . $contactErrorClass,
+    ));
+
+    echo $this->formRow($contact);
+    ?>
+
+    <?php if (isset($this->validationResults->contact)) : ?>
+        <p>
+            <?php
+            foreach ((array) $this->validationResults->contact as $validationResult) {
+                echo $validationResult . '<br>';
+            }
+            ?>
+        </p>
+    <?php endif ?>
+</div>
+
+<?php else : ?>
+    <br />
+    <div class="form-group">
+        <?php if($this->zfcUserIdentity()) : ?>
+            <?php echo $this->strings['signedinas'] ?>
+            <strong>
+                <?php
+                    $displayName = $this->zfcUserIdentity()->getUsername();
+
+                    if(empty($displayName)) {
+                        $displayName = $this->zfcUserIdentity()->getEmail();
+                    }
+
+                    echo $displayName;
+                ?>
+            </strong>
+            <a class="rb-float-right" href="<?php echo $this->url('zfcuser/logout') ?>">
+                <?php echo $this->strings['signout'] ?>
+            </a>
+
+            <input type="hidden" name="author" value="<?php echo $this->zfcUserIdentity()->getUsername() ?>">
+            <input type="hidden" name="contact" value="<?php echo $this->zfcUserIdentity()->getEmail() ?>">
+            <a class="closeme hidden"><i class="glyphicon glyphicon-remove-sign pull-right"></i></a>
+        <?php else : ?>
+            <?php echo $this->strings['notsignedin'] ?>
+            <a href="<?php echo $this->url('zfcuser/login') ?>">
+                <?php echo $this->strings['signin'] ?>
+            </a>
+        <?php endif ?>
+
+    </div>
+
+<?php endif ?>
+
+<?php if(($this->zfc_user && $this->zfcUserIdentity()) || !$this->zfc_user) : ?>
+
+    <div class="form-group">
+        <div class="share col-sm-10">
+            <?php
+            $contentErrorClass = isset($this->validationResults->content) ? 'rb-form-danger' : '';
+            $content = $this->form->get('content');
+            $content->setAttributes(array(
+                'class' => 'form-control share-text' . $contentErrorClass,
+            ));
+
+            echo $this->formRow($content);
+            ?>
+
+            <?php if (isset($this->validationResults->content)) : ?>
+                <p>
+                    <?php
+                    foreach ((array)$this->validationResults->content as $validationResult) {
+                        echo $validationResult . '<br>';
+                    }
+                    ?>
+                </p>
+            <?php endif ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="share col-sm-2">
+            <?php
+            $submitBtn = $this->form->get('submit')->setAttribute('class', 'btn btn-magenta solo-offset');
+            echo $this->formSubmit($submitBtn) ?>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <br />
+    <div class="row-fluid"><label>&nbsp;<?php echo $this->strings['required'] ?></label></div>
+<?php endif ?>
+
+<?php echo $this->form()->closeTag(); ?>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+       $('.reply').click(function(){
+           var id = $(this).data('id');
+           $('.closeme').removeClass('hidden');
+           $('#parentId').val(id);
+           $('#rbcomment').parent().appendTo($(this).parent().parent().parent());
+       });
+        $('.closeme').click(function(){
+            $(this).addClass('hidden');
+            $('#parentId').val();
+            $('#rbcomment').parent().appendTo('.messages-container');
+        });
+    });
+</script>

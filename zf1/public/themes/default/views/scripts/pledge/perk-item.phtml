@@ -1,0 +1,85 @@
+<?
+$delete = false;
+$moderate = false;
+if ($this->pledge && $this->perk->status != 1) {
+
+    if (Auth::isModel() && $this->pledge->id_model == user()->id && isset($this->frontend)) {
+        $delete = true;
+    }
+    if (Auth::isModerator() && (user()->id == 0 || user()->id == $this->pledge->id_moderator) && isset($this->frontend)) {
+        $moderate = true;
+    }
+}
+
+?>
+<?php
+$class = "";
+if ((Auth::isModel() && $this->pledge->id_model == user()->id) || (Auth::isModerator() && (user()->id == 0 || user()->id == $this->pledge->id_moderator))) {
+    if ($this->perk->status == 1) $class = " green-back";
+    elseif ($this->perk->status == 2) $class = " orange-back";
+    elseif ($this->perk->status == -1) $class = " red-back";
+}
+
+$edit_url = null;
+if (Auth::isModel())
+    $edit_url = $this->url(array("id_model" => $this->pledge->id_model, "id_pledge" => $this->pledge->id, "id_perk" => $this->perk->id, "perk-edit-performer-backend"));
+elseif (Auth::isModerator())
+    $edit_url = $this->url(array("id_model" => $this->pledge->id_model, "id_pledge" => $this->pledge->id, "id_perk" => $this->perk->id, "perk-edit-performer-backend"));
+
+$active = false;
+if ((time() <= $this->pledge->end_date && $this->perk->status == 1) || ($this->perk->quantity != 0 && $this->perk->quantity < $this->perk->contributors)) {
+    $class .= " hover";
+    $active = true;
+}
+
+?>
+<? if ($this->perk->status == 1 || $delete || $moderate) { ?>
+    <div class="perk<?= $class ?>" data-id="<?= $this->perk->id ?>" data-pledge="<?= $this->pledge->id ?>">
+        <? /* report */ ?>
+        <span class="reports tooltip top" style="float:right" title="Report this" data-type="perk"
+              data-id="<?= $this->perk->id ?>"></span>
+        <? /* </ report */ ?>
+        <? if (Auth::isModerator() && user()->id == 0) { ?>
+        <a title="Click to edit"
+           href="<?= $this->url(array("id_model" => $this->pledge->id_model, "id_pledge" => $this->pledge->id, "id_perk" => $this->perk->id, "name" => $this->pledge->model_screen_name), "perk-edit-moderator-backend") ?>"
+           class="btext" style="display: inline">
+            <? } else if ($active) { ?>
+            <a href="<?= $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title), "id_perk" => $this->perk->id), "pledge-contribute-frontend") ?>"
+               class="btext" style="display: inline">
+                <? } ?>
+                <div class="title magenta">
+                    <? if ($delete || $moderate) { ?>
+                        <input type="checkbox" class="casePerk" value="<?= $this->perk->id ?>"/>
+                    <? } ?>
+                    <?= $this->perk->title ?>
+
+                </div>
+                <div class="amount">Pledge $<?= ($this->perk->amount) ?> or more
+                    <small>(<?= ($this->perk->amount) ?> chips)</small>
+                </div>
+
+                <div class="description"><?= $this->perk->description ?></div>
+                <div class="contributors">
+                    <? /*<span class="magenta" style="font-size:18px;">&bull;</span> */ ?>
+                    <?= $this->perk->contributors ?><?= ($this->perk->quantity > 0 ? " of " . $this->perk->quantity : "") ?>
+                    contributors
+                </div>
+                <div class="delivery">
+                    <? /* <span class="magenta" style="font-size:18px;">&bull; </span>  */ ?>
+                    <?php if ($this->perk->shipping != "no") { ?>
+                        <span
+                            class="magenta"> Shipping </span><?= ($this->perk->shipping == "us" ? "US only" : "Worldwide") ?> /
+                    <? } ?>
+                    <span class="magenta"> Delivery </span><?= date("F Y", $this->perk->estimated_delivery) ?>
+
+                </div>
+                <div class="clear"></div>
+                <? if ($active) { ?>
+            </a>
+        <? } ?>
+            <? if ($this->perk->filename) { ?>
+                <img src="/uploads/photos/<?= $this->perk->filename ?>" class="perkimg" data-id="<?= $this->perk->id ?>"
+                     style="display: none; position: absolute;"/>
+            <? } ?>
+    </div>
+<? } ?>

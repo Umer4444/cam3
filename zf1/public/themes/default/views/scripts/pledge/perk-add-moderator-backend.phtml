@@ -1,0 +1,22 @@
+<?
+$title = 'Manage pledges';
+$this->headTitle($title);
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "model",
+        "acl" => $this->acl,
+        "user" => $this->model));
+
+if ($this->pledge->status != 1) {
+    echo $this->partial("partials/moderation-bar.phtml", array("type" => "pledge", "pledge" => $this->pledge, "screen_name" => $this->params["name"]));
+}
+
+?>
+
+<?= $this->notice ?>
+    <div class="page-content round-corners">
+        <?= $this->partial("pledge/perk-add-form.phtml", $this); ?>
+    </div>
+
+<?= $this->partial("pledge/perk-list.phtml", $this); ?>

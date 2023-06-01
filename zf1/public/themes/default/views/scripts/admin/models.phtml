@@ -1,0 +1,189 @@
+<? $this->headTitle(($this->type != 'all' ? ucwords($this->type) . ' ' : '') . 'Models'); ?>
+<?
+    //get view helper
+    $sm = Zend_Registry::get("service_manager");
+    $vhm = $sm->get('ViewHelperManager');
+    $previewStats = $vhm->get("previewStats");
+
+?>
+
+<div class="page-content round-corners">
+
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= ($this->type != 'all' ? ucwords($this->type) . ' ' : '') ?> Models</h1>
+
+    <br><br>
+    <table class="list_models" cellpadding="5" cellspacing="1">
+        <tr class="table_header">
+            <th style="width: 50px">Cover</th>
+            <th>Name</th>
+            <th>Screen Name</th>
+            <th>Email</th>
+            <th style="width: 50px">Gender</th>
+            <th style="min-width: 50px">Birthday</th>
+            <th>Country</th>
+            <th>Contract</th>
+            <th>Photo ID</th>
+            <th>Referall</th>
+            <th>Studio</th>
+            <th>Manager</th>
+            <th>Payout</th>
+            <th>Joined</th>
+            <th>Ip</th>
+            <th>Solo domain</th>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-account-settings", "view")) { ?>
+                <th style="width: 50px">Account</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "view")) { ?>
+                <th style="width: 50px">Profile</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "view") && $_SESSION["user"]["id"] == 0) { ?>
+                <th style="width: 50px">Login As Model</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "edit")) { ?>
+                <th>Actions</th>
+            <? } ?>
+
+        </tr>
+        <?
+        if (!count($this->paginator)) {
+            $message = '';
+            switch ($this->type) {
+                case 'all':
+                    $message = "No models found.";
+                    break;
+                case 'active':
+                    $message = "There are no active models.";
+                    break;
+                case 'pending':
+                    $message = "There are no models waiting for approval.";
+                    break;
+                case 'denied':
+                    $message = "There are no denied models.";
+                    break;
+
+            }
+            echo "<tr><td colspan='100'>" . $message . "</td></tr>";
+        } else {
+
+            foreach ($this->paginator as $model) {
+                $model = $model["user"];
+
+                $profile = $this->userRepo->getProfileSettings($model->getId());
+                $account = $this->userRepo->getAccountSettings($model->getId());
+
+        /*  r($profile);
+          r($account);
+          r($model);
+                exit;*/
+
+                $type = '';
+
+                switch ($model->active) {
+                    case 1:
+                        $type = 'active';
+                        break;
+                    case 0:
+                        $type = 'pending';
+                        break;
+                    case -1:
+                        $type = 'denied';
+                        break;
+
+                }
+                $cycle = $this->cycle(array("light", "dark"))->next();  ?>
+
+                <tr class="<?= $cycle ?>">
+                    <td style="width: 50px"><a target="_blank" href="<? // $model->getCover() ?>"><img
+                                src="<? // $model->getCover() ?>" border="0" width="50"></a></td>
+                    <td>
+                        <? //= $model->first_name ?> <?= $model->name ?>
+                        <?=(isset($account['billing_first_name']) ? $account['billing_first_name']["value"] : "")?>
+                        <?=(isset($account['billing_last_name']) ? $account['billing_last_name']["value"] : "")?>
+                    </td>
+                    <td>
+                        <a href="<?= $this->url(array("id_model" => $model->getId(), "name" => ($model->getDisplayName() ? $model->getDisplayName() : 'no name'), "profile_type" => "profile"), "model-profile") ?>"
+                           title="view public profile" target="_blank"><?= $model->getDisplayName(); ?></a></td>
+                    <td><?= $model->getEmail; ?></td>
+                    <td style="width: 50px"><?= $profile["gender"]["value"]; ?></td>
+                    <td style="min-width: 50px">
+                        <center><?= $account["birthday_real"]["value"]; ?>
+                            <br><?= $account["birthday_real"]["value"] ? date('Y', time()) - substr($account["birthday_real"]["value"], 0, 4) : '' ?> yrs
+                        </center>
+                    </td>
+                    <td><?= ($profile['default_profile_address']['value'] && $profile['default_profile_address']['value']->getCountry() ? $profile['default_profile_address']['value']->getCountry()->getCountry() : '') ?></td>
+                    <td><?php if ($model->terms_agreed == 1) echo "SIGNED"; else echo "not signed"; ?></td>
+                    <td><?php if (is_null($model->filename)) echo "N/A"; else echo "<img src='/uploads/" . $model->filename . "' />"; ?></td>
+                    <td><?php if (is_null($model->referral_code)) echo "NO"; else echo "YES"; ?></td>
+                    <td><?php if (is_null($model->name)) echo "N/A"; else echo $model->name; ?></td>
+                    <td><?php if (is_null($model->manager_username)) echo "N/A"; else echo $model->manager_username; ?></td>
+                    <td><?php if (is_null($model->payment_min_amount)) echo "N/A"; else echo $model->payment_min_amount . ' ' . $model->payment_currency; ?></td>
+                    <td><?php if (is_null($model->getJoined())) echo "N/A"; else echo date('Y-m-d', $model->getJoined()); ?></td>
+                    <td><?php if (is_null($model->getIpAddress())) echo "N/A"; else echo $model->getIpAddress(); ?></td>
+
+                    <td>
+                        <?php if (!empty($model->performer_domain)) { ?>
+                            <a href="http://<?= $model->performer_domain ?>" class="external_link tooltip top"
+                               target="_blank" title="<?= $model->performer_domain ?>"></a>
+                        <? } ?>
+                    </td>
+
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "model-account-settings", "view")) { ?>
+                        <td style="width: 50px; text-align: center;">
+                            <a href="<?= $this->url(array("id" => $model->getId(), "name" => ($model->getDisplayName() ? $model->getDisplayName() : 'n-a'), "manage" => "edit"), "manage-model-account") ?>"><img
+                                    border="0" title="Edit model account" alt="Edit"
+                                    src="/images/icons/edit_account.png"></a>
+                        </td>
+                    <? } ?>
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "view")) { ?>
+                        <td style="width: 50px; text-align: center;">
+                            <a href="<?= $this->url(array("id" => $model->getId(), "name" => ($model->getDisplayName() ? $model->getDisplayName() : 'n-a'), "manage" => "edit"), "manage-model") ?>"><img
+                                    border="0" title="Edit model profile" alt="Edit" src="/images/icons/edit.png"></a>
+                        </td>
+                    <? } ?>
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "view") && $_SESSION["user"]["id"] == 0) { ?>
+                        <td style="width: 50px; text-align: center;">
+
+                            <?php ?>
+                            <a href="<?= $this->url(array("id" => $model->getId(), "type" => "model"), "admin-login-as") ?>"><img
+                                    border="0" title="Login as model" alt="View"
+                                    src="/images/icons/profile_preview.png"></a>
+                            <?php ?>
+                        </td>
+                    <? } ?>
+
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "edit")) { ?>
+                        <td style="width: 60px; text-align: right;">
+                            <? if ($type == 'denied' || $type == 'pending') { ?>
+                                <a class="left"
+                                   href="<?= $this->url(array("id" => $model->getId(), "name" => $model->first_name . " " . $model->name, "manage" => "approve"), "manage-model") ?>"><img
+                                        border="0" title="Approve model" alt="Approve" src="/images/icons/checked.png"></a>
+                            <? } ?>
+                            <? if ($type == 'active' || $type == 'pending') { ?>
+                                <a onclick="return confirm('Are you sure you want to deny this model account?')"
+                                   href="<?= $this->url(array("id" => $model->getId(), "name" => $model->first_name . " " . $model->name, "manage" => "deny"), "manage-model") ?>"><img
+                                        border="0" title="Deny model" alt="Deny" src="/images/icons/disable.png"></a>
+                            <? } ?>
+                            <? if ($type == 'denied') { ?>
+                                <a onclick="return confirm('Are you sure you want to delete this model account?')"
+                                   href="<?= $this->url(array("id" => $model->getId(), "name" => $model->getDisplayName(), "manage" => "delete"), "manage-model") ?>"><img
+                                        border="0" title="Delete model" alt="Delete" src="/images/icons/delete.png"></a>
+                            <? } ?>
+                        </td>
+                    <? } ?>
+
+                </tr>
+            <?
+            }
+        }
+        ?>
+
+    </table>
+    <?
+
+    echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+
+    ?>
+</div>
+ 

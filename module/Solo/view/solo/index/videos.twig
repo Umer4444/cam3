@@ -1,0 +1,34 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    {% if videoId %}
+        {% set
+
+            vars = {
+                'thumbs' : thumbs,
+                'categories' : categories,
+                'userChips' : userChips,
+                'buyForm' : buyForm,
+                'enoughChips' : enoughChips,
+                'perSecond' : perSecond,
+                'purchased' : purchased,
+                'reviewsPending' : reviewsPending,
+                'reviews' : reviews,
+                'form' : form,
+                'video' : video,
+                'videoId' : videoId,
+                'name' : name
+            }
+
+        %}
+    {% else %}
+        {% set vars = {
+            'rows' : videos,
+            'perSecond' : perSecond,
+        } %}
+    {% endif %}
+
+    <div class="row margin-10">
+        {% include 'solo/partial/video' with vars %}
+    </div>
+
+{% endblock %}

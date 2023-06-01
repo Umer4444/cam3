@@ -1,0 +1,11 @@
+{% if rows|length == 0 %}
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert">
+            No videos uploaded yet!
+        </div>
+    </div>
+{% else %}
+    {% for video in rows %}
+        {% include 'video-item' %}
+    {% endfor %}
+{% endif %}

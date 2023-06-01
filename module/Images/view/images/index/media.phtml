@@ -1,0 +1,45 @@
+<?php
+$this->headTitle()->prepend('Media');
+?>
+<div class="background-rounded">
+<link href="<?= $this->basePath() ?>/css/bootstrap-duallistbox.css" media="screen" rel="stylesheet" type="text/css">
+<script src="<?= $this->basePath() ?>/js/jquery.bootstrap-duallistbox.js"></script>
+
+<?= $this->partial('application/dashboard/partial/tab-menu'); ?>
+
+<div class="main">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="span12">
+
+                <div class="widget stacked">
+
+                    <div class="widget-header">
+                        <h3>Media</h3>
+                    </div>
+
+                    <div class="widget-content">
+                        <br/>
+
+                        <fieldset align="left">
+                            <a href="<?= $this->url('media/addImage') ?>" class="btn"> Upload a new photo </a>
+                            <a href="<?= $this->url('media/addAlbum') ?>" class="btn"> Add a new album </a>
+                        </fieldset>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    </div>
+</div>
+

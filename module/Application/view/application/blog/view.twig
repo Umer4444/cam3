@@ -1,0 +1,95 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <div class="row row-no-margin padding-10">
+            <div class="col-sm-6 col-lg-6 col-md-6 generic-border padding-10">
+                <h3 class="album-title-h2 no-top-margin pink-background">
+                    <strong>{{ blog.getTitle() }}</strong>
+                </h3>
+                <hr>
+                <div class="form-group">
+                    <div class="text-center form-group centered">
+                        <img src="{{ blog.getBigCover() }}" class="img-responsive centered"/>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="rating-video pull-right">
+                            <div class="right">
+                                {#{{ likes(blog) }}#}
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="pull-left">
+                            {% if blog.getTags() %}
+                                Tags: {% include 'tags' with {'tags' : blog.getTags(), 'route': 'blog/filters'} %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <hr>
+                    <div class="col-sm-12 text-justify">
+                        {{ blog.getContent() }}
+                    </div>
+                    <div class="clear"></div>
+                    <hr>
+                </div>
+                <div class="form-group">
+                    <div class="row row-no-margin">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Comments</div>
+                                <div class="panel-body">
+                                    {{ commentCustom('default', 1, blog.getUser().getGuestbook() ?: 'null', blog.getUser().getId()) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-6 col-md-6 padding-10 margin-top-10-less">
+                <div class="form-group margin-bottom-0">
+                    <div class="row row-no-margin">
+                        <div class="col-sm-6 text-center">
+                            <div class="blog-buttons">
+                                <a href="{{ nextBlog(blog, prev) }}" class="btn btn-default btn-block">
+                                    <i class="glyphicon glyphicon-backward"></i> Previous Post
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 text-center">
+                            <div class="blog-buttons">
+                                <a href="{{ nextBlog(blog, 'next') }}" class="btn btn-default btn-block">
+                                    Next Post <i class="glyphicon glyphicon-forward"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row row-no-margin margin-top-10">
+                        <div class="col-sm-4 text-center">
+                            <div class="blog-buttons">
+                                {{ user().buttons().favorite() }}
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <div class="blog-buttons">
+                                {{ user().buttons().follow() }}
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <div class="blog-buttons">
+                                {{ user().buttons().friend() }}
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group ad margin-bottom-0">
+                    {{ related(newInstance('Application\\Entity\\BlogPosts'), 'blog/related', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST'), null, 4) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

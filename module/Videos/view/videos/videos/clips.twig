@@ -1,0 +1,58 @@
+{% extends 'layout/frontend' %}
+
+{% block headerImage %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <img src="images/common-banner.jpg" id="image" height="auto" width="100%" style="top: 0px;">
+            <div class="parallex-main-title">
+                <div class="para">
+                    <div class="para-title">
+                        <h1 style="text-align: center;">Clips Page</h1>
+                        <h5 >Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt <br>ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock headerImage %}
+
+{% block content %}
+
+
+
+    <div class="search_bar visible-xs">
+        <form class="form-search form-inline">
+            <input type="text" class="form-control input-sm" placeholder="Search">
+        </form>
+    </div>
+    <div class="row">
+        <div class="club-page form-group" id="clips-list">
+            <div class="col-lg-12 col-sm-12 col-xs-12">
+                <h5><strong>FEATURED CLIPS</strong></h5>
+            </div>
+            {{ related(newInstance('Videos\\Entity\\Video'), 'video/partial/related', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST')) }}
+        </div>
+        <div class="col-sm-12">
+            <div class="text-right">
+                <h4><a href="clips/list" class="theme-color ">Read More</a></h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="club-page form-group" id="clips-list">
+            <div class="col-lg-12 col-sm-12 col-xs-12">
+                <h5><strong>POPULAR CLIPS</strong></h5>
+            </div>
+            {{ related(newInstance('Videos\\Entity\\Video'), 'video/partial/related', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_POPULAR')) }}
+        </div>
+        <div class="col-sm-12">
+            <div class="text-right">
+                <h4><a href="clips/list" class="theme-color ">Read More</a></h4>
+            </div>
+        </div>
+    </div>
+
+    {#{{ video.getCategories() }}#}
+
+{% endblock %}

@@ -1,0 +1,51 @@
+<?php $this->headScript()->appendFile('/js/country-provinces.js'); ?>
+
+<?= $this->partial('solo/dashboard/partial/tab-menu'); ?>
+
+<div class="background-rounded">
+    <?php
+
+    $form = $this->form;
+    $form->prepare();
+    $form->setAttribute('method', 'post');
+    $form->setAttribute('class', 'form-horizontal center');
+
+    $submitElement = new \Zend\Form\Element\Button('submit');
+    $submitElement
+        ->setLabel('Save address')
+        ->setAttributes(array(
+            'type' => 'submit',
+        ));
+    $form->add($submitElement);
+
+    $form->get('submit')->setOptions(array('skipLabel' => true));
+    $form->get('submit')->setAttributes(array("class" => "btn btn-magenta"));
+    ?>
+
+    <div class="col-md-12">
+        <h2> Edit address</h2>
+        <?php echo $this->ztbForm($form); ?>
+    </div>
+</div>
+<script type="text/javascript">
+    (function () {
+        var jQuery = $;
+        $('.autocomplete').selectToAutocomplete({
+            'relevancy-sorting': true,
+            'relevancy-sorting-booster-attr': 'weight',
+            'alternative-spellings': true,
+            'alternative-spellings-attr': 'alt-spelling'
+        });
+
+    })();
+
+    $(document).ready(function () {
+        var i = $('select[name="country"]').children('option[selected="selected"]');
+
+        //init countryProvince
+        province = $("select[name=province]");
+        country = $("select[name=country]");
+        countryProvinces(province, country);
+    });
+
+</script>

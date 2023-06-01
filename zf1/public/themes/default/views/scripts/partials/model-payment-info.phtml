@@ -1,0 +1,108 @@
+<div class="page-content round-corners">
+
+    <?
+    $payment_methods = array(' -- ');
+    //    foreach($this->payment_methods as $pay_m){
+    //        $payment_methods[$pay_m->id] = $pay_m['name'];
+    //    }
+    $payment_methods = array("0" => " -- ", "2" => "Paxum", "1" => "PayPal");
+    $currency = array("eur" => "EUR Euro", "usd" => "USD United States Dollars");
+
+
+    $p_info_data = array();
+    foreach ($this->payments_info as $p_info) {
+        $p_info_data[$p_info->payment_method] = unserialize($p_info->info);
+    }
+
+    ?>
+
+    <?php if($this->notice) { ?>
+        <div class="alert alert-success" role="alert">
+            <strong><?= $this->notice; ?> </strong>
+        </div>
+    <? } ?>
+
+    <h1 class="page-title"><?= (Auth::isModerator() ? $this->model->first_name . " " . $this->model->name . "'s " : "") ?> Payment Info</h1>
+
+    <form action="" method="post" enctype="multipart/form-data" class="form-inline"
+          id="form_account_payment<?= (Auth::isModerator() ? "_admin" : "") ?>">
+        <div class="join-box-fields">
+
+            <div class="form-group">
+                <label for="payment_method">Withdraw type</label>
+
+                <div class="col-xs-12">
+                    <?= $this->formSelect('payment_method', $this->model->payment_method, array("onChange" => "onWithdrawTypeChanged(this, 'withdrawRow'); return false;", "class"=>"form-control"), $payment_methods) ?>
+                </div>
+            </div>
+
+            <div class="field form-group">
+                <label for="payment_currency">Withdraw currency</label>
+
+                <div class="field_wrapper col-xs-12">
+                    <?= $this->formSelect('payment_currency', $this->model->payment_currency, array("class" => "form-control"), $currency) ?>
+                </div>
+            </div>
+
+            <div class="field form-group">
+                <label for="payment_min_amount">Minimum amount</label>
+
+                <div class="field_wrapper col-xs-12">
+                    <?= $this->formText('payment_min_amount', $this->model->payment_min_amount, array('class' => 'small_tfield_date form-control')) ?>
+                </div>
+            </div>
+
+            <div id="withdrawRow" name="withdrawRow"
+                 withdraw="1" <?= $this->model->payment_method != 1 ? 'style="display: none"' : '' ?>>
+                <h3>Paypal Information</h3>
+
+                <div class="field form-group">
+                    <label for="paypal_account">Paypal Account</label>
+
+                    <div class="field_wrapper col-xs-12">
+                        <?= $this->formText('paypal_account', $p_info_data[1]['paypal_account'], array('class' => 'form-control')) ?>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="withdrawRow" name="withdrawRow"
+                 withdraw="2" <?= $this->model->payment_method != 2 ? 'style="display: none"' : '' ?>>
+                <h3>Paxum Information</h3>
+
+                <div class="field form-group">
+                    <label for="paxum_account">Paxum Account</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formText('paxum_account', $p_info_data[2]['paxum_account'], array('class' => 'form-control')) ?>
+                    </div>
+                </div>
+            </div>
+
+            <div id="withdrawRow" name="withdrawRow"
+                 withdraw="6" <?= $this->model->payment_method != 6 ? 'style="display: none"' : '' ?>>
+                <h3>CCBill Information</h3>
+
+                <div class="field form-group">
+                    <label for="paxum_account">CCBill Account</label>
+
+                    <div class="field_wrapper col-sm-12">
+                        <?= $this->formText('CCBill_account', $p_info_data[6]['CCBill_account'], array('class' => 'form-control')) ?>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br/>
+        <div class="join-button">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="submit" name="save" value="Save" class="btn btn-success btn btn-success">
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>

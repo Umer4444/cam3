@@ -1,0 +1,118 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+<div class="main-content">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <div class="content-block">
+                    <div class="text-center calender-title">CamClients Calendar</div>
+                    <div class="text-center center-block">
+                        <img src="/assets/images/calender-title-bottom.jpg" alt="bottom" class="img-responsive text-center center-block">
+                    </div>
+                    {% block timezoneSelect %}
+                        {{ timezone() }}
+                    {% endblock %}
+                    <div class="col-sm-7">
+                        <div class="panel panel-default panel1">
+                            <div class="panel-heading theme-grad-bg">
+                                <h4 class="panel-title text-center">NEXT SHOW START IN</h4>
+                            </div>
+                            <div style="" aria-expanded="true" id="Account" class="panel-collapse collapse in ">
+                                <div class="clock"></div>
+
+                                <div class="message"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default panel1">
+                        <div class="panel-heading theme-grad-bg">
+                            <h4 class="panel-title">
+                                <a aria-expanded="true" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#one">
+                                    {{ date('Monday last week').format('M d, Y') }} through {{ date('Monday last week +6 days').format('M d, Y') }}
+                                    <span class="fa fa-angle-down pull-left " style="margin-right:20px;"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div style="" aria-expanded="true" id="one" class="panel-collapse collapse in calender-group">
+                            <ul>
+                                {{ related(newInstance('Application\\Entity\\ModelSchedule'), 'calendar/eventNext', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_DATE'), date('Monday last week')) }}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default panel1">
+                        <div class="panel-heading theme-grad-bg">
+                            <h4 class="panel-title">
+                                <a aria-expanded="true" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#two">
+                                    {{ date('Monday this week').format('M d, Y') }} through {{ date('Monday this week +6 days').format('M d, Y') }}
+                                    <span class="fa fa-angle-down pull-left " style="margin-right:20px;"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div style="" aria-expanded="true" id="two" class="panel-collapse collapse in calender-group">
+                            <ul>
+                                {{ related(newInstance('Application\\Entity\\ModelSchedule'), 'calendar/event', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_DATE'), date('Monday this week')) }}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default panel1">
+                        <div class="panel-heading theme-grad-bg">
+                            <h4 class="panel-title">
+                                <a aria-expanded="true" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#three">
+                                    {{ date('Monday next week').format('M d, Y') }} through {{ date('Monday next week +6 days').format('M d, Y') }}
+                                    <span class="fa fa-angle-down pull-left " style="margin-right:20px;"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div style="" aria-expanded="true" id="three" class="panel-collapse collapse in calender-group">
+                            <ul>
+                                {{ related(newInstance('Application\\Entity\\ModelSchedule'), 'calendar/eventNext', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_DATE'), date('Monday next week')) }}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default panel1">
+                        <div class="panel-heading theme-grad-bg">
+                            <h4 class="panel-title">
+                                <a aria-expanded="true" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#four">
+                                    {{ date('Monday next week +7 days').format('M d, Y') }} through {{ date('Monday next week +13 days').format('M d, Y') }}
+                                    <span class="fa fa-angle-down pull-left " style="margin-right:20px;"></span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div style="" aria-expanded="true" id="four" class="panel-collapse collapse in calender-group">
+                            <ul>
+                                {{ related(newInstance('Application\\Entity\\ModelSchedule'), 'calendar/eventNext', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_DATE'), date('Monday next week +7 days')) }}
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var clock;
+    $(document).ready(function() {
+        var clock;
+        clock = $('.clock').FlipClock({
+            clockFace: 'DailyCounter',
+            autoStart: false,
+            callbacks: {
+                stop: function() {
+                    $('.message').html('The clock has stopped!')
+                }
+            }
+        });
+        clock.setTime({{ nextShow() }});
+        clock.setCountdown(true);
+        clock.start();
+    });
+</script>
+
+{% endblock %}

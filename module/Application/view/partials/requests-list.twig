@@ -1,0 +1,18 @@
+<div class="main-content">
+    <div class="search_bar visible-xs">
+        <form class="form-search form-inline">
+            <input type="text" class="form-control input-sm" placeholder="Search">
+        </form>
+    </div>
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <div class="content-block">
+                    <div class="results">
+                        {%  include 'requestsItem' with {users:users} %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

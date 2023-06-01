@@ -1,0 +1,194 @@
+<?
+$modelStatus = $this->model->getModelStatus($this->model->id);
+$isFollowing = $this->model->isFollower();
+$rates = $this->model->getModelRates();
+
+if ($modelStatus['id_status'] == 0) {
+    $ribbon_css = 'offline';
+} elseif ($modelStatus["id_status"] != "0" && strtolower($this->model->quality) == "hd") {
+    $ribbon_css = 'high-def';
+}
+
+$serviceLocator = Zend_Registry::get('service_manager');
+$videoRepo = $serviceLocator->get('doctrine.entity_manager.orm_default')->getRepository('Videos\Entity\Video');
+/*$set = $serviceLocator->get('doctrine.entity_manager.orm_default')->getRepository('Application\Entity\User')->getProfileSettings($this->model->id);*/
+$user = $serviceLocator->get('doctrine.entity_manager.orm_default')->getRepository('Application\Entity\User')->find($this->model->id);
+if(!$user) return;
+$video = $user->getIntroVideo();
+
+if ($video && array_key_exists('value', $video) && $video['value'] instanceof Videos\Entity\Video) {
+    $video = $video['value']->getFilename();
+} else {
+    $video = null;
+}
+?>
+<div class="girl-box col-md-4 <?= $ribbon_css ?>">
+    <div class="girl-container">
+        <div class="girl-box-head box-bg status_<?= $modelStatus['id_status'] ?>">
+            <? if ($modelStatus['id_status'] != 0) { ?>
+                <a href="<?= $this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name), "watch") ?>"> <?= $modelStatus['status'] ?> </a>
+            <? } else { ?>
+                <span><?= $modelStatus['status'] ?></span>
+            <? } ?>
+
+        </div>
+        <div class="chats <?= $ribbon_css ?>">
+            <span
+                class="<?= ($this->model->broadcast_mode) ? (($this->model->broadcast_mode == "duplex" || $this->model->broadcast_mode == "video") ? "" : "no_") : 'no_' ?>webcam"></span>
+            <span
+                class="<?= ($this->model->broadcast_mode) ? (($this->model->broadcast_mode == "duplex" || $this->model->broadcast_mode == "audio") ? "" : "no_") : 'no_' ?>microphone"></span>
+            <span class="<?= ($this->model->broadcast_mode) ? "" : 'no_' ?>keyboard"></span>
+        </div>
+        <div class="girl" id="model_<?= $this->model->id; ?>">
+
+            <? if ($this->show_favorite_btn == 1) { ?>
+                <a href="javascript:;" onclick="App.user.my_favorites.remove_my_favorites(<?= $this->model->id ?>)"><img
+                        id="favorites_<?= $this->model->id ?>" class="remove" src="/images/remove_favorite.png"
+                        title="Remove from favorites!"></a>
+            <? } ?>
+            <div class="wrap">
+                <div class="wrap">
+                    <span class="name pull-left"><?= $this->model->screen_name ?></span>
+                    <span class="details pull-right">
+                        <?= $this->model->birthday ? date('Y', time()) - substr($this->model->birthday, 0, 4) : '' ?>
+                        <span class="years">yrs</span>
+                    </span>
+                </div>
+                <div class="clear"></div>
+                <div class="avatar">
+                    <div class="avatar-ribbon <?=($video ? '' : 'no-hide-on-hover')?>"></div>
+                    <div class="cover-placement">
+                        <img alt="<?= $this->model->screen_name ?> cover picture" src="<?= $this->model->getCover() ?>">
+                    </div>
+                    <?php if($video) { ?>
+                    <embed style="display:none;"
+                           src="/assets/vendor/uploadify/uploadify.swf?file=/uploads/videos/<?= $video ?>&amp;autostart=true&shownavigation=false&showdigits=false&showicons=false&controlbar=none"
+                           type="application/x-shockwave-flash"
+                           width="260"
+                           height="193"
+                           wmode="transparent"
+                    <flashvars
+                    ="
+                    plugins=ova-jw&ova.tag=http://openx.openvideoads.org/ads/static-pre-roll-ad-tag.xml&file=http://streaming.openvideoads.org/shows/the-black-hole.mp4&duration=30&provider=video&controlbar=none&shownavigation=false&showdigits=false&showicons=false
+                    "
+                    >
+
+                <?php } ?>
+                </div>
+
+            </div>
+            <div class="clearfix"></div>
+            <div class="girl-info text-center">
+
+                <a class="btn btn-default btn-lg"
+                   href="<?= $this->url(array("profile_type" => "profile", "id_model" => $this->model->id, "name" => $this->model->screen_name), "model-profile") ?>">
+                    View My Profile
+                </a>
+
+                <div class="quote"><?= $this->model->status_profile ?></div>
+
+                <? if ($modelStatus['id_status'] != 0) { ?>
+                    <div class="location">
+                        <div class="wrap">
+                            <span class="country"><?= $this->model->getModelCountry()->name ?></span>
+                            <span class="orientation"><?= $this->model->getModelCategories(1)->name ?></span>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="segment">
+                        <div class="wrap">
+                            <span class="country">Private</span> <span class="number"><?= $rates['private_chat'] ?></span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="wrap">
+                            <? /*<span class="country">VIP</span> <span class="number"><?=$rates['vip_chat']?></span>*/ ?>
+                            <span class="country">Spy</span> <span class="number"><?= $rates['spy_mode'] ?></span>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                <? } else { ?>
+                    <div class="break-line"></div>
+                    <div class="b_btns">
+
+
+                            <span id="path_follow<?= $this->model->id ?>" class="row">
+
+                                <div class="col-xs-6">
+                                    <? if (Auth::isUser()) { ?>
+                                            <? if (!$isFollowing) { ?>
+                                                <a href="javascript:;" class="btn btn-info btn-sm btn-block  follow"
+                                                   onclick="App.user.follow.add(<?= $this->model->id ?>)">Follow</a>
+                                            <? } else { ?>
+                                                <a href="javascript:;" class="btn btn-info btn-sm btn-block follow"
+                                                   onclick="App.user.follow.remove(<?= $this->model->id ?>)">Unfollow</a>
+                                            <? } ?>
+                                        <? } else { ?>
+                                            <a class="btn btn-info btn-sm btn-block" href="/login/">Send Message</a>
+                                        <? } ?>
+
+
+                                        <ul class="follow_options">
+                                            <li>
+                                                <? if ($isFollowing->new_photo > 0) { ?>
+                                                    <input
+                                                        onclick="App.user.follow.remove(<?= $this->model->id ?>, 'photo')"
+                                                        type="checkbox" name="photo" id="photo<?= $this->model->id ?>"
+                                                        data-id="<?= $this->model->id ?>" value="New photo"/>
+                                                <? } else { ?>
+                                                    <input onclick="App.user.follow.add(<?= $this->model->id ?>, 'photo')"
+                                                           type="checkbox" name="photo" id="photo<?= $this->model->id ?>"
+                                                           data-id="<?= $this->model->id ?>" value="New photo"/>
+                                                <? } ?>
+                                                <label for="photo<?= $this->model->id ?>">New photos</label>
+                                            </li>
+                                            <li>
+                                                <? if ($isFollowing->new_video > 0) { ?>
+                                                    <input
+                                                        onclick="App.user.follow.remove(<?= $this->model->id ?>, 'video')"
+                                                        type="checkbox" name="video" checked="checked"
+                                                        id="video<?= $this->model->id ?>" data-id="<?= $this->model->id ?>"
+                                                        value="New video"/>
+                                                <? } else { ?>
+                                                    <input onclick="App.user.follow.add(<?= $this->model->id ?>, 'video')"
+                                                           type="checkbox" name="video" id="video<?= $this->model->id ?>"
+                                                           data-id="<?= $this->model->id ?>" value="New video"/>
+                                                <? } ?>
+                                                <label for="video<?= $this->model->id ?>">New videos</label>
+                                            </li>
+                                        </ul>
+
+                                </div>
+                                <div class="col-xs-6">
+
+                                    <? if (Auth::isUser()) { ?>
+                                        <a class="btn btn-info btn-sm btn-block"
+                                           href="<?= $this->url(array("message_action" => "compose"), "messages") ?>#<?= $this->model->screen_name ?>">Send
+                                            Message</a>
+                                    <? } else { ?>
+                                        <a class="btn btn-info btn-sm btn-block" href="/login/">Send Message</a>
+                                    <? } ?>
+                                </div>
+
+
+                            </span>
+
+                    </div>
+                <? } ?>
+            </div>
+        </div>
+
+        <div class="girl-box-bottom box-bg status_<?= $modelStatus['id_status'] ?>">
+            <? if ($modelStatus['id_status'] != 0) { ?>
+                <a href="<?= $this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name), "watch") ?>"
+                    class="btn btn-succcess col-xs-12">Watch
+                    Me Now</a>
+            <? } else { ?>
+                <a href="<?= $this->url(array("profile_type" => "profile", "id_model" => $this->model->id, "name" => $this->model->screen_name), "model-profile") ?>"
+                    class="btn btn-danger  col-xs-12">Offline</a>
+            <? } ?>
+            <?php /* <a href="<?= $this->url(array("id_model" => $this->model->id, "name" => $this->model->screen_name), "watch-popup") ?>" target="_blank" >open popup chat</a> */ ?>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>

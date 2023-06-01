@@ -1,0 +1,72 @@
+<?php
+$disable = "";
+if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["image"])) {
+    if (in_array($this->photo->id, $_SESSION["rate"]["image"])) $disable = " disableRate";
+}
+?>
+
+    <div class="col-md-4">
+<div class="photo-box" id="p_<?= $this->photo->id ?>">
+
+    <div class="photo">
+        <div class="photo-thumb">
+            <a class="a_cover" rel="group" href="<?= $this->photo->filename ?>"
+               data-id="<?= $this->image->id ?>" data-type="image" data-caption="<?php
+            echo $this->photo->caption . ' | ' .
+                ago($this->photo->uploaded_on) .
+                ' by <a class=\'tooltip\'
+                             title=\'View profile\'
+                                        href=\'' . $this->url(array("id_model" => $this->photo->user, "name" =>
+                    $this->photo->screen_name, "profile_type" => "profile"), "model-profile") . '\'>
+                                            ' . $this->photo->screen_name . '
+                                        </a>'
+            ?>">
+                <img alt="<?= $this->photo->caption ?>" title="<?= $this->photo->caption ?>" id="img_<?= $this->photo->id ?>"
+                     src="<?= getPhotoThumb($this->photo->filename, 't') ?>">
+            </a>
+
+            <? if (Auth::isModel() && $_SESSION['user']['id'] == $this->photo->user) { ?>
+                <div class="photo_controls">
+                    <a onclick="App.model.setGalleryCover(<?= $this->photo->id ?>)" id='c_<?= $this->photo->id ?>'
+                       href="javascript:;">set cover</a>
+                    &nbsp;&nbsp;
+                    <a onclick="App.model.addPhotoCaption(<?= $this->photo->id ?>)"
+                       data-caption="<?= htmlspecialchars($this->photo->caption) ?>" id='pc_<?= $this->photo->id ?>'
+                       href="javascript:;">edit caption</a>
+                    <a onclick="App.model.deletePhoto(<?= $this->photo->id ?>)" id='d_<?= $this->photo->id ?>'
+                       class="right" href="javascript:;">delete</a>
+                </div>
+
+            <? } ?>
+
+        </div>
+
+        <? /*<div class="album-stats"><a href="<?=$this->url(array("id_image"=> $this->photo->id), "model-image-gallery")?>">Comments (0)</a></div> */ ?>
+        <div class="album-stats">
+            <span style="display:none" id="viewCount<?= $this->image->id ?>"><?= $this->image->total_views ?></span>
+
+            <div>
+                by <a data-toggle="tooltip" data-placement="top"
+                      title="View <?= $this->photo->screen_name ?>'s profile"
+                      href="<?= $this->url(array("id_model" => $this->photo->user, "name" => $this->photo->screen_name,
+                                                 "profile_type" => "profile"), "model-profile") ?>">
+                    <?= $this->photo->screen_name ?>
+                </a>
+            </div>
+            <a class="tooltip" title="View comments"
+               href="<?= $this->url(array("id_image" => $this->photo->id), "model-image-gallery") ?>#disqus_thread"></a>
+        </div>
+        <div class="rating">
+            <div class="stars<?= $disable ?>" data-id="<?= $this->photo->id ?>"
+                 data-average="<?= $this->photo->rating ?>" data-extra="image"></div>
+            <b>
+                <a class="tooltip" title="View reviews"
+                   href="<?= $this->url(array("id_image" => $this->photo->id), "model-image-gallery") ?>#reviews"><?= $this->photo->total_active_reviews ?>
+                    reviews</a>
+            </b>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+</div>
+    </div>

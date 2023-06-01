@@ -1,0 +1,27 @@
+<form method="POST">
+    <div class="join-box-fields">
+        <div class="field">
+            <label for="title">Title</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText("title", null, null) ?>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="description">Description</label>
+
+            <div class="field_wrapper">
+                <?= $this->formTextarea("description", null, array("cols" => "10", "rows" => "7")) ?>
+            </div>
+        </div>
+        <div class="field">
+            <div class="field_wrapper">
+                <br/>
+                <input type="submit" name="save_unfinished" id="save_unfinished" value="Save" class="btn btn-success"
+                       style="display: inline;">
+
+            </div>
+        </div>
+    </div>
+</form>

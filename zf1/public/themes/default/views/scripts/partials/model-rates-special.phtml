@@ -1,0 +1,64 @@
+<div class="page-content round-corners">
+
+    <h1 class="page-title"><?= $this->model->first_name . " " . $this->model->name ?>'s Rates Requests</h1>
+
+    <form action="" method="post" id="form_rates_admin_special">
+        <div class="join-box-fields">
+            <div class="join-box-fields-partial permissions">
+                <?
+                $actions = $this->rates_fields_pending;
+
+                $i = 0;
+                $limit = floor(count($actions) / 2);
+                foreach ($actions as $action) {
+                    $i++;
+
+                    if ($i == $limit + (count($actions) % 2 > 0 ? 2 : 1)) {
+                        echo '
+                                </div>
+                                <div class="join-box-fields-partial permissions">';
+
+                    }
+                    $name = ucwords(str_replace("_", " ", $action['type']));
+                    echo '
+                            <div class="field">
+                                <label for="' . $action['id'] . '">' . $name . '<span style="float:right; padding-right: 15px;">requested value : ' . $action['value'] . '</span></label>
+                                <div class="field_wrapper" id="' . $action['id'] . '">';
+
+                    $rate = new Zend_Form_Element_Radio($action['id'] . '');
+                    $rate->addMultiOptions(array(
+                        1 => 'Approve',
+                        0 => 'Deny'
+                    ))
+                        ->setValue(1)
+                        ->setSeparator('');
+                    echo $rate;
+
+                    echo '</div>
+                            </div>';
+
+
+                }
+                echo '<script>$("#.field_wrapper dt").remove();</script>'
+                ?>
+
+            </div>
+            <div class="join-box-fields-partial" style="float: none;">&nbsp;</div>
+        </div>
+
+        <?if ($this->acl->isAllowed($_SESSION['group'], "model-rates", "edit")) {
+            if (count($actions) > 0) {
+                ?>
+                <div class="join-button">
+                    <input type="submit" name="save2" value="Save special rates" class="btn btn-success">
+                    <input type="hidden" name="save2" value="Save special rates">
+                </div>
+            <?
+            } else {
+                echo '*No special rates requests pending.';
+            }
+        }?>
+
+    </form>
+
+</div>

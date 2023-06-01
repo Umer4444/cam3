@@ -1,0 +1,175 @@
+<h3 class="pull-left">Manage Videos</h3>
+<form method="POST" id="videos-form" class="form-horizontal">
+
+    <div class="control-group pull-right">
+        <label class="control-label" for="selectFilter">Status</label>
+
+        <div class="controls">
+            <select id="selectFilter" class="form-control">
+                <option <?= ($this->selectedFilter == 'all' ? 'selected' : '') ?> value="all">
+                    All
+                </option>
+                <option <?= ($this->selectedFilter == 'approved' ? 'selected' : '') ?> value="approved">
+                    Approved
+                </option>
+                <option <?= ($this->selectedFilter == 'denied' ? 'selected' : '') ?> value="denied">
+                    Denied
+                </option>
+                <option <?= ($this->selectedFilter == 'pending' ? 'selected' : '') ?> value="pending">
+                    Pending
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="control-group pull-right">
+        <label class="control-label" for="selectFilterType">Type</label>
+
+        <div class="controls">
+            <select id="selectFilterType" class="form-control">
+                <option <?= ($this->selectedFilterType == 'all' ? 'selected' : '') ?> value="all">
+                    All
+                </option>
+                <option <?= ($this->selectedFilterType == 'profile' ? 'selected' : '') ?> value="profile">
+                    Profile
+                </option>
+                <?php if ($this->zfcUserIdentity()){
+                        $user = $this->zfcUserIdentity();
+                        if($user->getRole() == $user::ROLE_SUPER_ADMIN || $user->getRole() == $user::ROLE_ADMIN) {
+                    ?>
+                    <option <?= ($this->selectedFilterType == 'default' ? 'selected' : '') ?> value="default">
+                        Defaults
+                    </option>
+                    <? } ?>
+                <? } ?>
+            </select>
+        </div>
+    </div>
+    <div class="clear"></div>
+
+    <div class="control-group pull-left">
+        <?php  if ($this->isAllowed("manage-videos", "edit")) { ?>
+            <button type="button" class="btn btn-success submit" disabled>Save</button>
+        <?php } ?>
+    </div>
+    <div class="clear"></div>
+
+    <?php
+
+    /**
+     * pass in :
+     * $photo
+     *
+     * @var mixed
+     */
+    foreach ($items as $this->item) {
+        $disable = "";
+        if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["video"])) {
+            if (in_array($this->item->id, $_SESSION["rate"]["video"])) $disable = " disableRate";
+        }
+        ?>
+
+        <div class="item-box" id="v_<?= $this->item->getId() ?>">
+
+            <div class="item">
+                <div class="item-thumb">
+                    <a class="a_cover" rel="group" href="/scripts/jwplayer/player.swf?file=<?= $this->item->getFilename() ?>&amp;autostart=true"
+                       data-id="<?= $this->item->getId() ?>"
+                       data-type="swf"
+                       data-active="<?=$this->item->getActive()?>"
+                       data-caption="<?=$this->item->getTitle()?> | <?=$this->ago($this->item->getAdded())?>
+                        by <a class='tooltip'  title='View profile'  href='#'><?=$this->item->getUserReference()->getDisplayName()?></a>">
+                        <img alt="<?= $this->item->getTitle() ?>"
+                             title="<?echo $this->item->getTitle()?> | <?=$this->ago($this->item->getAdded())?> ago by <?=$this->item->getUserReference()->getDisplayName()?>"
+                             width="190"
+                             height="140"
+                             id="vid_<?= $this->item->getId() ?>"
+                             src="<?=$this->item->getCover()?>"
+                            />
+                    </a>
+                </div>
+
+                <?php
+
+                    echo $this->partial(
+                        'partials/moderate-items',
+                        array(
+                            'item' => array(
+                                "id" => $this->item->getId(),
+                                'active' => $this->item->getActive(),
+                                'resource' => 'manage-videos',
+                                "type" => "video",
+                                "destination" => $this->item->getType(),
+                                "defaults" => $this->defaults
+                            )
+                        )
+                    );
+                ?>
+
+                <div class="clear"></div>
+            </div>
+
+        </div>
+    <?php } ?>
+
+
+
+</form>
+<div class="clear"></div>
+
+<input type="hidden" name="denied" id="denied"/>
+<input type="hidden" name="approved" id="approved"/>
+<input type="hidden" name="pending" id="pending"/>
+
+
+
+<?php // add at the end of the file after the table
+    echo $this->paginationControl(
+    // the paginator object
+        $this->paginator,
+        // the scrolling style; see http://zf2.readthedocs.org/en/release-2.1.4/modules/zend.paginator.usage.html#rendering-pages-with-view-scripts
+        'sliding',
+        // the partial to use to render the control
+        array('partials/paginator.phtml', 'Photos'),
+        // the route to link to when a user clicks a control link
+        array(
+            'route' => 'admin/manage-photos',
+            'routeParams' => array(
+                'selectedFilter' => $this->selectedFilter,
+                'selectedFilterType' => $this->selectedFilterType
+            )
+        )
+    );
+?>
+
+<script type="text/javascript">
+    //<![CDATA[
+    $(document).ready(function ($) {
+        $("#selectFilter").on("change", function () {
+            window.location = '<?=$this->url('zfcadmin/manage-videos')?>/' + $(this).val() + '/'+$('#selectFilterType').val();
+        });
+        $("#selectFilterType").on("change", function () {
+            window.location = '<?=$this->url('zfcadmin/manage-videos')?>/' + $('#selectFilter').val() + '/'+$('#selectFilterType').val();
+        });
+
+
+
+        initOptionsMenu("<?=$this->url('zfcadmin/manage-videos/set-video')?>")
+        /**
+         *
+         */
+        submitItemsForModeration('<?=$this->url('zfcadmin/manage-videos/change-status')?>');
+
+        /**
+         *  init buttons group
+         */
+        initModerationButtons();
+
+        /**
+         * init fancy box with moderation buttons
+         */
+
+        initFancyboxWithModeration();
+    }); // ready
+    //]]>
+</script>

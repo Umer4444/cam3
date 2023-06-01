@@ -1,0 +1,30 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    <table class="listing_items table table-bordered" cellpadding="5" cellspacing="1">
+        <tr class="header">
+
+            <td class="center" width="90" colspan="2">
+                <h4 class="">{{ message.getSubject() }}</h4>
+
+            </td>
+            <td class="center" width="10" style="vertical-align:middle;">
+                <form method="post" action="{{ user().url('messages/compose/send-to', {(constant('Application\\Mapper\\Injector::TOUSER')): message.getSender().getId()}) }}" style="margin: 0;">
+
+                    <input type="submit" class="btn btn-purple" name="reply" value="Reply"/>
+
+                    <input type="hidden" value="{{ message.getSender().getUsername() }}" name="username"/>
+                    <input type="hidden" value="{{ message.getSender().getId() }}" name="userid"/>
+                    <input type="hidden" value="{{ message.getSender().getRole() }}" name="usertype"/>
+                </form>
+
+            </td>
+
+
+        </tr>
+        <tr class="model_message">
+            <td colspan="3">
+                {{ message.getBody()|striptags }}
+            </td>
+        </tr>
+    </table>
+{% endblock %}

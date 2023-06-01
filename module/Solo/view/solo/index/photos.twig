@@ -1,0 +1,17 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    {% include 'partial/images'
+        with
+    {
+        'prev': prev,
+        'next' : next,
+        'form' : form,
+        'reviewPending' : reviewsPending,
+        'reviews': reviews,
+        'image': image,
+        'viewPhoto': viewPhoto
+    }
+
+    %}
+{% endblock %}
+

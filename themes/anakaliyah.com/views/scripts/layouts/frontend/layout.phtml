@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Archivo+Narrow' rel='stylesheet' type='text/css'>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<?php echo $this->headTitle(); ?>
+<?php
+
+    echo $this->headLink()->appendStylesheet($this->theme('css/frontend.css'))
+                          ->appendStylesheet($this->theme('css/chat.css'));
+    echo $this->headScript();
+
+?>
+
+<script src="/scripts/App.js"></script>
+<script src="/scripts/jquery.ui.position.js"></script>
+<link rel="stylesheet" type="text/css" href="/scripts/jcarousel/skins/anakaliyah/skin.css" />
+
+<link rel="shortcut icon" href="/images/icons/favicon.ico" />
+<script>
+    var siteTime = new Date;
+</script>
+</head>
+
+<body>
+     <div class="top-bar">
+        <h1><a href="/live-broadcast"><span class="live_title">LIVE SHOW</span> Come and watch me tonight!</a></h1>
+
+    </div>
+    <div class="container-fluid">
+
+           <div class="content row">
+               <div class="row header">
+                    <div id="header" class="col-lg-10">
+                        <div class="logo"></div>
+                        <div class="join_star"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                     <div class="navbar">
+                          <div class="navbar-inner">
+                            <div class="container">
+
+                              <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+                              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                              </a>
+
+                              <!-- Be sure to leave the brand out there if you want it shown -->
+
+                              <!-- Everything you want hidden at 940px or less, place within here -->
+                              <div class="nav-collapse collapse">
+                                    <ul class="nav">
+                                      <li class="<?=$this->params->action=='index'?'active':''?>"><a href="/">Home</a></li>
+
+                                      <li class="menu-border-left <?=$this->params->profile_type=='profile'?'active':''?>"><a href="<?=$this->url(array("profile_type" => "profile"), "theme-profile", true)?>">About me</a></li>
+                                      <? /* <li><a href="#">Blog</a></li>
+                                      <li><a href="#">Store</a></li>
+                                      <li><a href="#">Auctions</a></li>
+                                      */ ?>
+                                      <li class="menu-border-left <?=$this->params->profile_type=='pictures'?'active':''?>"> <a href="<?=$this->url(array("profile_type" => "pictures"), "theme-profile", true)?>">Photos</a></li>
+                                      <li class="menu-border-left <?=$this->params->profile_type=='videos'?'active':''?>">   <a href="<?=$this->url(array("profile_type" => "videos"), "theme-profile", true)?>">Videos</a></li>
+                                      <li class="menu-border-left <?=$this->params->action=='watchModel'?'active':''?>">     <a href="<?=$this->url(array(), "theme-watch", true)?>">Live</a></li>
+                                      <li class="menu-border-left menu-border-right <?=$this->params->profile_type=='blog'?'active':''?>">     <a href="<?=$this->url(array("profile_type" => "blog"), "theme-profile", true)?>">Blog</a></li>
+                                    </ul>
+                                    <ul class="menu-border-left nav pull-right">
+                                        <? $submenu = array( "login", "edit", "messages", "special-requests", "videos", "chips");
+                                            if( in_array($this->params->action, $submenu) || in_array($this->params->profile_action, $submenu))
+                                                $drop_active = " active";
+                                            else
+                                                $drop_active = "";
+
+                                        ?>
+                                      <li class="dropdown<?=$drop_active?>">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <? if(!Auth::isUser()) {?>
+                                                <li class="<?=$this->params->action=='login'?'active':''?>"><a href="/login">Login</a></li>
+                                            <? } else { ?>
+                                                <li class="<?=$this->params->action=='messages'?'active':''?>"><a href="<?=$this->url(array("message_action"=>"inbox"),"messages")?>" class="">Messages</a> </li>
+                                                <li class="<?=$this->params->profile_action=='edit'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"edit","id" => user()->id,"name" => user()->username),"user_profile")?>" class="">Edit My Account</a> </li>
+                                                <li class="<?=$this->params->profile_action=='special-requests'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"special-requests","id" => user()->id,"name" => user()->username),"user_profile")?>" class="">Special Requests</a> </li>
+                                                <li class="<?=$this->params->profile_action=='videos'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"videos","id" => user()->id,"name" => user()->username),"user_profile")?>" class="">Videos</a> </li>
+                                                <li class="<?=$this->params->profile_action=='chips'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"chips","id" => user()->id,"name" => user()->username),"user_profile")?>" class="">Chips</a> </li>
+
+                                                  <li class="divider"></li>
+                                                  <li><a href="/logout">Logout</a></li>
+                                            <? } ?>
+
+                                        </ul>
+                                      </li>
+                                    </ul>
+
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <!-- end nav bar -->
+
+
+
+
+
+
+	<?php echo $this->layout()->content ?>
+
+
+
+
+
+<? echo $this->partial('partials/footer.phtml'); ?>
+
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends 'layout/user-profile' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2 timeline-filter">
+            {% include 'timeline-activity-filter' %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="timeline-centered" data-type="infinite" data-url="{{ url('activity/filter') }}">
+                {% include('timeline-activity') with {'results':results} %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

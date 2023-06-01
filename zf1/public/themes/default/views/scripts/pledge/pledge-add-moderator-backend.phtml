@@ -1,0 +1,60 @@
+<?
+$title = 'Manage pledges';
+$this->headTitle($title);
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "model",
+        "acl" => $this->acl,
+        "user" => $this->model));
+
+if ($this->pledge->status != 1) {
+    echo $this->partial("partials/moderation-bar.phtml", array("type" => "pledge", "pledge" => $this->pledge, "screen_name" => $this->params["name"]));
+}
+?>
+
+<?= $this->notice ?>
+<div class="page-content round-corners">
+    <?= $this->partial("pledge/pledge-add-form.phtml", $this); ?>
+    <?php
+
+    /* switch($this->params["action_type"]){
+                case 'list':
+                    echo $this->partial("partials/pledges-list-table.phtml", $this);
+                    break;
+                case 'edit':
+                    if($this->pledge->status != 1) {
+                        echo $this->partial("partials/moderation-bar.phtml", array("type" => ""));
+                    }
+                    echo $this->partial("partials/pledge-add-form.phtml", $this);
+                    break;
+                case 'add-perk':
+                case 'edit-perk':
+                    echo $this->partial("partials/pledge-perks-add-form.phtml", $this);
+            ?>
+                    <div class="perks">
+                        <?  if(count($this->perks_moderator) > 0) { ?>
+                            <h3>Admin bonuses</h3>
+                            <? foreach($this->perks_moderator as $this->perk) { ?>
+                                <? echo $this->partial("partials/item-pledge-perk.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+
+                            <? } ?>
+
+                        <? } ?>
+                        <? if(count($this->perks_model) > 0 ) { ?>
+                            <h3>Performer offers</h3>
+                            <? foreach($this->perks_model as $this->perk) { ?>
+                                <? echo $this->partial("partials/item-pledge-perk.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+
+                            <? } ?>
+
+                        <? } ?>
+                    </div>
+    <?
+
+                    break;
+
+    } */
+    ?>
+
+</div>

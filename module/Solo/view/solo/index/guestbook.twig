@@ -1,0 +1,20 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="title">Guest Book</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="guestbook">
+
+            {% if guestbook == 1 %}
+                {{ commentCustom('default',1,null,modelId) }}
+            {% else %}
+                {{ commentCustom('default',1,null,modelId) }}
+            {% endif %}
+           </div>
+        </div>
+    </div>
+{% endblock %}

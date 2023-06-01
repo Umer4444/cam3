@@ -1,0 +1,149 @@
+<? $other_contacts = json_decode($this->moderator->other_contact); ?>
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= $this->moderator->username ?>'s profile</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="join-box-fields">
+
+            <div class="field" style="min-height: 100px;padding-top: 5px;">
+                <label for="cover"> <a target="_blank" href="<?= $this->moderator->getCover() ?>"><img
+                            src="<?= $this->moderator->getCover() ?>" border="0" width="120" height="90"></a> </label>
+
+                <div class="field_wrapper">
+                    <? //$this->formFile('cover',array())?>
+                    <input type="file" name="cover" id="cover"/>
+
+                    <p class="field_notice"> Supported file formats: JPEG, GIF, PNG </p>
+
+                    <p class="field_notice"> Profile image must be at least 300x200</p>
+                    <?= $this->formCheckbox('delete_cover', null); ?> <label class="delete_label" for="delete_cover">Delete
+                        cover</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="name">Name</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('name', $this->moderator->name, array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="screen_name">Screen name</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('screen_name', $this->moderator->screen_name, array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="phone">Phone</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('phone', $this->moderator->phone, array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="email">Email</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('email', $this->moderator->email, array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="other_contact1">Other contact 1</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('other_contact1', $other_contacts->contact1->name, null,
+                        array(
+                            "" => "Select network",
+                            "skype" => "Skype",
+                            "xbiz" => "Xbiz",
+                            "fubar" => "Fubar",
+                            "twitter" => "Twitter",
+                            "linkedin" => "Linkedin",
+                            "google+" => "Google+",
+                            "facebook" => "Facebook",
+                        )) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="other_id1">Other ID 1</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('other_id1', $other_contacts->contact1->value, array()) ?>
+                </div>
+            </div>
+            <div class="field">
+                <label for="other_contact1">Other contact 2</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('other_contact2', $other_contacts->contact2->name, null,
+                        array(
+                            "" => "Select network",
+                            "skype" => "Skype",
+                            "xbiz" => "Xbiz",
+                            "fubar" => "Fubar",
+                            "twitter" => "Twitter",
+                            "linkedin" => "Linkedin",
+                            "google+" => "Google+",
+                            "facebook" => "Facebook",
+                        )) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="other_id1">Other ID 2</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('other_id2', $other_contacts->contact2->value, array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="other_contact1">Other contact 3</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('other_contact3', $other_contacts->contact3->name, null,
+                        array(
+                            "" => "Select network",
+                            "skype" => "Skype",
+                            "xbiz" => "Xbiz",
+                            "fubar" => "Fubar",
+                            "twitter" => "Twitter",
+                            "linkedin" => "Linkedin",
+                            "google+" => "Google+",
+                            "facebook" => "Facebook",
+                        )) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="other_id1">Other ID 3</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('other_id3', $other_contacts->contact3->value, array()) ?>
+                </div>
+            </div>
+
+
+        </div>
+
+        <br>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "moderator-settings", "edit")) { ?>
+            <div class="join-button">
+                <input type="submit" name="save" value="Save" class="btn btn-success">
+                <input type="hidden" name="save" value="Save">
+            </div>
+        <? } ?>
+    </form>
+
+    <input type="hidden" name="moderator_id" value="<?= $this->moderator->id ?>" id="moderator_id">
+</div>

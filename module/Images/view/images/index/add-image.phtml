@@ -1,0 +1,86 @@
+<?php
+$this->headTitle()->prepend('New Image');
+?>
+
+<link href="<?= $this->basePath() ?>/css/bootstrap-duallistbox.css" media="screen" rel="stylesheet" type="text/css">
+<script src="<?= $this->basePath() ?>/js/jquery.bootstrap-duallistbox.js"></script>
+
+<?= $this->partial('application/dashboard/partial/tab-menu'); ?>
+
+<div class="main">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="span12">
+
+                <div class="widget stacked">
+
+                    <div class="widget-header">
+
+                        <h3>Add a new image!</h3>
+                    </div>
+
+                    <div class="widget-content">
+                        <br/>
+
+                        <fieldset align="left">
+
+                            <?php
+
+                            $form = $this->form;
+                            $form->prepare();
+
+                            echo $this->form()->openTag($form);
+                            echo "<div class=\"control-group\">";
+                            echo "<label for=\"url\" class=\"control-label\">
+                        Name
+                        </label>";
+                            echo "<div class=\"controls\">";
+                            echo $this->formRow($form->get('name'));
+                            echo "</div></div>";
+                            echo "<div class=\"control-group\">";
+                            echo "<label for=\"name\" class=\"control-label\">
+                        Description
+                        </label> ";
+                            echo "<div class=\"controls\">";
+                            echo $this->formRow($form->get('description'));
+                            echo "</div></div>";
+                            echo "<div class=\"control-group\">";
+                            echo "<label for=\"name\" class=\"control-label\">
+                        Album
+                        </label> ";
+                            echo "<div class=\"controls\">";
+                            echo $this->formRow($form->get('albumId'));
+                            echo "</div></div>";
+                            echo "<div class=\"control-group\">";
+                            echo "<label for=\"campaign\" class=\"control-label\">
+                        Upload an image </label>";
+                            echo "<div class=\"controls\">";
+                            echo $this->formRow($form->get('extension'));
+                            echo "</div></div>";
+                            echo "<div class=\"form-actions\">";
+                            echo "<div class=\"controls\">";
+                            echo $this->formSubmit($form->get('submit'));
+                            echo "&nbsp;&nbsp;";
+                            echo "<button type=\"reset\" class=\"btn\">Reset</button>";
+                            echo "</div>";
+                            echo $this->form()->closeTag();
+
+                            ?>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+

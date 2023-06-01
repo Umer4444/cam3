@@ -1,0 +1,516 @@
+<? if ($this->pledge) { ?>
+
+    <? $this->headTitle($this->pledge->title . ' By ' . $this->pledge->model_screen_name); ?>
+
+    <?
+    if ($this->pledge->start_date <= time() && $this->pledge->end_date >= time() && $this->pledge->status == 1)
+        $this->pledge_status = true;
+    else
+        $this->pledge_status = null;
+
+
+    ?>
+
+    <link rel="stylesheet" href="/scripts/countdown/jquery.countdown.css">
+    <script type="text/javascript" src="/scripts/countdown/jquery.countdown.js"></script>
+
+    <script src="/scripts/jcarousel/lib/jquery.jcarousel.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/scripts/jcarousel/skins/exposed/skin.css"/>
+
+    <? /*  http://keith-wood.name/countdown.html*/ ?>
+    <?
+    if (Auth::isModerator() && (user()->id == $this->pledge->id_moderator || user()->id == 0) && $this->pledge->status != 1)
+        echo $this->partial("partials/moderation-bar.phtml", array("type" => "pledge", "pledge" => $this->pledge, "name"));
+    ?>
+    
+    <div class="pledge">
+        <!-- col1 -->
+        <div class="col-sm-6">
+            <?= $this->partial("pledge/pledge-view-item.phtml", $this) ?>
+        </div>
+        <!-- col2-->
+        <div class="col-sm-3">
+            <div class="generic-border padding-10 margin-10">
+                <div class="raise">
+                    $<?= $this->pledge->contributed_amount ?> raise of
+                    $<?= ($this->pledge->goal_amount) ?>
+                </div>
+                <? if ($this->pledge_status) { ?>
+                    <div id="contribute_button" data-id="<?= $this->pledge->id ?>">
+                        <a href="<?= $this->url(array("id_pledge" => $this->pledge->id, "title" => ro_slug($this->pledge->title)), "pledge-contribute-frontend") ?>"
+                           style="display: inline">
+                            <p>
+                                Contribute Now!
+                            </p>
+                            <p>
+                                <small>
+                                    Click here to support!
+                                </small>
+                            </p>
+
+                        </a>
+                    <span class="buttons">
+                        <span class="pledge_form form buttons" style="display: none">
+                            <span>Chips</span>
+                            <input type="text" name="contribute_amount" class="contribute_amount" value="0"/>
+                            <span class="dollars">$0</span>
+                            <a href="javascript:void(0)" class="contribute_ok">Contribute</a>
+
+                        </span>
+
+                        <span class="pledge_form login buttons" style="display: none;">
+                            <a href="/login">login</a>
+                        </span>
+                    </span>
+                    </div>
+                <? } ?>
+
+                <div id="chart" class="centered margin-auto"></div>
+
+                <div class="remaning">
+                    <? if ($this->pledge_status) { ?>
+                        <? if (($this->pledge->end_date - time()) < (24 * 3600)) { ?>
+                            <span class="countdown pink" data-time="<?= ($this->pledge->end_date * 1000) ?>">0</span> <span
+                                class="">Hours left</span>
+                        <? } else { ?>
+                            <span class="countdowndays pink" data-time="<?= ($this->pledge->end_date * 1000) ?>">0</span>
+                            <span class="">Days left</span>
+                        <? } ?>
+                    <? } else if ($this->pledge->start_date > time()) { ?>
+                        <span class="start pink"><?= date("F, d Y H:m", $this->pledge->start_date) ?></span> <span class="">Start date</span>
+                    <? } else if ($this->pledge->end_date < time()) { ?>
+                        <span class="start pink"><?= date("F, d Y H:m", $this->pledge->end_date) ?></span> <span class="">End date</span>
+
+                    <? } ?>
+                </div>
+
+                <div class="contributors">
+                    <div class="top">
+                        <?php if ($this->largest_user) { ?>
+                            <p>
+                                <span class="magenta">&hearts; <?= ($this->largest_user->username ? $this->largest_user->username : "anonymous") ?>
+                                </span> did the largest contribution
+                            </p>
+                        <?php } ?>
+                        <?php if ($this->last_user) { ?>
+                            <p>
+                                <span class="magenta">$ <?= ($this->largest_user->username ? $this->largest_user->username : "anonymous") ?>
+                                </span> is the latest contributor
+                            </p>
+                        <?php } ?>
+                        <p><span class="magenta">&#9776 <?= $this->pledge->contributors ?></span> Peoples in total</p>
+                    </div>
+                    <div class="members">
+                        <? foreach ($this->funders as $this->funder) { ?>
+                            <?
+                                if ($this->funder->user_type == 'user') {
+                                    $profile_url = $this->url(array("profile_action" => "profile", "id" => $this->funder->id_user, "name" => ($this->funder->username ? $this->funder->username : 'user')), 'user_profile');
+                                    $pic_url = $this->funder->avatar;
+                                    $name = $this->funder->username;
+                                } elseif ($this->funder->user_type == 'model') {
+                                    $profile_url = $this->url(array("profile_type" => "profile", "id_model" => $this->funder->id_user, "name" => ($this->funder->m_username ? $this->funder->m_username : 'model')), 'model-profile');
+                                    $pic_url = $this->funder->m_avatar;
+                                    $name = $this->funder->m_username;
+                                }
+                            ?>
+                            <a href="<?= $profile_url ?>" title="<?= $name ?>"><img src="<?= $pic_url ?>"/></a>
+                        <? } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="generic-border padding-10 margin-10">
+                <div class="albums">
+
+                    <? if ($this->albums) { ?>
+                        <ul id="albums_carousel" class="jcarousel-skin-exposed">
+                            <? foreach ($this->albums as $this->album) { ?>
+                                <li data-id="<?= $this->album->id ?>" data-pledge="<?= $this->pledge->id ?>"><img
+                                        src="<?= $this->album->cfilename ?>" width="75" height="75" alt=""/>
+                                    <span
+                                        title="<?= ($this->album->name) ?>"><?= substr($this->album->name, 0, 10) ?></span>
+                                </li>
+                            <? } ?>
+                        </ul>
+                    <? } ?>
+
+                </div>
+                <div class="photos_slider">
+
+                    <? if (count($this->first_album) > 0) { ?>
+                        <ul id="photos_carousel" class="jcarousel-skin-exposed">
+                            <? foreach ($this->first_album as $fa) { ?>
+                                <li>
+                                    <a class="a_cover" rel="group"
+                                       href="<?= str_replace("_t.", ".", $fa->filename) ?>">
+                                        <img src="<?= $fa->filename ?>" width="75" height="75" alt=""/>
+                                    </a>
+                                </li>
+                            <? } ?>
+                        </ul>
+                    <? } ?>
+
+
+                </div>
+                <? if (count($this->perks_moderator) > 0 || count($this->perks_model) > 0) { ?>
+
+                    <? if (Auth::isModerator() && (user()->id == 0 || user()->id == $this->pledge->id_moderator)) {
+                        echo $this->partial("partials/moderation-bar.phtml", array("type" => "perks"));
+                    }
+                }?>
+                <div class="perks">
+                    <? if (count($this->perks_moderator) > 0) { ?>
+                        <h3>Admin bonuses</h3>
+                        <? foreach ($this->perks_moderator as $this->perk) { ?>
+                            <? echo $this->partial("pledge/perk-item.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+
+                        <? } ?>
+
+                    <? } ?>
+                    <? if (count($this->perks_model) > 0) { ?>
+                        <h3>Performer offers</h3>
+                        <? foreach ($this->perks_model as $this->perk) { ?>
+                            <? echo $this->partial("pledge/perk-item.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+
+                        <? } ?>
+
+                    <? } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* sliders */
+        function carousel_callback(carousel, state) {
+            $("#albums_carousel li").unbind("click");
+            $("#albums_carousel li").bind("click", function () {
+                var this_elem = $(this);
+                var request = $.ajax({
+                    url: "/process",
+                    type: "POST",
+                    data: {
+                        action: "photoalbum",
+                        album: this_elem.data("id")
+                    },
+                    dataType: "html"
+                });
+
+                request.done(function (msgs) {
+
+                    msg = $.parseJSON(msgs);
+                    if (msg.status == "ok") {
+
+                        csize = $('#photos_carousel').jcarousel("size");
+                        for (i = 1; i < csize; i++) {
+                            $('#photos_carousel').jcarousel("remove", i);
+                        }
+                        $('#photos_carousel').jcarousel("reload");
+
+                        $('#photos_carousel').jcarousel("reset");
+                        ncsize = msg.photos.length;
+                        for (j = 0; j < ncsize; j++) {
+                            $('#photos_carousel').jcarousel("add", j, '<li><a href="' + msg.photos[j].replace("_t.", ".") + '" rel="group" class="a_cover"><img src="' + msg.photos[j] + '" width="75" height="75" alt="" /></a></li>');
+                        }
+
+                        $('#photos_carousel').jcarousel("size", ncsize);
+                        $('#photos_carousel li').each(function () {
+                            if ($(this).children().size() == 0)
+                                $(this).remove();
+                        });
+                        csize = $('#photos_carousel').jcarousel("size");
+                        /* reinitiate lightbox */
+                        lightMyBox();
+                    }
+                });
+
+                request.fail(function (jqXHR, textStatus) {
+                    this_elem.parent().children(".pledge_form").html('<p class="shadow">Fail! Try later!</p>');
+                    ;
+                });
+            });
+        }
+
+        function prev_next_callback() {
+            $('#photos_carousel li').each(function () {
+                if ($(this).children().size() == 0)
+                    $(this).remove();
+            });
+            ///$('#photos_carousel').jcarousel("size", $('#photos_carousel li').length);
+        }
+        $(document).ready(function () {
+            /* instantiate tabs */
+            $("#tabs").tabs();
+
+            /* instantiate carousel */
+            $('#albums_carousel').jcarousel();
+
+            /* check for elements and remove emty ones */
+            $('#albums_carousel li').each(function () {
+                if ($(this).children().size() == 0)
+                    $(this).remove();
+            });
+
+            /* set size for carousel, else creates emty elemets */
+            $('#albums_carousel').jcarousel("size", $('#albums_carousel').children('li').length);
+
+            var photo_carousel = $('#photos_carousel').jcarousel({
+                vertical: true,
+                scroll: 2,
+                initCallback: carousel_callback,
+                buttonNextCallback: prev_next_callback,
+                buttonPrevCallback: prev_next_callback
+            });
+
+        });
+
+    </script>
+
+<? } else {
+    echo "No pledge found!";
+} ?>
+
+
+<? $contributors_percent = (($this->pledge->contributed_amount * 100) / ($this->pledge->goal_amount > 0 ? $this->pledge->goal_amount : 1)) ? $this->pledge->contributed_amount : 1;
+?>
+
+<script language="javascript" type="text/javascript" src="/scripts/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="/scripts/flot/jquery.flot.pie.min.js"></script>
+<script>
+    <? if(Auth::isLogged()) { ?>
+    var logged = true;
+    <? } else { ?>
+    var logged = false;
+    <? } ?>
+
+    var login = '<p class="shadow"><a href="/login">Login</a></p>';
+
+    $(function () {
+        function labelFormatter(label, series) {
+            return "<div style='font-size:8pt; text-align:center;padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+        }
+
+        /* pie chart */
+        var data = [
+            {label: "Funded", data: <?=($this->pledge->contributed_amount )?>.00, color: "#fffff"},
+            {
+                label: "Remaning",
+                data:  <?=(($this->pledge->goal_amount == 0 ? 1000000 : $this->pledge->goal_amount) - $this->pledge->contributed_amount)  ?>,
+                color: '#d02899'
+            }
+        ];
+
+
+        $.plot('#chart', data, {
+            series: {
+                pie: {
+                    show: true,
+                    radius: 1,
+                    label: {
+                        show: true,
+                        radius: 4 / 5,
+                        formatter: labelFormatter,
+                        background: {
+                            opacity: 0
+                        }
+                    }
+                }
+            },
+            legend: {
+                show: false
+            }
+        });
+    });
+
+    $("#share").click(function () {
+        this.select();
+    });
+
+
+    <?/*       $("#contribute_button").click(function(){
+              amounts = $("#contribute_button span.form .contribute_amount").val();
+              $("#contribute_button span.form .dollars").html('$' + parseFloat(amounts/<?=(config()->chips_parity > 1 ? config()->chips_parity : 1)?>));
+
+              $("#contribute_button span.btext p").hide();
+              if(!logged){
+                  $("#contribute_button span.login").show()
+              }else{
+                 $("#contribute_button span.form").show();
+                 $("#contribute_button span.form .contribute_amount").bind("keyup", function(){
+                       amounts = $("#contribute_button span.form .contribute_amount").val();
+                       $("#contribute_button span.form .dollars").html('$' + parseFloat(amounts/<?=(config()->chips_parity > 1 ? config()->chips_parity : 1)?>));
+                   });
+              }
+          });
+         $("#contribute_button").mouseleave(function(){
+              setTimeout(function(){
+                      $("#contribute_button span.btext p").show();
+                      $("#contribute_button span.form").hide();
+                      $("#contribute_button span.login").hide();
+                  },
+                  3000
+              );
+
+          });
+
+
+          $(".contribute_ok").click(function(){
+              var amount = $(".contribute_amount").val();
+
+              if(amount.length == 0 || !$.isNumeric(amount)) {alert("Insert amount!"); return;}
+
+               var this_elem = $("#contribute_button");
+
+
+               var request = $.ajax({
+                    url: "/process",
+                    type: "POST",
+                    data: {
+                              action: "contribute",
+                              item : this_elem.data("id"),
+                              amount : amount
+                          },
+                    dataType: "html"
+                  });
+
+                  request.done(function(msgs) {
+                      msg = $.parseJSON(msgs);
+                      if(msg.status == 'ok'){
+                         alert("Thanks!");
+                         $("#chips_number").html("Chips: " + msg.chips);
+                         $("#contribute_button .contribute_amount").val('');
+                      } else {
+
+                         alert(msg.message); ;
+                      }
+                  });
+
+                  request.fail(function(jqXHR, textStatus) {
+                    this_elem.parent().children(".pledge_form").html('<p class="shadow">Fail! Try later!</p>'); ;
+                  });
+          });
+          */  ?>
+
+    $(function () {
+        /* perk photo hover */
+        $(".perk").each(function () {
+            if ($(this).children("img").length > 0) {
+                width = $(this).children("img").width();
+                $(this).mouseover(function () {
+                    $(this).children("img").fadeIn();
+                    $(this).mousemove(function (e) {
+                        $(this).children("img").offset({left: e.pageX + 10, top: e.pageY});
+                    });
+
+                }).mouseleave(function () {
+                    $(this).children("img").fadeOut();
+                });
+            }
+        });
+
+
+        /*  count down */
+        $('.countdown').countdown({
+            until: new Date($('.countdown').data("time")),
+            compact: true,
+            layout: '{dn}{sep}{hnn}{sep}{mnn}{sep}{snn} ',
+            description: ''
+        });
+
+        $('.countdowndays').countdown({
+            until: new Date($('.countdowndays').data("time")),
+            compact: true,
+            layout: '{dn} ',
+            description: ''
+        });
+
+        /* perk purchase */
+        <? /*
+        $(".perk").click(function(e){
+               if($(e.target).hasClass("case")) {
+                    return true;
+               }
+
+            <? if(!$this->pledge_status) echo 'e.preventDefault();return false;'; ?>
+
+
+           if(!logged){
+               alert("You must be logged");
+           } else {
+               this_elem = $(this);
+                 var request = $.ajax({
+                      url: "/process",
+                      type: "POST",
+                      data: {
+                                action: "purchasePerk",
+                                item : this_elem.data("id"),
+                                pledge : this_elem.data("pledge")
+                            },
+                      dataType: "html"
+                    });
+
+                    request.done(function(msgs) {
+                        msg = $.parseJSON(msgs);
+                        if(msg.status == 'ok'){
+                           alert("Thanks!");
+                           $("#chips_number").html("Chips: " + msg.chips);
+                        } else {
+                           alert(msg.message);
+                        }
+                    });
+
+                    request.fail(function(jqXHR, textStatus) {
+                      alert("Fail! Try later!");
+                    });
+           }
+        });
+        */ ?>
+    });
+
+    /* multiple selection */
+    function check() {
+        var ids = '';
+        $('.case:checkbox:checked').each(function () {
+            if (typeof $(this).val() != 'undefined') {
+                ids += $(this).val() + ',';
+            }
+        });
+        $('#multiple_select').val(ids);
+    }
+
+    $(function () {
+        // add multiple select / deselect functionality
+        $("#selectall").click(function () {
+            $('.case').attr('checked', this.checked);
+            check();
+        });
+        // if all checkbox are selected, check the selectall checkbox
+        // and viceversa
+        $(".case").click(function () {
+            check();
+            // alert(this);
+            if ($(".case").length == $(".case:checked").length) {
+                $("#selectall").attr("checked", "checked");
+            } else {
+                $("#selectall").removeAttr("checked");
+            }
+        });
+    });
+
+    /* lightbox */
+    function lightMyBox() {
+        $("a[rel=group]").fancybox({
+            'transitionIn': 'none',
+            'transitionOut': 'none',
+            'titlePosition': 'over',
+            'titleFormat': function (title, currentArray, currentIndex, currentOpts) {
+                return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
+            }
+        });
+    }
+    $(document).ready(function () {
+        lightMyBox();
+    });
+</script>

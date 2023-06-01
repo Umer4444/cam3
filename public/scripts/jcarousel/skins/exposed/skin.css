@@ -1,0 +1,230 @@
+.albums ul li img{
+    border: 1px solid #ca3599;
+}
+.jcarousel-skin-exposed li span{
+    font-size: 10px;
+    color:  #d02899;
+    overflow: hidden;
+}
+.jcarousel-skin-exposed li:hover{
+    cursor: pointer;           
+}
+
+.jcarousel-skin-exposed .jcarousel-container {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+   border-radius: 5px;
+    /*background: #F0F6F9;*/
+   /* border: 1px solid #346F97;  */
+}
+
+.jcarousel-skin-exposed .jcarousel-direction-rtl {
+	direction: rtl;
+}
+
+.jcarousel-skin-exposed .jcarousel-container-horizontal {
+    width: 220px;
+    padding: 10px 20px;
+}
+
+.jcarousel-skin-exposed .jcarousel-container-vertical {
+    width: 240px;
+    height: 245px;
+    padding: 20px 10px;
+}
+
+.jcarousel-skin-exposed .jcarousel-clip {
+    overflow: hidden;
+}
+
+.jcarousel-skin-exposed .jcarousel-clip-horizontal {
+    width:  220px;
+    height: 100px;
+}
+
+.jcarousel-skin-exposed .jcarousel-clip-vertical {
+    width:  240px;
+    height: 245px;
+}
+
+.jcarousel-skin-exposed .jcarousel-item {
+    width: 75px;
+    height: 75px;
+}
+
+.jcarousel-skin-exposed .jcarousel-item-horizontal {
+    width: 75px;
+    height: 150px;
+	margin-left: 0;
+    margin-right: 10px;
+}
+
+.jcarousel-skin-exposed .jcarousel-direction-rtl .jcarousel-item-horizontal {
+	margin-left: 10px;
+    margin-right: 0;
+}
+
+.jcarousel-skin-exposed .jcarousel-item-vertical {
+    margin-bottom: 5px;       
+    margin-right: 5px;  
+}
+
+
+
+.jcarousel-skin-exposed .jcarousel-item-placeholder {
+    background: #fff;
+    color: #000;
+}
+
+/**
+ *  Horizontal Buttons
+ */
+.jcarousel-skin-exposed .jcarousel-next-horizontal {
+    position: absolute;
+    top: 43px;
+    right: 0px;
+    width: 16px;
+    height: 42px;
+    cursor: pointer;    
+    background: transparent url(next-horizontal.png) no-repeat 0 0;
+    background-size: 10px 15px;
+    opacity:0.8;
+    filter:alpha(opacity=80); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-direction-rtl .jcarousel-next-horizontal {
+    left: 5px;
+    right: auto;
+    background-image: url(prev-horizontal.png);
+}
+
+.jcarousel-skin-exposed .jcarousel-next-horizontal:hover,
+.jcarousel-skin-exposed .jcarousel-next-horizontal:focus {
+    background-position: 0px 0;
+    opacity:1;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-next-horizontal:active {
+    /*background-position: -64px 0;*/
+}
+
+.jcarousel-skin-exposed .jcarousel-next-disabled-horizontal,
+.jcarousel-skin-exposed .jcarousel-next-disabled-horizontal:hover,
+.jcarousel-skin-exposed .jcarousel-next-disabled-horizontal:focus,
+.jcarousel-skin-exposed .jcarousel-next-disabled-horizontal:active {
+    cursor: default;
+    opacity:0.1;
+    filter:alpha(opacity=10); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-horizontal {
+    position: absolute;
+    top: 43px;
+    left: 0px;
+    width: 16px;
+    height: 42px;
+    cursor: pointer;
+    background: transparent url(prev-horizontal.png) no-repeat 0 0;
+    background-position:top right;
+    background-size: 10px 15px;
+    opacity:0.8;
+    filter:alpha(opacity=80); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-direction-rtl .jcarousel-prev-horizontal {
+    left: auto;
+    right: 5px;
+    background-image: url(next-horizontal.png);
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-horizontal:hover, 
+.jcarousel-skin-exposed .jcarousel-prev-horizontal:focus {
+   /* background-position: -32px 0;*/ 
+    opacity:1;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-horizontal:active {
+    //background-position: -64px 0;
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-disabled-horizontal,
+.jcarousel-skin-exposed .jcarousel-prev-disabled-horizontal:hover,
+.jcarousel-skin-exposed .jcarousel-prev-disabled-horizontal:focus,
+.jcarousel-skin-exposed .jcarousel-prev-disabled-horizontal:active {
+    cursor: default;
+    opacity:0.1;
+    filter:alpha(opacity=10); /* For IE8 and earlier */
+}
+
+/**
+ *  Vertical Buttons
+ */
+.jcarousel-skin-exposed .jcarousel-next-vertical {
+    position: absolute;
+    bottom: 5px;
+    left: 120px;
+    width: 42px;
+    height: 16px;
+    cursor: pointer;
+    background: transparent url(next-vertical.png) no-repeat 0 0;
+    background-size: 15px 10px;
+    opacity:0.8;
+    filter:alpha(opacity=80); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-next-vertical:hover,
+.jcarousel-skin-exposed .jcarousel-next-vertical:focus {
+    //background-position: 0 -32px;
+    opacity:1;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-next-vertical:active {
+    //background-position: 0 -64px;
+    opacity:1;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-next-disabled-vertical,
+.jcarousel-skin-exposed .jcarousel-next-disabled-vertical:hover,
+.jcarousel-skin-exposed .jcarousel-next-disabled-vertical:focus,
+.jcarousel-skin-exposed .jcarousel-next-disabled-vertical:active {
+    cursor: default;
+        opacity:0.1;
+    filter:alpha(opacity=10); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-vertical {
+    position: absolute;
+    top: 5px;
+    left: 120px;
+    width: 42px;
+    height: 16px;
+    cursor: pointer;
+    background: transparent url(prev-vertical.png) no-repeat 0 0;
+    background-size: 15px 10px;
+    opacity:0.8;
+    filter:alpha(opacity=80); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-vertical:hover,
+.jcarousel-skin-exposed .jcarousel-prev-vertical:focus {
+    //background-position: 0 -32px;
+    opacity:1;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-vertical:active {
+    //background-position: 0 -64px;
+}
+
+.jcarousel-skin-exposed .jcarousel-prev-disabled-vertical,
+.jcarousel-skin-exposed .jcarousel-prev-disabled-vertical:hover,
+.jcarousel-skin-exposed .jcarousel-prev-disabled-vertical:focus,
+.jcarousel-skin-exposed .jcarousel-prev-disabled-vertical:active {
+    cursor: default;       
+       opacity:0.1;
+    filter:alpha(opacity=10); /* For IE8 and earlier */
+}

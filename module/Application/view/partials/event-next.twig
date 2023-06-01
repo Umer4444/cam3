@@ -1,0 +1,75 @@
+{% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+{% set today = date('now').format('l') %}
+{% for day in days %}
+
+    <li class="{{ day }}">
+        <div class="day-head">
+            {{ day }}
+        </div>
+        <div class="day-main">
+            {% for event in rows %}
+
+                {% if event.getDate().format('l') == day %}
+
+                    {% set img =  event.getUser().getAvatar() %}
+
+                    {% if event.getThumb() %}
+                        {% set img = event.getThumb() %}
+                    {% endif %}
+
+                    <div class="media">
+                        <div class="media-left tooltip-white">
+                            <img data-holder-rendered="true"
+                                 data-toggle="tooltip"
+                                 data-placement="bottom"
+                                 data-html="true" title=""
+                                 data-original-title=
+                                    "<div class='row pop-over'>
+                                <div class='col-sm-12'>
+                                    <h4>
+                                        <span class='pull-left text-uppercase form-group'>{{ event.getTitle() }}</span>
+                                                <span class='pull-right'>
+                                                    <small>{{ event.getStartHour() }} - {{ event.getEndHour() }}</small>
+                                                </span>
+                                    </h4>
+                                    <div class='clearfix'><br></div>
+                                </div>
+                                <div class='col-sm-5'>
+                                    <img src='{{ img }}' alt='image' class='full-width form-group'>
+                                    {#{{ interaction(event.getModel()).likes()|raw }}#}
+                                </div>
+                                <div class='col-sm-7 no-padding'>
+                                    <small>{{ event.getDescription() }}</small>
+                                    <br>
+                                    <small>by Cicero</small>
+                                    <small>by Cicero</small>
+                                </div>
+                            </div>"
+                                 src="{{ img }}" class="media-object thumb-32" data-src="holder.js/64x64" alt="64x64">
+                        </div>
+                        <div class="media-body black">
+                            <h4 id="media-heading" class="media-heading">
+                                <a class="anchorjs-link" href="#media-heading">
+                                    <span class="anchorjs-icon"></span>
+                                    {{ event.getTitle() | slice(0, 7) }}
+                                </a>
+                            </h4>
+                            <p>{{ event.getStartHour() }} - {{ event.getEndHour() }}</p>
+                        </div>
+                        {% set currentDate = date('now').format('y-m-d') %}
+                        {% set eventDate = event.getDate().format('y-m-d') %}
+                        {% set eventHour = date('now').format('h') %}
+                        {% if (today == day and eventDate == currentDate and event.getStartHour() >= eventHour and event.getEndHour() <= eventHour) %}
+                            {{ user(event.getUser()).buttons().watch() }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </li>
+{% endfor %}
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>

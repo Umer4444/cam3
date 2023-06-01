@@ -1,0 +1,10 @@
+camclients:
+  extends:
+    file: common.yml
+    service: camclients
+  image: perfectweb/development:master
+  environment:
+    - APPLICATION_ENV=development
+  container_name: camclients_development
+  volumes:
+    - ../server/nginx/development/nginx.conf:/etc/nginx/vhosts/vhost.conf

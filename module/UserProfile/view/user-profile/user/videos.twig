@@ -1,0 +1,26 @@
+{% extends 'layout/user-profile' %}
+
+{% block content %}
+
+    <div class="row profile-video-header">
+        <div class="col-sm-12">
+            <h2>{{ user.getDisplayName() }}'s Videos</h2>
+        </div>
+    </div>
+
+    <div class="row no-margins">
+        {% set videos = user.getVideos().slice(0, 9) %}
+        {% if videos|length %}
+            {% for video in videos %}
+                {% include 'partial/profile-video' with {'video': video} only %}
+            {% endfor %}
+        {% else %}
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert">
+                    There are no videos here !
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

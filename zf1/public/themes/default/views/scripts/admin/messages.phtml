@@ -1,0 +1,44 @@
+<? $this->headTitle("My Messages - " . $this->page_title); ?>
+
+<div class="model_content">
+
+    <?= $this->partial('partials/message-filter.phtml'); ?>
+
+    <div class="page-content round-corners">
+
+        <div class="tabs_messages">
+            <a class="<?= $this->message_action == 'inbox' ? 'active' : '' ?>"
+               href="<?= $this->url(array("message_action" => "inbox"), "messages-moderator") ?>">Inbox(<?= $this->unread_count->count; ?>
+                )</a> |
+            <a class="<?= $this->message_action == 'outbox' ? 'active' : '' ?>"
+               href="<?= $this->url(array("message_action" => "outbox"), "messages-moderator") ?>">Sent Messages</a> |
+            <a class="<?= $this->message_action == 'archive' ? 'active' : '' ?>"
+               href="<?= $this->url(array("message_action" => "archive"), "messages-moderator") ?>">Archive Messages</a>
+            |
+            <a class="<?= $this->message_action == 'compose' ? 'active' : '' ?>"
+               href="<?= $this->url(array("message_action" => "compose"), "messages-moderator") ?>">Compose Message</a>
+        </div>
+
+        <br>
+        <?= $this->notice ?>
+
+        <?
+        switch ($this->message_action) {
+
+            case "inbox":
+            case "archive":
+            case "outbox":
+                echo $this->partial('partials/message-list.phtml', array("users" => $this->users, "paginator" => $this->paginator, "message_action" => $this->message_action));
+
+                break;
+
+            case "compose":
+                echo $this->partial('partials/message-compose.phtml', array("replyto" => $this->replyto));
+                break;
+        }
+        ?>
+
+
+    </div>
+
+</div>

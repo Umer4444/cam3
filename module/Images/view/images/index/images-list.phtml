@@ -1,0 +1,168 @@
+<?php
+$this->headTitle()->prepend('Images List');
+?>
+
+<script src="<?= $this->basePath() ?>/js/jquery.qtip-1.0.0-rc3.min.js"></script>
+<link href="<?= $this->basePath() ?>/css/jquery.qtip.min.css" media="screen" rel="stylesheet" type="text/css">
+<link href="<?= $this->basePath() ?>/css/zf-table/zf-table.css" media="screen" rel="stylesheet" type="text/css">
+<script src="<?= $this->basePath() ?>/js/jquery.dataTables.min.js"></script>
+<script src="<?= $this->basePath() ?>/js/zf-table.js"></script>
+<script src="<?= $this->basePath() ?>/js/DT_bootstrap_3.js"></script>
+
+<div class="main">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="span12">
+
+                <div class="widget stacked">
+
+                    <div class="widget-header">
+                        <i class="icon-check"></i>
+
+                        <h3>Edit/delete images</h3>
+                    </div>
+
+                    <div class="widget-content">
+
+                        Loading!
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="delete" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Delete image</h3>
+    </div>
+    <div class="modal-body">
+
+        <h4 style="padding:20px 10px;">Are you sure do you want to delete the ad?</h4>
+
+    </div>
+    <div class="modal-footer">
+        <form action="" method="post" id="imageId">
+
+            <input type="hidden" name="id" id="hiddenId" value="<?php echo (int)$id; ?>"/>
+            <input type="button" id="del" name="del" value="Yes" class="btn btn-danger"/>
+            <input type="button" data-dismiss="modal" aria-hidden="true" value="No" id="dismiss"
+                   class="btn btn-default"/>
+
+        </form>
+
+    </div>
+</div>
+
+<div id="preview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal-body">
+        <center>
+
+            <img id="image" src=""/>
+
+        </center>
+
+    </div>
+    <div class="modal-footer">
+        <form action="" method="post" id="imageId">
+
+            <input type="button" data-dismiss="modal" aria-hidden="true" value="Close" class="btn btn-default"/>
+
+        </form>
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ajaxComplete(function (event, xhr, settings) {
+
+        $(".prev").click(function () {
+
+            var path = $(this).data('src');
+
+            $('#image').attr('src', path);
+
+        });
+
+        $('.icon-trash').click(function () {
+            var Id = $(this).data('id');
+            $('#hiddenId').val(Id);
+            var thisButton = $(this);
+
+            $('#imageId').attr('action', "/images/delete/" + Id);
+            $('#del').unbind('click');
+            $('#del').click(function () {
+                var data = {
+                    id: Id,
+                    del: "Yes"
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/images/delete/" + Id,
+                    data: data,
+                    success: function (response) {
+
+                        if (response.status == 'success') {
+                            thisButton.parents().eq(1).remove();
+                            $('.widget-content').zfTable('<?=$this->url('images-ajax')?>');
+                        }
+                        else {
+
+                            alert("failed");
+                        }
+                        $('#delete').modal('hide')
+
+                    }
+                });
+
+            })
+
+        });
+        $('#dismiss').unbind('click');
+        $('#dismiss').click(function () {
+
+            $('#hiddenId').val('');
+            var Id = 0;
+            $('#imageId').attr('action', "");
+
+        });
+        $('.widget-content').find('.pagination').find('.disabled a').unbind('click');
+        $('.widget-content').find('.pagination').find('li.disabled').unbind('click');
+
+        $('.widget-content').find('.pagination').find('.disabled a').on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+        $('.widget-content').find('.pagination').find('li.disabled').on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+        $('.btn').tooltip("enable");
+
+        $('.icon-signal').tooltip("enable");
+
+        if (settings['url'] == '<?=$this->url('images-ajax')?>') {
+
+            $('.itemPerPage').parent().prepend('Items per Page: ');
+
+        }
+
+    }); //end ajax complete
+
+    $('.widget-content').zfTable('<?=$this->url('images-ajax')?>');
+
+</script>
+

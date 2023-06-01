@@ -1,0 +1,13 @@
+{% extends 'layout/user-profile' %}
+
+{% block content %}
+
+    {% set topPayersHelper = topPayers(user.getId()) %}
+
+    <div class="row">
+        <div class="col-md-12">
+            {% include 'user/profile/blocks' with {user: user} %}
+        </div>
+    </div>
+
+{% endblock content %}

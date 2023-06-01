@@ -1,0 +1,14 @@
+<?
+$page_title = "Banners ";
+
+$this->headTitle($page_title);
+
+
+?>
+<div class="model_content">
+    <? echo $this->partial("partials/model-submenu.phtml", array("type" => "banner", "params" => $this->params)); ?>
+
+    <?= $this->notice ?>
+
+    <? echo $this->partial("banner/banner-list.phtml", $this); ?>
+    

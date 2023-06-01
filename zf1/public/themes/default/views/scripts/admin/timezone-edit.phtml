@@ -1,0 +1,45 @@
+<? $this->headTitle('System settings'); ?>
+
+<?
+$timezones = array();
+foreach ($this->timezones as $t) {
+    $timezones[$t->id] = $t['name'];
+}
+?>
+<? if ($this->acl->isAllowed($_SESSION['group'], "mod-timezone", "view")) { ?>
+    <div class="page-content round-corners">
+
+        <?= $this->notice ?>
+
+        <h1 class="page-title">System timezone</h1>
+
+        <? if ($this->acl->isAllowed($_SESSION['group'], "mod-timezone", "edit")) { ?>
+            <form name="timezone" id="timezoneedit" action="" method="POST">
+                <br>
+
+                <div class="join-box-fields">
+                    <div class="field" style="width:600px; margin: 10px auto">
+                        <label for="timezone">Select timezone:</label>
+                        <?= $this->formSelect('timezone', config()->timezone, array(), $timezones) ?>
+
+                    </div>
+                </div>
+                <br><br>
+
+                <div class="join-button">
+                    <input type="submit" name="save" value="Save timezone" class="btn btn-success">
+                </div>
+
+            </form>
+        <? } else { ?>
+            <div class="join-box-fields">
+                <div class="field" style="width:600px; margin: 10px auto">
+                    <label for="timezone">System timezone:</label>
+                    <input style="width:250px;" class="timezone" name="timezone" type="text" disabled="disabled"
+                           value="<?= $timezones[config()->timezone] ?>"/>
+
+                </div>
+            </div>
+        <? } ?>
+    </div>
+<? } ?>

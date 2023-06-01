@@ -1,0 +1,28 @@
+{% set url = user().url('albums/album', {(constant('Application\\Mapper\\Injector::ALBUM')): album.getId(), 'slug':  slugify(album.getName()) }) %}
+
+<div class="col-sm-4">
+    <div class="padding-10 margin-10 generic-border">
+        <h1 class="no-margin padding-10 margin-bottom-10 generic-border pink-background">
+            <a  href="{{ url }}">{{ album.getName() }}</a>
+        </h1>
+        <a href="{{ url }}">
+            <img class="img-responsive" src="{{ album.getCover() }}"/>
+        </a>
+        <div class="pull-left">{{ stars(album) }}</div>
+        {#<div class="pull-center">{{ buy(album) }}</div>#}
+        <div class="stats center pure-white margin-top-10 generic-border pink-background">
+            <div class="col-lg-6 margin-top-10">
+                <div class="rating-video pull-left padding-left-10">
+                   Views : {{ album.interaction.views }}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="rating-video pull-right rating-custom-margins">
+                    <div class="right">
+                        {{ likes(album) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

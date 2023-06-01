@@ -1,0 +1,57 @@
+{% set url = user(performer).url('performer/profile', {'action': 'watch'}) %}
+{% set ribbonCss = performer.isOnline() ? (performer.isBroadcasting() ? 'high-def' : '') : 'offline' %}
+
+<div class="girl-box col-md-4 {{ ribbonCss }}">
+    <div class="girl-container"{{ user(performer).getContextInnerTag() }} >
+        <div class="girl-box-head box-bg status_{{ performer.getStatus() }} ?>">
+            <a href="{{ url }}"> {{ performer.getUsername() }} </a>
+        </div>
+        <div class="chats {{ ribbonCss }}">
+            <span class="{{ performer.getBroadcastType() in ['duplex', 'video'] ? '' : 'no_' }}webcam{{ performer.getNumberOfCameras() > 1 ? '_multi' : '' }}"></span>
+            <span class="{{ performer.getBroadcastType() in ['duplex', 'audio'] ? '' : 'no_' }}microphone"></span>
+            <span class="{{ performer.getBroadcastType() ? '' : 'no_' }}keyboard"></span>
+        </div>
+        <div class="girl" id="model_{{ performer.getId() }}">
+            <div class="wrap">
+                <div class="wrap">
+                    <span class="name pull-left">{{ performer.getDisplayName() }}</span>
+                    <span class="details pull-right">
+                        {{ date().diff(performer.getBirthday()).format('%y') }} <span class="years">yrs</span>
+                    </span>
+                </div>
+                <div class="clear"></div>
+                <div class="avatar">
+                    <div class="avatar-ribbon {{ video ? '' : 'no-hide-on-hover' }}"></div>
+                    <div class="cover-placement"><img src="{{ performer.getAvatar() }}"></div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="girl-info text-center">
+
+                {{ user(performer).buttons().profile() }}
+
+                <div class="quote"> {{ performer.getStatusProfile() }}</div>
+
+                <div class="break-line"></div>
+                <div class="b_btns">
+                    <span id="path_follow{{ performer.getId() }}" class="row">
+
+                        <div class="col-xs-6">
+                            {{ user(performer).buttons().follow() }}
+                        </div>
+                        <div class="col-xs-6">
+                            {{ user(performer).buttons().call() }}
+                        </div>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="girl-box-bottom box-bg status_{{ performer.getStatus() }}">
+            {{ user(performer).buttons().watch() }}
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>

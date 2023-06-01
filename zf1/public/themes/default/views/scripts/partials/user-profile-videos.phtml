@@ -1,0 +1,11 @@
+<h3 class="sub_header top">Bought Videos</h3>
+
+<?  if ($paginator)
+    foreach ($this->paginator as $video) echo $this->partial('partials/video-small-item.phtml', array('video' => $video));
+
+?>
+<div class="clear"></div>
+<?
+echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+?>
+

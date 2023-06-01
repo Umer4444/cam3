@@ -1,0 +1,24 @@
+<div class="row">
+	{% for image in rows %}
+		{% set url = object(image).toUrl() %}
+		<div class="col-sm-6">
+			<div class="post-2 padding-10">
+				<a href="{{ url }}">
+					<h1 class="padding-10 no-background blog-title">{{ image.getCaption()  }}</h1>
+				</a>
+				<div>
+					<a href="{{ url }}">
+						<a href="{{ url }}">
+							<img src="{{ image.getAlbum()
+							and buy(image.getAlbum()).isPurchasable()
+							and buy(image.getAlbum()).isPurchased() ? image : image.getFilename(false) }}" class="img-responsive"/>
+						</a>
+					</a>
+					<div class="blog-post-stats">
+						{{ video.getInteraction().getLikes() }} Likes · {{ video.getInteraction().getDislikes() }} Dislike
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+</div>

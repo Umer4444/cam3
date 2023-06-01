@@ -1,0 +1,82 @@
+{% for pledge in rows %}
+    {% if loop.index == 3 %}
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
+        <div class="pledge-box">
+            <div class="boxxmain">
+                <img src="/assets/images/banner-ad.jpg" height="300" width="360">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 padding-10 ">
+    <div class="pledge-box generic-border">
+        <div class="row row-no-margin">
+            <div class="box-main">
+                <div class="col-lg-4 col-sm-4 col-xs-12 no-padding pledge-img">
+                    <img src="{{ pledge.getModel.getAvatar() }}" class="img-responsive pledge-image-fix" alt="">
+                </div>
+                <div class="col-lg-8 col-sm-8 col-xs-12">
+                    <div class="effect pledge-performer-name ">
+                        {{ pledge.getModel.getScreenName() }}
+                    </div>
+                    <div class="pledge-detail-box">
+                        <p class="text-muted">
+                            <span class="theme-color">
+                                Wanted for :
+                            </span>
+                        </p>
+                        <p class="text-muted"><span class="theme-color">Refer Percentage: </span>15</p>
+                        <p class="text-muted"><span class="theme-color">Known where aboutus: <br>
+                      </span>
+                        <a title="" href="/pledge/view/{{ pledge.getId() }}/{{ pledge.getTitle() }}">
+                            {{ profile }}
+                        </a>
+                    </div>
+                    <a href="/pledge/view/{{ pledge.getId() }}/{{ pledge.getTitle() }}">
+                        <div class="effect pledge-performer-btn ">
+                            <small class="half small-txt">Bounty Currently @</small>
+                            <h4 class="white half big-txt">
+                                $ {{ pledge.getGoalAmount() |round }}
+                                <small class="white"></small>
+                            </h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row row-no-margin">
+            <div class="col-sm-12">
+                <div class="pull-left padding-10">
+
+                    <span class="theme-color">
+                        Bounty Issued:
+                    </span>
+
+                    {{ pledge.getStartDate()|date('d/m/Y') }}
+
+                    <span class="text-muted">
+                        {% if pledge.getEndDate() < date('now').getTimestamp()  and pledge.getEndDate > date('now').getTimestamp() %}
+                            {% if pledge.getStartDate() < date('now').getTimestamp()  and pledge.getEndDate > date('now').getTimestamp() %}
+
+                                {% if (pledge.getEndDate() - date('now').getTimestamp()) < (24*3600) %}
+                                    <span class="countdown pink"
+                                          data-time="">0</span> <span class="">Hours left
+                                    </span>
+                                {% else %}
+
+                                    <span class="countdowndays pink"
+                                          data-time="">0</span> <span class="">Days left
+                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="pull-right">
+                    {{ interaction(pledge.getModel()).likes()|raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}

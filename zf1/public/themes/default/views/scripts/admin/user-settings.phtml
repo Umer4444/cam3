@@ -1,0 +1,18 @@
+<? $this->headTitle('Edit ' . $this->user->username . '\'s Profile - Settings');
+
+echo '<script src="/scripts/jquery.autocomplete.js"></script>';
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "user",
+        "acl" => $this->acl,
+        "user" => $this->user,
+
+    ));
+
+echo $this->partial('partials/user-profile-edit.phtml', $this);
+
+?>
+        
+      
+    

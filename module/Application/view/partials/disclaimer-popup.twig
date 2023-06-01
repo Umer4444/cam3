@@ -1,0 +1,53 @@
+
+<div class="modal row" id="bg" style="display:block">
+    <div class="col-md-12">
+
+    </div>
+</div>
+<div class="modal row" id="pop" style="display:block">
+    <div class="col-md-12">
+        <div class="popup" >
+            <div class="col-md-2"></div>
+            <div class="col-md-8" id="popup-fix">
+                <div class="girl">
+                    <div class="col-md-12 col-sm-12" id="logo-popup">
+                        <img src="/assets/images/camclients.png" width="50%">
+                    </div>
+                    <p class="para">
+                        {{ disclaimer.getContent() }}
+                    </p>
+                    <p class="col-md-6 col-sm-6 col-xs-6">
+                        <a class="exit" href="{{ disclaimer.getLink() }}">EXIT</a>
+                    </p>
+                    <p class="col-md-6 col-sm-6 col-xs-6">
+                        <a class="enter" href="#" onclick="closeDisclamer();">ENTER</a>
+                    </p>
+                </div>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function() {
+
+        getCookie('disclaimer') == "open"
+
+        if(getCookie('disclaimer') == "open" || getCookie('disclaimer') == "") {
+            $('#bg').show();
+            $('#pop').show();
+        } else {
+            $('#pop').hide();
+            $('#bg').hide();
+        }
+    });
+
+    function closeDisclamer() {
+        $('#pop').hide();
+        $('#bg').hide();
+        setCookie('disclaimer', 'closed', 'Session')
+    }
+
+</script>

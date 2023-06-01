@@ -1,0 +1,119 @@
+<div class="row">
+    {% for video in rows %}
+        {#{% set difference = date('NOW').diff(video.startDate) %}#}
+        {% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+        {% set price = video.getCost() %}
+        {% set url = url('premiers/premiere', {(constant('Application\\Mapper\\Injector::VIDEO')) : video.getId(), 'slug' : slug}) %}
+        <div class="pri-block">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <img src="{{ video.getCover() }}" class="full-width img-responsive">
+                </div>
+                <div class="form-group">
+                    <span>
+                        <i class="fa fa-circle black"></i>
+                        <strong class="black">{{ video.startDate.date | date("D. jS M Y") }}</strong>
+                    </span>
+                    <span>
+                        <i class="fa fa-circle black"></i>
+                        <strong class="black"></strong>
+                    </span>
+                </div>
+                <div>
+                    <div class="widget time-tracker form-group">
+                        <div class="widget-body">
+                            <div class="timer" data-type="timer-flip" data-from=" {{ video.startDate.getTimestamp() - date('now').getTimestamp() }}" data-to="{{ date('now').getTimestamp() }}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="pull-left form-group">
+                        {% if zfcUserIdentity() %}
+                            <a href="#buy" role="button" class="buy-tic" data-toggle="modal">
+                                BUY NOW!
+                            </a>
+                        {% else %}
+                            <a href="{{ url('zfcuser/login') }}"class="buy-tic">Login to buy</a>
+                        {% endif %}
+                    </div>
+                    <div class="pull-right">
+                        <div class="btn-group" role="group" id="remind-me">
+                            <button id="btnGroupVerticalDrop2" type="button" class="btn btn-default dropdown-toggle  buy-tic" data-toggle="dropdown" aria-expanded="false"> Remind Me <span class="caret"></span> </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="btnGroupVerticalDrop2">
+                                <li><a href="#">2 hours before</a></li>
+                                <li><a href="#">1 days before</a></li>
+                                <li><a href="#">2 days before</a></li>
+                                <li><a href="#">1 week before</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div>
+                    <div class="premier-main">
+                        <div>
+                            <div class="col-sm-9">
+                                <div class="scroll-container mCustomScrollbar _mCS_1" style="overflow: auto; height: 446px;">
+                                    <div id="mCSB_1" class="mCustomScrollBox mCS-dark mCSB_vertical mCSB_inside" tabindex="0">
+                                        <div id="mCSB_1_container" class="mCSB_container" style="position:relative; top:0; left:0;" dir="ltr">
+                                            <div>
+                                                <h2 class="theme-color no-margin">
+                                                    <strong>{{ video.getTitle() }} </strong>
+                                                </h2>
+                                            </div>
+                                            <div class="form-group">
+                                                <h4 class="white no-margin">Starring: {{ video.getUser().displayName() }}</h4>
+                                            </div>
+                                            <p>
+                                                <small>{{ video.getDescription() }}</small>
+                                            </p>
+                                            <p class="text-uppercase">
+                                                <small>Cast:</small>
+                                                <small>{{ video.getCast() }}</small>
+                                            </p>
+                                            <div class="grid-ul ">
+                                                <ul>
+                                                    <li><img src="/assets/images/user-3.png" width="57" class="mCS_img_loaded"></li>
+                                                    <li><img src="/assets/images/user-3.png" width="57" class="mCS_img_loaded"></li>
+                                                    <li><img src="/assets/images/user-3.png" width="57" class="mCS_img_loaded"></li>
+                                                </ul>
+                                            </div>
+                                            <p></p>
+                                            <div class="clearfix"></div>
+                                            <p class="text-uppercase"><small>Price: <span class="theme-color text-uppercase">{{ price ? : 'FREE' }}</span></small></p>
+                                            <div class="clearfix"></div>
+                                            <p class="text-uppercase">
+                                                <small>Expectation: </small>
+                                                <span class="white-btn-series">
+                                                    <a href="{{ url }}">{{ video.getTags() }}</a>
+                                                </span>
+                                            </p>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-dark mCSB_scrollTools_vertical" style="display: block;">
+                                            <div class="mCSB_draggerContainer">
+                                                <div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 30px; display: block; height: 237px; max-height: 436px;" oncontextmenu="return false;">
+                                                    <div class="mCSB_dragger_bar" style="line-height: 30px;"></div>
+                                                </div>
+                                                <div class="mCSB_draggerRail"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 logo-sec">
+                            <div class="white text-center">
+                                <h4><strong>Brought to you by:</strong></h4>
+                                <div><img src="/assets/images/hustlebug-logo.jpg" class="img-responsive"></div>
+                            </div>
+                        </div>
+                        <div class="view-past"><a href="{{ url }}">View Past Shows</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+

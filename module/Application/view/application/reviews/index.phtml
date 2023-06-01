@@ -1,0 +1,42 @@
+
+<div id="table"></div>
+<div class="clear"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#table").zfTable('<?=$this->url('admin/table-ajax')?>');
+    });
+
+    $(document).ajaxComplete(function(event, xhr, settings){
+
+        if(settings.url === '<?=$this->url('admin/table-ajax')?>') {
+
+            $(".status").change(function () {
+
+                var status = $(this).val();
+                var id = $(this).data('id');
+
+                var object = {'status': status, 'id': id};
+
+                $.ajax({
+                    url: '<?=$this->url('admin/manage-reviews/change-status')?>',
+                    type: 'POST',
+                    data: object
+                });
+
+            });
+
+            $("#additionalParams").on('submit', function (e) {
+                e.preventDefault();
+                $("#table").zfTable('<?=$this->url('admin/table-ajax')?>', {
+                    sendAdditionalParams: function () {
+                        return '&' + $('#additionalParams').serialize();
+                    }
+                });
+            });
+
+        }
+
+    });
+</script>

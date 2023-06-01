@@ -1,0 +1,33 @@
+<?= $this->partial('application/dashboard/partial/tab-menu'); ?>
+<div class="row-fluid">
+    <div class="span6">
+
+        <h3>Change Email for <?php echo $this->zfcUserDisplayName() ?></h3>
+        <?php if ($status === true) : ?>
+            <div class="alert alert-success">Email address changed successfully.</div>
+        <?php elseif ($status === false) : ?>
+            <div class="alert alert-error">Unable to update your email address. Please try again.</div>
+        <?php endif; ?>
+        <?php
+
+        $form = $this->changeEmailForm;
+
+        $submitElement = new \Zend\Form\Element\Button('submit');
+        $submitElement
+            ->setLabel('Save email')
+            ->setAttributes(array(
+                'type' => 'submit',
+            ));
+        $form->add($submitElement);
+
+        $form->prepare();
+        $form->setAttribute('action', $this->url('zfcuser/changeemail'));
+        $form->setAttribute('method', 'post');
+        $form->setAttribute('class', 'form-horizontal center');
+        $form->get('submit')->setOptions(array('skipLabel' => true));
+        $form->get('submit')->setAttributes(array("class" => "btn btn-magenta"));
+
+        echo $this->ztbForm($form);
+        ?>
+    </div>
+</div>

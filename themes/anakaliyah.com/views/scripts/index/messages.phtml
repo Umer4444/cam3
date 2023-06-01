@@ -1,0 +1,99 @@
+<? $this->headTitle("My Messages - ".$this->page_title); ?>
+
+
+<div class="row">
+     <h2 class="title"><?=$this->user->username?>'s Profile</h2>
+
+
+    <div class="col-lg-3 profile-left">
+        <? echo $this->partial('partials/user-profile-left.phtml',array('user' => $this->user,'country' => $this->country,"active" => $this->profile_action)); ?>
+    </div>
+
+
+       <div class="col-lg-9">
+           
+            <?=$this->partial('partials/message-filter.phtml');?>
+            <br/>
+                <div class="tabs_messages">
+                    <a class="<?=$this->message_action=='inbox'?'active':''?>" href="<?=$this->url(array("message_action"=>"inbox"),"messages")?>">Inbox</a> | 
+                    <a class="<?=$this->message_action=='outbox'?'active':''?>" href="<?=$this->url(array("message_action"=>"outbox"),"messages")?>">Sent Messages</a> |
+                    <a class="<?=$this->message_action=='archive'?'active':''?>" href="<?=$this->url(array("message_action"=>"archive"),"messages")?>">Archive Messages</a> | 
+                    <a class="<?=$this->message_action=='compose'?'active':''?>" href="<?=$this->url(array("message_action"=>"compose"),"messages")?>">Compose Message</a> 
+                </div>
+                
+                <br>
+                <?=$this->notice?>
+                
+        <?        
+                switch($this->message_action){
+                    
+                    case "inbox":
+                    case "archive":         
+                    case "outbox":
+                             echo $this->partial('partials/message-list.phtml', array("users" => $this->users, "paginator" => $this->paginator, "message_action" => $this->message_action));
+                              
+                    break;
+                    
+                    case "compose":
+                           echo $this->partial('partials/message-compose.phtml', $this);
+                           /*
+        ?>
+                    <p>Create your new message with the form below.</p>
+               
+                    <script src="/scripts/jquery.autocomplete.js"></script>
+                    <form action="" method="post" id="messages_compose">
+                        <div class="join-box-fields">
+                            <div class="field">
+                                <label for="sendto">Send To</label>
+                                <div class="field_wrapper">
+                                    <?=$this->formText('sendto', null)?>
+                                </div>
+                            </div>
+                        
+                            <div class="field">
+                                <label for="subject">Subject</label>
+                                <div class="field_wrapper">
+                                    <?=$this->formText('subject', null)?>
+                                </div>
+                            </div>
+                           
+                            <div class="field">
+                                <label for="message">Message</label>
+                                <div class="field_wrapper">
+                                    <?=$this->formTextarea('message', null, array('cols'=>30,'rows'=>6))?>
+                                </div>
+                            </div> 
+                            
+                            <div class="field">
+                                <label for="tip">Tip *</label>
+                                <div class="field_wrapper">
+                                    <?=$this->formText('tip', null,array("class"=>"small_tfield","style"=>"float:left !important;","onkeypress"=>"return isNumeric(event);"))?>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <p class="field_notice">* tips are not required but might improve the chances of getting read faster or replied to at all!</p>
+                            </div>
+                                           
+                        </div>
+                        <br>
+                        <div class="join-button">
+                            <input type="submit" name="send" value="Send Message" class="green-button">
+                            <input type="hidden" name="send" value="Send Message">
+                        </div>
+                    </form>
+                    
+        <script type="text/javascript">
+        var sendTo = document.URL.split('#')[1];
+
+        if(sendTo){
+            $('#sendto').val(sendTo);
+        }
+        </script>  
+                    
+        <?         */
+                    break;
+                }
+        ?>      
+    </div>          
+</div>     
+

@@ -1,0 +1,18 @@
+<div>
+    <h3>Chat is opened in popup</h3>
+</div>
+<script>
+    $(document).ready(function () {
+        if (typeof $.cookie("popup_<?=$this->model->id?>") != "undefined") {
+
+            var timer = setInterval(function () {
+                if (typeof $.cookie("popup_<?=$this->model->id?>") == "undefined") {
+                    clearInterval(timer);
+                    $.removeCookie('popup_<?=$this->model->id?>', {path: '/'})
+                    location.reload();
+
+                }
+            }, 2999);
+        }
+    })
+</script>

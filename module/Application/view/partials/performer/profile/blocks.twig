@@ -1,0 +1,81 @@
+{% set configAdmin = serviceLocator().get('cfg.'~user.getId()) %}
+{% set settings = configAdmin.getConfigValue('profile_settings/profile_blocks')|json_decode %}
+
+<div class="grid-stack">
+    {% for setting in settings %}
+
+        {% set entitySetting = user.getSetting(setting.id, true) %}
+        {% set isVideo = 'Video' in entitySetting.getResource().getEntity() %}
+        {% set blockValue = user.getSetting(setting.id) %}
+
+        {# skip empty blocks on admin #}
+        {% if admin or (not admin and blockValue is not empty) %}
+            <div class="grid-stack-item" id="{{ setting.id }}"
+                 data-gs-x="{{ setting.x }}" data-gs-width="{{ setting.width }}" data-gs-y="{{ setting.y }}"
+                 data-gs-height="{{ setting.height }}"
+                 {% if admin %}
+                     {% if setting.locked %}
+                         data-gs-locked="true" data-gs-no-resize="true" data-gs-no-move="true"
+                     {% else %}
+                        data-context="{{ configAdmin.getContextKey()~'.'~user.getId() }}"
+                     {% endif %}
+                     data-file="{{ setting.file }}" data-group="{{ entitySetting.getResource().getGroup() }}"
+                     data-type="{{ isVideo ? 'video' : 'text' }}"
+                {% endif %}
+                >
+                <div class="grid-stack-item-content">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            {% if admin %}
+                                <a class="glyphicon glyphicon-pencil" href="javascript:;"></a>
+                                <span class="glyphicon glyphicon {{ isVideo ? 'glyphicon-facetime-video' : 'glyphicon-text-size' }} pull-right"></span>
+                            {% endif %}
+                            {{ user.getSetting(setting.id, true).getResource().getLabel() }}
+                        </div>
+                        <div class="panel-body" {{ isVideo ? '' : 'style="background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.7) 100%)'~(setting.file?', url('~setting.file~') no-repeat right top')~'"' }}>
+                            {% if isVideo %}
+                                {% if blockValue is empty %}
+                                    No Video
+                                {% else %}
+                                    {# for admin we need space for the controls #}
+                                    <div class="flowplayer" data-splash="true" {{ admin ? 'style="height: 100px"' : '' }}>
+                                        <video>
+                                            <source type="video/mp4" src="{{ blockValue }}">
+                                        </video>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                {{ blockValue }}
+                            {% endif %}
+                        </div>
+
+                        {% if admin %}
+                            <div class="panel-footer hide">
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">{{ isVideo ? 'Video' : 'Background' }}</span>
+                                            <input type="text" id="file" value="{{ setting.file }}"
+                                                   placeholder="Leave empty for none" class="form-control"/>
+                                            <span class="input-group-btn">
+                                                <a href="javascript:;" class="btn btn-default">Pick file</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        {% if not setting.locked %}
+                                            <button type="button" class="btn btn-danger">Delete</button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-warning">Cancel</button>
+                                        <button type="button" class="btn btn-success">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

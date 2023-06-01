@@ -1,0 +1,16 @@
+<? $this->headTitle('Notifications'); ?>
+<div class="model_content">
+    <?
+    echo $this->partial('partials/model-submenu.phtml',
+        array("params" => $this->theme()->view->params,
+            "type" => "notifications",
+            "acl" => $this->acl
+        ));
+    echo $this->partial('partials/notifications.phtml',
+        array(
+            //"notifications" => $this->notifications
+            "paginator" => $this->paginator
+        )
+    );
+    ?>
+</div>

@@ -1,0 +1,81 @@
+{% extends 'layout/layout_base' %}
+
+{% block containerClass %}container-fluid nopadding main-bgg{% endblock %}
+
+{% block content %}
+
+    {% if redirect %}
+        {{ loginForm.add({'name': 'redirect', 'type': 'hidden', 'attributes': {'value': escapeHtml(redirect)}, 'options': {'type': 'hidden'} }) ? '' : '' }}
+    {% endif %}
+
+    <div class="container-fluid nopadding main-bgg">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="light-pink">
+                <div class="col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12 col-xs-offset-0">
+                    <div class="pad1">
+                        <h4>LOGIN</h4>
+                        <div class="pad">
+                            {{ form().openTag(loginForm.prepare().setAttribute('action', url('zfcuser/login'))) }}
+                            {% for field in loginForm %}
+                                    {% if field.getAttributes()['type'] == 'submit' %}
+                                        <div class="form-group col-md-6 col-md-offset-3">
+                                            <input type="{{ field.getAttributes()['type'] }}"
+                                                   placeholder="{{ field.getLabel() }}"
+                                                   class="form-control btn btn-black" id="{{ field.getName }}" name="{{ field.getName() }}">
+                                        </div>
+                                    {% else %}
+                                        <div class="form-group">
+                                            <label for="{{ field.getName() }}">{{ field.getLabel() }}</label>
+                                            <input type="{{ field.getAttributes()['type'] }}"
+                                                   placeholder="{{ field.getLabel() }}"
+                                                   class="form-control" id="{{ field.getName() }}" name="{{ field.getName() }}">
+                                        </div>
+                                    {% endif %}
+
+                            {% endfor %}
+                            {{ form().closeTag() }}
+                        </div>
+                        <div class="low nopadding">
+                            <div class="">
+                                <div class="col-md-6">
+                                    <p class="col-md-12 pull-left pink lef nopadding"><a href="">sign up</a></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <a class="col-md-12 pull-left grey lef1 nopadding" href="">lost password</a><p></p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-12 nopadding">
+                    <div class="dark-pink">
+                        <h2><img src="/images/dots.png" width="23%"> Astonishing looks at a low price!<img src="/images/dots.png" width="23%"></h2>
+                        <div class="shop">
+                            <div class="col-md-11 col-md-offset-1">
+                                <ul>
+                                    <li class="active pink1">
+                                        <a href="#">BEAUTY</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">DRESS</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">LINGERIE</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">SWIMWEAR</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">ACCESSORIES</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

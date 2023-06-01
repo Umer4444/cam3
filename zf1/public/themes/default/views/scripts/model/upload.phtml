@@ -1,0 +1,361 @@
+<?php
+$title = 'Upload '. $this->params['type'];
+$timestamp = time();
+
+switch ($this->params['type']) {
+    case 'photo':
+        $title = 'Upload Photo';
+        $albums = array('0' => ' -- New Album -- ', '-1' => ' -- Standalone Photos --');
+        foreach ($this->albums as $_album) {
+            $albums[$_album->id] = $_album['name'];
+        }
+
+        break;
+    case 'video':
+        $title = 'Upload Video';
+        break;
+}
+
+$types = array("gallery" => "gallery");
+//if(!empty($this->pledges_array))
+$types["pledge"] = "pledge";
+
+$this->headTitle($title);
+?>
+
+
+<div class="model_content">
+
+
+<div class="page-content round-corners">
+<?= $this->notice ?>
+<h1 class="page-title"><?= $title ?></h1>
+
+<?php
+switch ($this->params['type']) {
+
+    case 'photo':
+
+        ?>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                setTimeout(function () {
+                        $('#upload_photo').uploadify({
+                            'queueSizeLimit': 100,
+                            'swf': '/assets/vendor/javascript/uploadify/uploadify.swf',
+                            'uploader': '/admin/upload/photo',
+                            'method': 'post',
+                            'auto': false,
+                            'fileTypeDesc': 'Image Files',
+                            'fileTypeExts': '*.gif; *.jpg; *.png',
+                            'buttonText': "Select photos",
+                            //'scriptAccess' : 'always',
+                            onComplete: function (event, queueId, fileObj, response, data) {
+                                alert(response);
+                            },
+                            'onQueueComplete': function (queueData) {
+                                //RELOAD PAGE
+                                location.href = "/admin/crud/photo";
+                            }
+
+                        })
+                    },
+                    123
+                );
+                $("#viewable").datepicker({
+                    minDate: 0
+                });
+
+
+                $('#password_box').css('display', 'block');
+                $('#submitButton').onClick = function (e) {
+                    e.preventDefault();
+                    submitForm();
+                };
+
+                $('#existing_gallery').change(function () {
+                    if ($('#existing_gallery').val() == 0) {
+                        $('#new_album_info').css('display', 'block');
+                    } else {
+                        $('#new_album_info').css('display', 'none');
+                    }
+                });
+
+                //$("#id_resource").hide();
+                $("#type").change(function () {
+                    if ($(this).val() == "gallery") {
+                        $("#parent_id").parents().eq(1).show();
+                        $("#description").parents().eq(1).show();
+
+                        $("#viewable").parents().eq(1).show();
+                        $("#amount").parents().eq(1).show();
+                    } else {
+                        $("#parent_id").parents().eq(1).hide();
+                        $("#description").parents().eq(1).hide();
+
+                        $("#viewable").parents().eq(1).hide();
+                        $("#amount").parents().eq(1).hide();
+                    }
+                });
+            });
+
+            function submitForm() {
+                if ($("#name").val() == "" && $("#existing_gallery").val() == 0) {
+                    alert("Add gallery name!");
+                    return;
+                }
+                if ($(".uploadify-queue-item").length < 1) {
+                    alert("Add photo!");
+                    return;
+                }
+                var _formData = {
+                    'name': $("#name").val(),
+                    'description': $("#description").val(),
+                    'password': $("#password").val(),
+                    'viewable': $("#viewable").val(),
+                    'existing_gallery': $("#existing_gallery").val(),
+                    'amount': $("#amount").val(),
+                    'parent_id': $("#parent_id").val(),
+                    'id_resource': $("#id_resource").val(),
+                    'type_resource': $("#type").val(),
+                    'total_photos': $(".uploadify-queue-item").length,
+                    'timestamp': '<?php echo $timestamp;?>',
+                    'token': '<?php echo md5('unique_salt_pw.ro2013' . $timestamp);?>'
+                };
+
+                _formData.PHPSESSID = '<?=session_id(); ?>';
+                $('#upload_photo').uploadify("settings", "formData", _formData);
+                $('#upload_photo').uploadify("upload", "*");
+
+            }
+
+        </script>
+
+        <form action="" method="post" enctype="multipart/form-data" id="form_upload_photo">
+            <div class="join-box-fields">
+
+                <div class="field">
+                    <div class="field_wrapper">
+                        <?= $this->formSelect('existing_gallery', null, null, $albums) ?>
+                    </div>
+                </div>
+
+                <div id="new_album_info">
+                    <div class="field">
+                        <label for="album_name">Album Name</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('name', null, array("autocomplete" => "off")); ?>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="type">Type</label>
+
+                        <div class="type">
+                            <?=
+                            $this->formSelect('type', 0, null, $types); ?>
+
+                        </div>
+                    </div>
+                    <?/*
+                    <div class="field">
+                        <label for="existing_gallery">Add as child gallery of</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formSelect('parent_id', 0, null, $albums) ?>
+                        </div>
+                    </div>*/?>
+                    <div class="field">
+                        <label for="description">Description</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formTextarea('description', null, array('cols' => 30, 'rows' => 3)) ?>
+                        </div>
+                    </div>
+
+                    <div id='password_box' style="display:none;">
+                        <div class="field">
+                            <label for="password">Password</label>
+
+                            <div class="field_wrapper">
+                                <?= $this->formText('password', null, array("autocomplete" => "off")); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="amount">Purchase Amount</label>
+
+                        <div class="field_wrapper">
+                            <?= $this->formText('amount', '', array('autocomplete' => 'off', "class" => "small_tfield_date")) ?>
+                        </div>
+                    </div>
+                    <?/*
+                        <div class="field">
+                            <label for="viewable">Viewable</label>
+
+                            <div class="field_wrapper">
+                                <?= $this->formText('viewable', '', array('autocomplete' => 'off', "class" => "small_tfield_date")) ?>
+                            </div>
+                        </div>
+                    */ ?>
+                </div>
+
+
+                <div class="field">
+                    <label for="upload_photo"></label>
+
+                    <div class="field_wrapper">
+                        <input type="file" name="upload_photo" id="upload_photo"/>
+                    </div>
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="join-button">
+                <input type="button" name="save" value="Save" class="btn btn-success" id="submitButton"
+                       onclick="submitForm()">
+            </div>
+        </form>
+        <?php
+        break;
+
+    case 'video':
+        ?>
+
+        <script type="text/javascript" >
+        <?php $timestamp = time();?>
+        $(document).ready(function () {
+            setTimeout(function () {
+                    $('#upload_video').uploadify({
+                        'queueSizeLimit': 100,
+                        'swf': '/assets/vendor/javascript/uploadify/uploadify.swf',
+                        'uploader': '/admin/upload/video',
+                        'method': 'post',
+                        'fileTypeExts': '*.mov; *.wmv; *.flv; *.mp4; *.mpeg; *.avi; *.h264;',
+                        'fileTypeDesc': 'Video file',
+                        'auto': false,
+                        'uploadLimit': 1,
+                        'buttonText': "Select video",
+                        'fileObjName': "upload_video",
+                        'preventCaching': true,
+                        'onQueueComplete': function (queueData) {
+                            location.href = "/admin/crud/video";
+                        }
+                    })
+                },
+                123
+            );
+
+            $('#submitButton2').on("click", function (e) {
+                if ($("#title").val() == "") {
+                    alert("Add video title!");
+                    return false;
+                }
+                e.preventDefault();
+                var _fdata = {
+                    'title': $("#title").val(),
+                    'description': $("#description").val(),
+                    'tags': $("#tags").val(),
+                    'type': $("#type").val(),
+                    'sizeLimit': parseInt(1 * 1024 * 1024 * 1024),
+                    'total_videos': $(".uploadify-queue-item").length,
+                    'timestamp': '<?php echo $timestamp;?>',
+                    'token': '<?php echo md5('unique_salt_pw.ro2013' . $timestamp);?>'
+                };
+
+                $('#upload_video').uploadify('settings', 'formData', _fdata);
+                $('#upload_video').uploadify('upload', '*');
+            });
+        });
+
+        </script>
+<!--    TODO REMOVE THIS-->
+        <style>
+            .uploadify-button {
+                height: 30px;
+                line-height: 30px;
+                width: 120px;
+                z-index: 0 !important;
+                margin-top: -35px;
+                position: absolute;
+                float: left;
+                /* position: relative; */
+            }
+
+            .uploadify-button span {
+                z-index: 0 !important;
+            }
+
+            object {
+                position: relative !important;
+                z-index: 100 !important;
+            }
+
+        </style>
+
+<!--    /TODO REMOVE THIS-->
+        <form action="" method="post" enctype="multipart/form-data" id="form_upload_photo">
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="type">Video type</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formSelect('type',
+                            null,
+                            null,
+                            array(
+                                "Videos\Entity\PremiereVideo" => "premieres",
+                                "Videos\Entity\VodVideo" => "vod",
+                                "blog" => "blog",
+                                "Videos\Entity\PledgeVideo" => "pledge",
+                                //"promo" => "promotional",
+                                "Videos\Entity\ProfileVideo" => "profile",
+                                //"sale" => "for sale",
+                            )
+                        ); ?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="title">Title</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formText('title', null, array("autocomplete" => "off")); ?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="tags">Tags</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formText('tags', null, array("autocomplete" => "off")); ?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="tags">Description</label>
+
+                    <div class="field_wrapper">
+                        <?= $this->formTextarea('description', null, array('cols' => 30, 'rows' => 3)) ?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="upload_video">Select video file</label>
+
+                    <div class="field_wrapper">
+                        <input type="file" name="upload_video" id="upload_video"/>
+                    </div>
+                </div>
+                <div class="join-button">
+                    <input type="button" name="save" value="Save" class="btn btn-success" id="submitButton2">
+                </div>
+            </div>
+        </form>
+        <?php
+        break;
+}
+?>
+</div>
+
+</div>

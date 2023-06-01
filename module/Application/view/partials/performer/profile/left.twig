@@ -1,0 +1,194 @@
+<article id="widget_1" class="widget separator">
+    <div class="col-sm-4 text-center">
+        {{ user().buttons().friend() }}
+        <br/>
+        <span>Friends</span>
+        <p><strong>{{ user.getFriends().count() }}</strong></p>
+    </div>
+    <div class="col-sm-4 text-center">
+        {{ user().buttons().favorite() }}
+        <br>
+        <span>Favorited</span>
+        <p><strong>0</strong></p>
+    </div>
+    <div class="col-sm-4 text-center">
+        {{ user().buttons().follow() }}
+        <br/>
+        <div class="col-sm-6">
+            <span>Followers</span>
+            <p><strong>2</strong></p>
+        </div>
+        <div class="col-sm-6">
+            <span>Following</span>
+            <p><strong>0</strong></p>
+        </div>
+    </div>
+</article>
+<article id="widget_2" class="widget separator">
+    <p>{{ user.getAboutMe() }}</p>
+</article>
+
+<article id="widget_3" class="widget text-center separator col-md-12">
+    {{ user().buttons().watch() }}
+    <br>
+    <p>Last Online: {{ user.getOnline() ? 'Just Now' : user.getLastActivity().format('d, F Y') }}</p>
+</article>
+
+<article id="widget_5" class="separator">
+    <div class="col-sm-4">
+        <p>Votes: {{ user.getInteraction().getVotes() }}</p>
+    </div>
+    <div class="col-sm-4">
+        {{ interaction(user).rating()|raw }}
+    </div>
+    <div class="col-sm-4" style="z-index:1">
+        {{ interaction(user).likes()|raw }}
+        <br>
+    </div>
+</article>
+
+<article id="widget_6" class="separator">
+    <div class="row">
+        <div class="col-xs-6">
+            {{ user().buttons().tip() }}
+        </div>
+        <div class="col-xs-6">
+            {{ user().buttons().message() }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            {{ user().buttons().sms() }}
+        </div>
+        <div class="col-xs-6">
+            {{ user().buttons().call() }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            {{ user().buttons().play() }}
+        </div>
+    </div>
+</article>
+
+<article id="widget_7" class="separator">
+
+    <div class="title_widget">Personal Stats</div>
+    <ul class="list-group">
+
+        {% if user.getCountry().getName() %}
+            <li class="list-group-item">
+                Country<span class="badge">{{ user.getCountry().getName() }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getBodyType() %}
+            <li class="list-group-item">
+                Body Type<span class="badge">{{ user.getBodyType() }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getEthnicity %}
+            <li class="list-group-item">
+                Ethnicity<span class="badge">{{ user.getEthnicity() }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getHeight() %}
+            <li class="list-group-item">
+                Height<span class="badge">{{ user.getHeight() }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getWeight() %}
+            <li class="list-group-item">
+                Weight<span class="badge">{{ user.getWeight() }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getMeasurementsBust() and user.getMeasurementsWaist() and user.getMeasurementsBottom() %}
+            <li class="list-group-item">
+                Measurement
+                <span class="badge">
+                    {{ user.getMeasurementsBust() }} -
+                    {{ user.getMeasurementsWaist() }} -
+                    {{ user.getMeasurementsBottom() }}
+                </span>
+            </li>
+        {% endif %}
+
+        {% if user.getHairColor() %}
+            <li class="list-group-item">
+                Hair Color<span class="badge">{{ user.getHairColor(1) }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getOrientation() %}
+            <li class="list-group-item">
+                Orientation<span class="badge">{{ user.getOrientation(1) }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getBirthday() %}
+            <li class="list-group-item">
+                Birthday<span class="badge">{{ user.getBirthday().format('d, F Y') }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getSpokenLanguages() %}
+            <li class="list-group-item">
+                Lanuages<span class="badge">{{ user.getSpokenLanguages(1) }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getZodiacSign() %}
+            <li class="list-group-item">
+                Zodiac sign<span class="badge">{{ user.getZodiacSign(1) }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getEyeColor() %}
+            <li class="list-group-item">
+                Eye Color<span class="badge">{{ user.getEyeColor(1) }}</span>
+            </li>
+        {% endif %}
+
+        {% if user.getPubicHair() %}
+            <li class="list-group-item">
+                Pubic hair<span class="badge">{{ user.getPubicHair(1) }}</span>
+            </li>
+        {% endif %}
+    </ul>
+</article>
+
+{% set profileUrl = serverUrl() ~ user().url('performer/profile') %}
+
+<article id="widget_8" class="separator">
+    <div class="title_widget">Connect with me</div>
+
+    <div class="row margin-10">
+        {#{% for socialPlatform in connectHelper() %}
+
+            {% set link =  'connect/'~socialPlatform.getResource().getName() %}
+            {% set image =  '/assets/images/social/'~socialPlatform.getResource().getName()~'.png' %}
+
+            <a href="#{{ cfg(user).getConfigValue(link) }}" target="_blank" title="{{ socialPlatform.getResource().getLabel() }}">
+                <img src="{{ image }}" width="22px" alt="{{ socialPlatform.getResource().getLabel() }}">
+                {{ socialPlatform.getResource().getLabel() }}
+            </a>
+        {% endfor %}#}
+    </div>
+
+</article>
+
+<article id="widget_8" class="separator">
+    <div class="title_widget">Share my Profile's URL</div>
+    <input type="text" class="form-control" onclick="select()" readonly="readonly" value="{{ profileUrl }}">
+    <br/>
+</article>
+
+{% block calendar %}
+    <article id="widget_9">
+        {{ eventCalendar(user) }}
+    </article>
+{% endblock calendar %}

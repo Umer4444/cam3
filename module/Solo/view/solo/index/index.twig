@@ -1,0 +1,208 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+
+    {% do headTitle().prepend('Solo') %}
+
+    <div class="padding-10" id="solo-index">
+
+        <div class="row row-no-margin">
+
+            <div class="col-md-4" id="Welcome">
+                <div class="margin-10 padding-10 generic-border">
+                    <h2 class="no-top-margin resp">WELCOME</h2>
+                    <p class="padding-10">
+                        I finally have my own website! I get to show you guys my homemade videos and pictures. Massive
+                        amount of
+                        sexiness. I can finally be myself! Get comfortable. You will love my "fucking private life" :)
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4" id="chat">
+                <div class="margin-10 padding-10 generic-border">
+                    <div class="ch">
+                        <h2 class="no-top-margin">CHAT<span>OPTIONS</span></h2>
+                    </div>
+                    <div class="row row-no-margin padding-10">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                    {% for price in priceHelper() %}
+                                        <tr>
+                                            <th scope="row" class="col-md-8"><span class="pink">{{ price.getResource().getLabel() }}</span></th>
+                                            <td><span class="green" class="col-md-4">$ {{ price.getValue() }} /min</span></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="margin-10 padding-10 generic-border">
+                    <h2 class="no-top-margin">MY LIVE <span class="highcolor">WEBCAM</span></h2>
+                    <div class="padding-10">
+                        <p class="hidden-phone hidden-tablet">I will be on cam Multiple times a week. Keep up to date by
+                            reading my blog
+                            and checking my schedule. I will be streaming everything from photo shoots to hot Shows. V.I.P
+                            membership
+                            does have its privileges. This is definitely the best place to get the most of me. Theres no
+                            better way
+                            for
+                            us to spend time together.</p>
+                        <a href="{{ url('zfcuser/register', {'type' : 'member'}) }}" class="btn btn-purple">Join now</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row row-no-margin">
+            <div class="col-md-4">
+                <div class="generic-border padding-10 margin-10">
+                    {{ news(user().getUser()) }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="generic-border padding-10 margin-10">
+                    <h2 class="no-top-margin"><span class="highcolor">Twitter</span></h2>
+                    {{ partial("solo/twitter") }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="generic-border padding-10 margin-10">
+                    {{ modelFriends() }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-no-margin">
+            <div class="generic-border padding-10" id="blog">
+                <div class="col-md-12">
+                    <h2 class="no-top-margin">MY LATEST <span>VIDEOS</span></h2>
+                </div>
+                <div class="row row-no-margin videos">
+                    {{ related(newInstance('Videos\\Entity\\Video'), 'solo/partial/video', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST'), null, 6) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-no-margin margin-top-10">
+            <div class="generic-border padding-10" id="plege">
+                <h2 class="no-top-margin">PLEDGE</h2>
+                <div class="pl-block">
+                    <div class="row row-no-margin padding-10">
+                        {{ related(newInstance('Application\\Entity\\Pledge'), 'pledge-solo-homepage', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_BOUNTIES'), null, 4) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-no-margin margin-top-10">
+            <div class="generic-border padding-10"  id="play">
+                <div class="ch">
+                    <h2 class="no-top-margin">PLAY</h2>
+                </div>
+                <div class="pl-block">
+                    <div class="row row-no-margin padding-10">
+                        <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box ">
+                            <div class="play-box margin-10">
+                                <div class="play-title">
+                                    <h3><strong>Chess</strong></h3>
+                                </div>
+                                <div class="play-img">
+                                    <a href="/play/chess">
+                                        <img src="/assets/images/game/chess.jpg" alt="image" class="img-responsive">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box ">
+                            <div class="play-box margin-10">
+                                <div class="play-title">
+                                    <h3><strong>Checkers</strong></h3>
+                                </div>
+                                <div class="play-img">
+                                    <a href="/play/checkers">
+                                        <img src="/assets/images/game/checker.jpg" alt="image" class="img-responsive">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box ">
+                            <div class="play-box margin-10">
+                                <div class="play-title">
+                                    <h3><strong>Tic Tac Toe</strong></h3>
+                                </div>
+                                <div class="play-img">
+                                    <a href="/play/tic-tac-toe">
+                                        <img src="/assets/images/game/tic-tac-toe.jpg" alt="image" class="img-responsive">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-no-margin margin-top-10">
+            <div class="generic-border padding-10" id="pictures">
+                <div class="ch">
+                    <h2 class="no-top-margin">PICTURE <span>SETS</span></h2>
+                </div>
+                <div class="main-con1">
+                    <div class="row row-no-margin padding-10">
+                        <div class="col-md-12 pictures">
+                            {{ related(newInstance('Images\\Entity\\Photo'), 'photo/index-item', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST'), null, 12) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-no-margin margin-top-10">
+            <div class="generic-border padding-10" id="pictures">
+                <div class="ch">
+                    <h2 class="no-top-margin">ALBUM <span>SETS</span></h2>
+                </div>
+                <div class="main-con1">
+                    <div class="row row-no-margin padding-10">
+                        <div class="col-md-12 pictures">
+                            {{ related(newInstance('Images\\Entity\\Albums'), 'album/solo-album-item', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST'), null, 6) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-no-margin">
+            <div class="col-md-6 footer-buttons">
+                <a href="{{ url('zfcuser/register', {'type': 'vip_user' }) }}"><span class="continue"></span></a>
+            </div>
+            <div class="col-md-6 footer-buttons">
+                <a href="{{ url('zfcuser/register', {'type': 'member' }) }}"><span class="join"></span></a>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        d1 = new Date();
+        d1.toString('yyyy-MM-dd');
+        $(".calendar").datepicker({
+            dateFormat: "yy-mm-dd",
+            defaultDate: d1,
+            onSelect: function (dateText, inst) {
+                window.location.href = '/premieres/date/' + dateText;
+            }
+        });
+        $('#myTabs a').click(function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+    </script>
+
+{% endblock content %}

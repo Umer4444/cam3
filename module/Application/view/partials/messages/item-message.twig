@@ -1,0 +1,46 @@
+{{ cycle({"dark":"light"}, index).next() }}
+{% set sender = row.getSender() %}
+{% set role = user.getRole() %}
+{% set profileUrl = user(row.getSender()).url('performer/profile') %}
+{% set replyUrl = user(row.getSender()).url('messages/compose/send-to', {(constant('Application\\Mapper\\Injector::TOUSER')): row.getSender().getId()}) %}
+
+{% if role == 'performer' %}
+    {% set role = 'model' %}
+{% endif %}
+{% if role == 'super_admin' %}
+    {% set role = 'moderator' %}
+{% endif %}
+        <tr class="{{ role }}_message ">
+            <td class="center" width="50"><input type="checkbox" class="case" value="{{ row.getId() }}" id="{{ row.getId() }}"/></td>
+            <td class="center" width="250"><img class="left" width="48" src="{{ sender.getAvatar() }}" alt="{{ sender.getDisplayName() }} cover picture">
+                  <div class="message_info">
+                    <a target="_blank" href="{{ profileUrl }}">{{ sender.getDisplayName()|capitalize }}</a>
+                    <div class="timestamp">date TBD</div>
+                  </div>
+            </td>
+
+            <td class="{% if row.getRead == 1 %} read {% endif %}">
+                <div class="subject">
+                    <a href="{{ user(row.getReceiver()).url('messages/view', {(constant('Application\\Mapper\\Injector::MESSAGE')): row.getId(), 'slug': slugify(row.getSubject())}) }}">
+                        {{ row.getSubject }}
+                    </a>
+                </div>
+               {{ row.getBody()|striptags }}</td>
+            <td class="center" title="tip" width="35">
+                Tip: {{ row.getTip() }}
+            </td>
+            <td class="center" width="50">
+                <form method="post" action="{{ replyUrl }}">
+                    <?
+
+                    {% if messageAction == 'inbox' %}
+                        <input type="submit" class="btn btn-purple" name="reply" value="Reply"/>
+                    {% endif %}
+                    <input type="hidden" value="{{ sender.getUsername() }}" name="username"/>
+                    <input type="hidden" value="{{ sender.getId() }}" name="userid"/>
+                    <input type="hidden" value="{{ role }}" name="usertype"/>
+
+                </form>
+            </td>
+
+        </tr>

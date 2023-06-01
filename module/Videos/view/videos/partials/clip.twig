@@ -1,0 +1,67 @@
+{% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+    {% set url = url('videos/video', {(constant('Application\\Mapper\\Injector::VIDEO')) : video.getId(), 'slug' : slug}) %}
+<div class="col-lg-3 col-sm-6 col-md-3 col-xs-12  block-box">
+    <div>
+        <div class="club-title">
+            <span class="pull-left">
+                <a href="{{ url }}">{{ video.getTitle() | slice(0, 25) }}</a>
+                </br>
+                <a href="{{ video.getCategory }}">
+                <small class="cat_name">
+                        {{ video.getCategory() }}
+                    </small>
+                </a>
+            </span>
+            <span class="pull-right">$
+             {{ video.getCost()|trim('0')|trim('.')}}<br>
+            </span>
+        </div>
+        <div class="club-img">
+            <a href="{{ url }}">
+                <img alt="" class="img-responsive" src="{{ video.getCover() }}">
+            </a>
+        </div>
+        <div class="club-cont">
+            <div class="row">
+
+                <div class="col-sm-6 form-group">
+                    <div class="clip-page">
+                        <span>
+                            <a href="{{ url }}" data-toggle="tooltip" data-placement="left" title="" data-original-title="Uploaded Date">
+                                <i class="fa fa-calendar"></i>
+                                {{ video.getUploadedOn().date | slice(0, 10) }}
+                            </a>
+                            <a href="{{ url }}" data-toggle="tooltip" data-placement="left" title="" data-original-title="Views">
+                                <i class="fa fa-eye"></i>
+                                {{ video.getInteraction().getViews() }}
+                            </a>
+                            <a href="{{ url }}" data-toggle="tooltip" data-placement="left" title="" data-original-title="Comments">
+                                <i class="fa fa-comment"></i>
+                                Comments
+                            </a>
+                            <a href="{{ url }}" data-toggle="tooltip" data-placement="left" title="" data-original-title="Reviews">
+                                <i class="fa fa-edit"></i>
+                                Reviews
+                            </a>
+                        </span>
+                    </div>
+                </div>
+
+                {% set difference = date('NOW').diff(date(date('NOW').getTimestamp() + video.getDuration())) %}
+                <div class="col-sm-6 form-group">
+                    <div class="clip-page">
+                        <span class="">
+                            <a href="{{ url }}" data-toggle="tooltip" data-placement="left" title="" data-original-title="Length">
+                                <i class="fa fa-arrows-h"></i>
+                                {{ difference.format('%h:%I:%S') }}
+                            </a>
+                        </span>
+                    </div>
+                    <div class="profile-like-un">
+                        {{ interaction(video.getUser()).likes()|raw }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

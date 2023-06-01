@@ -1,0 +1,26 @@
+{% for performer in rows %}
+    <div class="col-lg-5ths  col-xs-12  block-box">
+        <a href="#" class="conten-box-hover">
+            <div class="conten-box">
+                <div class="conten-box-title">
+                    <span class="text-left">
+                        {{ performer.getUsername() }}
+                    </span>
+                    <span class="pull-right view_list">
+                        <img src="images/player.jpg" width="16" height="13"> 1
+                        <img src="images/cam.jpg" width="16" height="13">145
+                    </span>
+                </div>
+                <div class="conten-hover-btn">
+                    <button>Like</button>
+                    <button>Comment</button>
+                </div>
+                <img src="{{ performer.getAvatar() }}" alt="image" class="img-responsive">
+                <div class="text-center conten-time" >
+                    <span>00:02:14:01 - </span>
+                    <span class="theme-color">DAYS LEFT</span>
+                </div>
+            </div>
+        </a>
+    </div>
+{% endfor %}

@@ -1,0 +1,37 @@
+<? $file =         $this->item->getCover()  ;
+    $disable =     "";
+
+    if(isset($_SESSION["rate"]) && isset($_SESSION["rate"]["video"])) { 
+        if(in_array($this->item->id, $_SESSION["rate"]["video"])) $disable =  " disableRate"; 
+    }
+
+   
+?>
+<div class="video video-small thumbnail with-caption col-lg-4">
+    <a href="<?=$this->url(array("id" => $this->item->id, "name" => ro_slug($this->item->title)), "video")?>">
+        <span class="col-lg-3 play_button"></span>
+        <img  src="<?=$file?>">  
+    
+    
+        <div class="title center">                           
+                <h2><?=$this->item->title?></h2>          
+        </div>
+         <? /*
+        <div class="video-type">Free Preview</div>
+        <div class="video-price"><?=$this->item->getVideoCost()?></div>
+        */?>
+    </a>
+
+    <div class="clear"></div>
+    <? /*
+    <div class="stats center"> 
+          <?=$this->item->getDuration()?> | <?=$this->item->views?> Views 
+          <br/>  
+          <a href="<?=$this->url(array("id" => $this->item->id, "name" => ro_slug($this->item->title)), "video")?>#disqus_thread">Comments</a> |
+              
+          <a href="<?=$this->url(array("id" => $this->item->id, "name" => ro_slug($this->item->title)), "video")?>#reviews"><?=$this->videitemo->total_active_reviews?> Reviews</a>
+    </div>
+      */?>
+    
+
+</div>

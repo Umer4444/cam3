@@ -1,0 +1,40 @@
+<?  
+    $this->headTitle($this->page_content->title); 
+?>
+<style >
+    #accordion h2{
+        background: white;
+    }
+    .page p span{
+        color: white !important;
+    }
+    
+</style>
+<div class="row page">
+    <?
+    echo "<h2 class='title'>".$this->page_content->title."</h2>";
+
+    if ($this->page_content->page == 'faq'){//content + script for accordition
+        ?>
+        <div id="accordion">
+            <?echo $this->page_content->content;?>
+        </div>
+        <script type="text/javascript">
+            
+            var options = {
+                header : 'h2',
+                autoHeight: false
+            };
+            
+            $(document).ready(function() {
+                $( "#accordion" ).accordion(options);
+            });
+        
+        </script>
+        <?
+    }else{
+        echo $this->page_content->content;
+    }
+    ?>
+</div>
+

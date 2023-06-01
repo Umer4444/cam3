@@ -1,0 +1,30 @@
+<?php
+
+return array(
+
+    // Development time modules
+    'modules' => array(
+        'ZF\Apigility\Admin',
+        'ZF\Apigility\Admin\Ui',
+        'ZF\Apigility\Doctrine\Admin',
+        'ZF\Configuration',
+        'DoctrineDataFixtureModule',
+        'AssetManager',
+
+        // modules for developers
+        'ZendDeveloperTools',
+        //'OcraServiceManager',
+        'AistGitTools',
+        'Jhu\ZdtLoggerModule',
+        'SanSessionToolbar',
+        'ZfSnapEventDebugger',
+    ),
+
+    // development time configuration globbing
+    'module_listener_options' => array(
+        'config_glob_paths' => array(
+            'config/autoload/{,*.}{global,local}-development.php',
+        )
+    )
+
+);

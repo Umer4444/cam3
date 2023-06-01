@@ -1,0 +1,304 @@
+<div class="page-content round-corners">
+    <table class="listing_items messages">
+        <tbody>
+        <tr align="center">
+            <td class="model_message">Performers</td>
+            <td class="user_message">Members</td>
+            <td class="moderator_message">Staff members</td>
+        </tr>
+        </tbody>
+    </table>
+</div><br/>
+<table class="listing_items messages table table-bordered" cellpadding="5" cellspacing="1">
+    <tr class="header">
+        {% if paginator | length > 0 %}
+            <td class="center" width="50">
+                <input type="checkbox" id="selectall" class="checkboxes"/>
+
+            </td>
+
+            <td colspan="5" align="left">
+                <form method="post" action="" style="margin:0;">
+                    <input type="hidden" id="multiple_select" name="multiple_select"/>
+                    <input type="submit" class="btn btn-purple" id="read" name="read" value="Mark as read"/>
+                    <input type="submit" class="btn btn-purple" id="unread" name="unread" value="Mark as unread"/>
+                    {% if messageAction == 'inbox' %}
+                    <input type="submit" class="btn btn-purple" id="archive" name="archive" value="Archive"/>
+                    {% elseif messageAction == 'archive' %}
+                    <input type="submit" class="btn btn-purple" id="delete" name="delete" value="Delete"/>
+                    {% endif %}
+                </form>
+            </td>
+        {% endif %}
+    </tr>
+    <tr>
+        {% if message | length == 0 %}
+            <tr><td colspan="100" class="center" ><br>No messages.</td></tr>
+        {% endif %}
+        {% for message in paginator %}
+            {% include 'messages/message-item' with { 'row' : message, 'messageAction' : messageAction, 'index' : loop.index } %}
+
+        {% endfor %}
+    </tr>
+</table>
+{#{{ paginationControl(paginator, 'Sliding', 'message_paginator') }}#}
+            {#uncomment this when pagination is working#}
+
+
+<script>
+/* multiple selection */
+function check() {
+    var ar = [];
+    $('.case:checkbox:checked').each(function () {
+        if (typeof $(this).val() != 'undefined') {
+
+            ar.push($(this).val());
+        }
+    });
+    var ids = ar.join(', ');
+    $('#multiple_select').val(ids);
+}
+
+$(function () {
+    // add multiple select / deselect functionality
+    $("#selectall").click(function () {
+        $('.case').attr('checked', this.checked);
+        check();
+    });
+    // if all checkbox are selected, check the selectall checkbox
+    // and viceversa
+    $(".case").click(function () {
+        check();
+        // alert(this);
+        if ($(".case").length == $(".case:checked").length) {
+            $("#selectall").attr("checked", "checked");
+        } else {
+            $("#selectall").removeAttr("checked");
+        }
+
+    });
+
+    $('#archive').click(function (e) {
+        e.preventDefault();
+        var formData = $('#multiple_select').val();
+        if (formData.indexOf(',') === -1) {
+
+            var myData = formData;
+
+        } else {
+
+            var myArray = formData.split(', ');
+        }
+
+
+        var jsonForm = [];
+
+        if (typeof(myArray) !== 'undefined') {
+
+            $.each(myArray, function (index, value) {
+
+                array_push = {'id': value, 'type': 'archive'};
+                jsonForm.push(array_push);
+            });
+        } else {
+
+            array_push = {'id': formData, 'type': 'archive'};
+            jsonForm.push(array_push);
+
+        }
+
+
+        $.ajax({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: "/api/messages",
+            method: "PATCH",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(jsonForm),
+            success: function () {
+                if (typeof(myArray) !== 'undefined') {
+                    $.each(myArray, function (index, value) {
+                        $('#' + value).parent().parent().remove();
+                    });
+                } else {
+
+                    $('#' + formData).parent().parent().remove();
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+
+    });
+
+    $('#delete').click(function (e) {
+        e.preventDefault();
+        var formData = $('#multiple_select').val();
+        if (formData.indexOf(',') === -1) {
+
+            var myData = formData;
+
+        } else {
+
+            var myArray = formData.split(', ');
+        }
+
+
+        var jsonForm = [];
+
+        if (typeof(myArray) !== 'undefined') {
+
+            $.each(myArray, function (index, value) {
+
+                array_push = {'id': value, 'type': 'delete'};
+                jsonForm.push(array_push);
+            });
+        } else {
+
+            array_push = {'id': formData, 'type': 'delete'};
+            jsonForm.push(array_push);
+
+        }
+        $.ajax({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: "/api/messages",
+            method: "PATCH",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(jsonForm),
+            success: function () {
+
+                if (typeof(myArray) !== 'undefined') {
+                    $.each(myArray, function (index, value) {
+                        $('#' + value).parent().parent().remove();
+                    });
+                } else {
+
+                    $('#' + formData).parent().parent().remove();
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+
+    });
+
+    $('#read').click(function (e) {
+        e.preventDefault();
+        var formData = $('#multiple_select').val();
+        if (formData.indexOf(',') === -1) {
+
+            var myData = formData;
+
+        } else {
+
+            var myArray = formData.split(', ');
+        }
+
+
+        var jsonForm = [];
+
+        if (typeof(myArray) !== 'undefined') {
+
+            $.each(myArray, function (index, value) {
+
+                array_push = {'id': value, 'read': 1};
+                jsonForm.push(array_push);
+            });
+        } else {
+
+            array_push = {'id': formData, 'read': 1};
+            jsonForm.push(array_push);
+
+        }
+
+        $.ajax({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: "/api/messages",
+            method: "PATCH",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(jsonForm),
+            success: function () {
+                if (typeof(myArray) !== 'undefined') {
+                    $.each(myArray, function (index, value) {
+                        $('#' + value).parent().parent().children().eq(2).addClass('read');
+                    });
+                } else {
+
+                    $('#' + formData).parent().parent().children().eq(2).addClass('read');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+
+    });
+    $('#unread').click(function (e) {
+        e.preventDefault();
+        var formData = $('#multiple_select').val();
+        if (formData.indexOf(',') === -1) {
+
+            var myData = formData;
+
+        } else {
+
+            var myArray = formData.split(', ');
+        }
+
+
+        var jsonForm = [];
+
+        if (typeof(myArray) !== 'undefined') {
+
+            $.each(myArray, function (index, value) {
+
+                array_push = {'id': value, 'read': 0};
+                jsonForm.push(array_push);
+            });
+        } else {
+
+            array_push = {'id': formData, 'read': 0};
+            jsonForm.push(array_push);
+
+        }
+        $.ajax({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: "/api/messages",
+            method: "PATCH",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(jsonForm),
+            success: function () {
+                if (typeof(myArray) !== 'undefined') {
+                    $.each(myArray, function (index, value) {
+                        $('#' + value).parent().parent().children().eq(2).removeClass('read');
+                    });
+                } else {
+
+                    $('#' + formData).parent().parent().children().eq(2).removeClass('read');
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+
+            }
+        });
+
+    });
+
+});
+</script>

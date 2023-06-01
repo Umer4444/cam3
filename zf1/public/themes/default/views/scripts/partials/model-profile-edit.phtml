@@ -1,0 +1,368 @@
+<div class="page-content round-corners">
+
+<?
+$ethnicity = array("Other" => "Other", "Asian" => "Asian", "Black / African descent" => "Black / African descent", "Latino / Hispanic" => "Latino / Hispanic", "Caucasian" => "Caucasian");
+
+$values_bt = explode(',', config()->model_body_type);
+$body_type = array();
+foreach ($values_bt as $v_) {
+    $v_ = strtolower(trim($v_));
+    $body_type[$v_] = ucwords($v_);
+}
+
+$values_ht = explode(',', config()->model_hair_type);
+$hair_type = array();
+foreach ($values_ht as $v_) {
+    $v_ = strtolower(trim($v_));
+    $hair_type[$v_] = ucwords($v_);
+}
+
+$values_o = explode(',', config()->model_orientation);
+$orientation = array();
+foreach ($values_o as $v_) {
+    $v_ = strtolower(trim($v_));
+    $orientation[$v_] = ucwords($v_);
+}
+
+$years = array('' => 'year');
+for ($i = date('Y') - 18; $i >= 1950; $i--) $years[$i] = $i;
+$months = array('' => 'month');
+for ($i = 1; $i <= 12; $i++) {
+    $months[$i] = date("F", mktime(0, 0, 0, $i, 10));
+}
+$days = array('' => 'day');
+for ($i = 1; $i <= 31; $i++) $days[$i] = str_pad((int)$i, 2, "0", STR_PAD_LEFT);
+
+//        $countries = array(' -- ');
+//        foreach($this->countries as $c){
+//            $countries[$c->id] = substr($c['name'],0,35);
+//        }
+
+$birthday = explode('-', $this->model->getBirthday()->format('Y-m-d'));
+
+$categories = array('' => ' -- ');
+foreach ($this->categories as $cat) {
+    $categories[$cat->id] = $cat['name'];
+}
+?>
+
+<?= $this->notice ?>
+<h1 class="page-title"><?= (Auth::isModel() ? "My main" : $this->model->getFirstName() . " " . $this->model->getName() . "'s main") ?>
+    profile</h1>
+
+<form action="" method="post" enctype="multipart/form-data" id="form_profile_settings">
+<div class="join-box-fields">
+<div class="field">
+    <? if ($this->model->new_screen_name && Auth::isModel()) { ?>
+        <div class="field_wrapper">
+            <span>Your screen name <b><?= $this->model->new_screen_name ?></b> is pendding for approval!</span>
+        </div>
+    <? } else { ?>
+        <div class="field_wrapper" style="min-height: 15px;">
+            <div id="notice_screen" class="field" style="visibility: hidden;">
+                <span style="color:red;font-size:11px;">* Changing the Screen name may lead to loss of clients!</span>
+            </div>
+        </div>
+    <? } ?>
+</div>
+<div class="field">
+    <label for="screen_name">Screen name</label>
+
+    <div class="field_wrapper">
+        <?
+        if ($this->model->new_screen_name) {
+            echo "<p class='field_notice'>Old screen name: <b>" . $this->model->screen_name . "</b></p>";
+            echo $this->formText('screen_name', $this->model->getNewScreenName(),
+                array(
+                    "autocomplete" => "off",
+                    "style" => "border:1px solid orange", "onblur" => "if(this.value=='')this.value='" . $this->model->screen_name . "';"
+                ));
+            if (Auth::isModerator()) {
+                echo '<label for="approve_screen_name">Approve</label>';
+                echo '<input type="checkbox" name="approve_screen_name" id="approve_screen_name" />';
+            }
+        } else {
+
+            echo $this->formText('screen_name', $this->model->getScreenName(),
+                array(
+                "autocomplete" => "off"
+            ));
+        }
+        ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="field_wrapper">
+        <div id='scrname'></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#screen_name").focus(function () {
+            $("#notice_screen").css('visibility', 'visible').fadeIn();
+        });
+        $("#screen_name").blur(function () {
+            $("#notice_screen").css('visibility', 'hidden').fadeOut();
+        });
+    });
+</script>
+
+<div class="field" style="min-height: 100px;padding-top: 5px;">
+    <label for="cover">
+
+        <?php if(isset($this->cover)) {?>
+        <a target="_blank" href="<?= $this->cover->getFilename() ?>">
+            <img src="<?= $this->cover->getFilename() ?>" border="0" width="100" height="80">
+        </a>
+<?php } ?>
+    </label>
+
+    <div class="field_wrapper" style="display: inline-block;">
+        <?= $this->formFile('cover', array()) ?>
+        <p class="field_notice"> Supported file formats: JPEG, GIF, PNG </p>
+        <p class="field_notice"> Profile image must be at least 300x200</p>
+        <?php if (!strpos($this->model->getCover(), "avatar_default")) { ?>
+            <?= $this->formCheckbox('delete_cover', null); ?> <label class="delete_label" for="delete_cover">Delete
+                cover</label>
+        <? } ?>
+    </div>
+</div>
+
+<?
+$photo_cov = $this->model->getAllPhotoCover("pending");
+
+if (count($photo_cov) > 0) {
+    ?>
+    <div class="field pending">
+        <? if (Auth::isModerator()) { ?>
+            <label>Activate cover</label>
+        <? } else { ?>
+            <label>Pending covers</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>None</a>
+                    <input type="radio" name="PhotoCoverPending" value="all"/>
+                </div>
+            <? } ?>
+            <?//pendiong documents
+
+            foreach ($photo_cov as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="PhotoCoverPending" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+<? } ?>
+
+<? //rejected
+$photos_id = $this->model->getAllPhotoCover("rejected");
+if (count($photos_id) > 0) {
+    ?>
+    <div class="field rejected">
+
+        <? if (Auth::isModerator()) { ?>
+            <label>Delete rejected covers</label>
+        <? } else { ?>
+            <label>Rejected covers</label>
+        <? } ?>
+        <div class="field_wrapper">
+            <? if (Auth::isModerator()) { ?>
+                <div class="parentGroup">
+                    <a>All</a>
+                    <input type="radio" name="PhotoCoverRejected" value="all"/>
+                </div>
+            <? } ?>
+            <?//pending documents
+
+            foreach ($photos_id as $k => $ph) {
+                ?>
+                <div class="parentGroup">
+
+                    <a target="_blank" href="<?= $ph["file"] ?>"><img src="<?= $ph["file"] ?>" border="0" width="50"
+                                                                      height="30"></a>
+                    <? if (Auth::isModerator()) { ?>
+                        <input type="radio" name="PhotoCoverRejected" value="<?= $k ?>"/>
+                    <? } ?>
+                </div>
+
+            <? } ?>
+        </div>
+    </div>
+    <br/>
+<? } ?>
+
+<!--
+<div class="field">
+    <label for="about_me">About me</label>
+
+    <div class="field_wrapper">
+        <?= $this->formTextarea('about_me', $this->model->getAboutMe(), array('cols' => 30, 'rows' => 3)) ?>
+    </div>
+</div>
+<div class="field">
+    <label for="gender">Gender</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('gender', $this->model->getGender(), null, array("f" => "female", "m" => "male")) ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="body_type">Body type</label>
+
+    <div class="field_wrapper">
+        <?/*= $this->formSelect('body_type', $this->model->getBodyType(), null, $body_type) */?>
+    </div>
+</div>-->
+<!--<div class="field">
+    <label for="">Measurements</label>
+
+    <div class="field_wrappers inline-group">
+        <?/*= $this->formText('measurements_bust', $this->model->getMeasurementsBust(), array("class" => "small_field", "title" => "measurements_bust")) */?>
+        &nbsp; / &nbsp;
+        <?/*= $this->formText('measurements_waist', $this->model->getMeasurementsWaist(), array("class" => "small_field", "title" => "measurements_waist")) */?>
+        &nbsp; / &nbsp;
+        <?/*= $this->formText('measurements_bottom', $this->model->getMeasurementsBottom(), array("class" => "small_field", "title" => "measurements_bottom")) */?>
+    </div>
+</div>
+<div class="field">
+    <label for="ethnicity">ethnicity</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('ethnicity', $this->model->getEthnicity(), null, $ethnicity) ?>
+    </div>
+</div>
+<div class="field">
+    <label for="hair_color">Hair color</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('hair_color', $this->model->getHairColor(), null, $hair_type) ?>
+    </div>
+</div>
+<div class="field">
+    <label for="orientation">Orientation</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('orientation', $this->model->getOrientation(), null, $orientation) ?>
+    </div>
+</div>
+-->
+<div class="field">
+    <label for="">Birthday</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('birthday_year', $birthday[0] ? $birthday[0] : 'year', null, $years) ?>
+        <?= $this->formSelect('birthday_month', $birthday[1] ? $birthday[1] : 'month', null, $months) ?>
+        <?= $this->formSelect('birthday_day', $birthday[2] ? $birthday[2] : 'day', null, $days) ?>
+
+        <div id="Birth"></div>
+    </div>
+</div>
+
+<!--<div class="field">
+    <label for="width">Weight</label>
+
+    <div class="field_wrapper">
+        <input name="weight" id="weight" type="text" value="<?/*= $this->model->getWeight() */?>"/>
+    </div>
+</div>
+<div class="field">
+    <label for="width">Height</label>
+
+    <div class="field_wrapper">
+        <input name="height" id="height" type="text" value="<?/*= $this->model->getHeight() */?>"/>
+    </div>
+</div>-->
+<? /*
+           <div class="field">
+            <label for="region">Country</label>
+                <div class="field_wrapper">
+                     <input type="text" id="country_name" name="country_name" />
+                     <input name="country" id="country" type="hidden" value="<?=$this->model->country;?>"/>
+                </div>
+            </div>
+           <div class="field">
+            <label for="region">Region</label>
+                <div class="field_wrapper">
+                     <input type="text" id="region_name" name="region_name" />
+                     <input name="region" id="region" type="hidden" value="<?=$this->model->region;?>"/>
+                </div>
+            </div>
+            <div class="field">
+            <label for="city">City</label>
+                <div class="field_wrapper">
+                     <input type="text" id="city_name" name="city_name" />
+                     <input name="city" id="city" type="hidden" value="<?=$this->model->city;?>"/>
+                </div>
+            </div>
+ */
+?>
+
+<div class="field">
+    <label for="category">Main Category</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('category', $this->cats_to_model[0]["id_category"], null, $categories) ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="category1">Secondary Category</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('category1', $this->cats_to_model[1]["id_category"], null, $categories) ?>
+    </div>
+</div>
+
+<div class="field">
+    <label for="category2">Third Category</label>
+
+    <div class="field_wrapper">
+        <?= $this->formSelect('category2', $this->cats_to_model[2]["id_category"], null, $categories) ?>
+    </div>
+</div>
+<?
+/*
+if (Auth::isModerator() && user()->id == 0) { ?>
+  <div class="field">
+      <label for="website_title">Website title</label>
+
+      <div class="field_wrapper">
+          <?= $this->formText('website_title', $this->model->name, array('autocomplete' => 'off')) ?>
+      </div>
+  </div>
+  <div class="field">
+      <label for="website_title">Website url</label>
+
+      <div class="field_wrapper">
+          <?= $this->formText('website_url', $this->model->name, array('autocomplete' => 'off')) ?>
+      </div>
+  </div>
+<? }
+  */ ?>
+</div>
+<br>
+<? if ($this->acl->isAllowed($_SESSION['group'], "model-settings", "edit") || Auth::isModel()) { ?>
+    <div class="join-button">
+        <input type="submit" name="save" value="Save" class="btn btn-success">
+        <input type="hidden" name="save" value="Save">
+    </div>
+<? } ?>
+</form>
+<? if (Auth::isModerator()) { ?>
+    <input type="hidden" name="model_id" value="<?= $this->model->getId() ?>" id="model_id">
+<? } ?>
+</div>
+

@@ -1,0 +1,82 @@
+<?php $this->headTitle('Add New Model'); ?>
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <h1 class="page-title">Add New Model</h1>
+
+    <form action="" method="post" id="form_add_model">
+        <div class="join-box-fields">
+
+            <div class="field">
+                <label for="first_name">First name</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('first_name', $this->model->first_name, array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="name">Last name</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('name', $this->model->name, array('autocomplete' => 'off')) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="screen_name">Screen name</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('screen_name', '') ?>
+                </div>
+
+            </div>
+
+            <div class="field_wrapper">
+                <div id='scrname'></div>
+            </div>
+
+            <div class="field">
+                <label for="email">Email</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('email', '', array()) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="password">New Password</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formPassword('password', '', array('autocomplete' => 'off')) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="confirm_password">Confirm Password</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formPassword('confirm_password', '', array('autocomplete' => 'off')) ?>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "add-model", "edit")) { ?>
+            <div class="join-button">
+                <input type="submit" name="save" value="Add" class="btn btn-success">
+                <input type="hidden" name="save" value="Add">
+            </div>
+        <? } ?>
+        <br/>
+
+        <div class="model_notice">
+            *This information is for administration use only and will not be shared
+        </div>
+
+        <br/>
+    </form>
+
+</div>

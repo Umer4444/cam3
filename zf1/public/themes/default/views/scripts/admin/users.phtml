@@ -1,0 +1,132 @@
+<? $this->headTitle(($this->type != 'all' ? ucwords($this->type) . ' ' : '') . 'Users'); ?>
+
+
+<div class="page-content round-corners">
+
+
+    <?= $this->notice ?>
+    <h1 class="page-title"><?= ($this->type != 'all' ? ucwords($this->type) . ' ' : '') ;?> Users</h1>
+
+    <br><br>
+    <table class="list_models" cellpadding="5" cellspacing="1">
+        <tr class="table_header">
+            <th style="width: 50px">Avatar</th>
+            <th>Name</th>
+            <th>Nickname</th>
+            <th>Email</th>
+            <th style="min-width: 50px">Birthday</th>
+            <th>Country</th>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "user-account-settings", "view")) { ?>
+                <th style="width: 50px">Account</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "user-settings", "view")) { ?>
+                <th style="width: 50px">Profile</th>
+            <? } ?>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "user-settings", "edit")) { ?>
+                <th>Actions</th>
+            <? } ?>
+        </tr>
+        <?
+
+        if (!count($this->paginator)) {
+            $message = '';
+            switch ($this->type) {
+                case 'all':
+                    $message = "No users found.";
+                    break;
+                case 'active':
+                    $message = "There are no active users.";
+                    break;
+                case 'pending':
+                    $message = "There are no users waiting for approval.";
+                    break;
+                case 'denied':
+                    $message = "There are no denied users.";
+                    break;
+
+            }
+            echo "<tr><td colspan='100'>" . $message . "</td></tr>";
+        } else {
+
+            foreach ($this->paginator as $user) {
+
+                $type = '';
+                //switch($user->active){
+                switch ($user->state) {
+                    case 1:
+                        $type = 'active';
+                        break;
+                    case 0:
+                        $type = 'pending';
+                        break;
+                    case -1:
+                        $type = 'denied';
+                        break;
+
+                }
+                $cycle = $this->cycle(array("light", "dark"))->next();  ?>
+
+                <tr class="<?= $cycle ?>">
+                    <td><a target="_blank" href="<?= $user->getAvatar() ?>"><img src="<?= $user->getAvatar() ?>"
+                                                                                 border="0" width="50"></a></td>
+                    <td>
+                        <a href="<?= $this->url(array("id" => $user->user_id, "name" => ($user->username ? $user->username : "no-username"), "profile_action" => "profile"), "user_profile") ?>"
+                           title="view public profile"
+                           target="_blank"><?= ($user->username ? $user->username : "no-username") ?></a></td>
+                    <td><?= $user->display_name; ?></td>
+                    <td><?= $user->email; ?></td>
+                    <td style="min-width: 50px">
+                        <center><?= $user->birthday; ?>
+                            <br><?= $user->birthday ? date('Y', time()) - substr($user->birthday, 0, 4) : '' ?> yrs
+                        </center>
+                    </td>
+                    <td><?= $user->getUserCountry()->name ?></td>
+
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "user-account-settings", "view")) { ?>
+                        <td style="width: 50px; text-align: center;">
+                            <a href="<?= $this->url(array("id" => $user->user_id, "name" => ($user->username ? $user->username : "no-username"), "manage" => "edit"), "manage-user-account") ?>"><img
+                                    border="0" title="Edit user account" alt="Edit"
+                                    src="/images/icons/edit_account.png"></a>
+                        </td>
+                    <? } ?>
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "user-settings", "view")) { ?>
+                        <td style="width: 50px; text-align: center;">
+                            <a href="<?= $this->url(array("id" => $user->user_id, "name" => ($user->username ? $user->username : "no-username"), "manage" => "edit"), "manage-user") ?>"><img
+                                    border="0" title="Edit user profile" alt="Edit" src="/images/icons/edit.png"></a>
+                        </td>
+                    <? } ?>
+                    <? if ($this->acl->isAllowed($_SESSION['group'], "user-settings", "edit")) { ?>
+                        <td style="width: 60px; text-align: right;">
+                            <? if ($type == 'denied' || $type == 'pending') { ?>
+                                <a class="left"
+                                   href="<?= $this->url(array("id" => $user->user_id, "name" => ($user->username ? $user->username : "no-username"), "manage" => "approve"), "manage-user") ?>"><img
+                                        border="0" title="Approve user" alt="Approve"
+                                        src="/images/icons/checked.png"></a>
+                            <? } ?>
+                            <? if ($type == 'active' || $type == 'pending') { ?>
+                                <a onclick="return confirm('Are you sure you want to deny this user account?')"
+                                   href="<?= $this->url(array("id" => $user->user_id, "name" => ($user->username ? $user->username : "no-username"), "manage" => "deny"), "manage-user") ?>"><img
+                                        border="0" title="Deny user" alt="Deny" src="/images/icons/disable.png"></a>
+                            <? } ?>
+                            <? if ($type == 'denied') { ?>
+                                <a onclick="return confirm('Are you sure you want to delete this user account?')"
+                                   href="<?= $this->url(array("id" => $user->user_id, "name" => ($user->username ? $user->username : "no-username"), "manage" => "delete"), "manage-user") ?>"><img
+                                        border="0" title="Delete user" alt="Delete" src="/images/icons/delete.png"></a>
+                            <? } ?>
+                        </td>
+                    <? } ?>
+
+                </tr>
+            <?
+            }
+        }
+        ?>
+
+    </table>
+    <?
+
+    echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+
+    ?>
+</div>
+ 

@@ -1,0 +1,26 @@
+<?
+$page_title = "Banners ";
+
+$this->headTitle($page_title);
+
+
+?>
+
+<div class="model_content">
+    <?php
+    echo $this->partial('partials/moderator-submenu.phtml',
+        array("params" => $this->theme()->view->params,
+            "type" => "model",
+            "acl" => $this->acl,
+            "user" => $this->model
+        ));
+
+
+    if (Auth::isModerator() && user()->id == 0 && count($this->paginator) > 0)
+        echo $this->partial("partials/moderation-bar.phtml", array("type" => "banner", "params" => $this->params));
+
+    echo $this->notice;
+
+    echo $this->partial("banner/banner-list.phtml", $this);
+    ?>
+</div>

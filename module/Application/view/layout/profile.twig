@@ -1,0 +1,42 @@
+{% extends constant('APPLICATION_TYPE') == 'solo' ? 'layout/profile' : 'layout/layout_base' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <div class="profile_cover">
+                <div class="cover-fix-size">
+                    <img src="{{ photos(user.getId(), 'Cover') }}" alt="profile_pic" class="img-responsive">
+                </div>
+            </div>
+            <div id="pagetitle" class="profile-tab">
+                <div class="profile-tabs" role="tabpanel" data-example-id="togglable-tabs">
+                    <div class="nav nav-tabs tab_prof" id="myTab">
+                        <div class="profile-pic">
+                            <img {{ user().getContextInnerTag() }} src="{{ user.getAvatar() }}" width="220" height="190">
+                        </div>
+                        <div class="profile_name" style="">
+                            <h3>{{ user.getDisplayName() }}</h3>
+                            <small>
+                                | {{ user.getAge() }}yrs
+                                <span class="theme-color"></span>
+                            </small>
+                        </div>
+                        {% block profileNavigation %}
+                            {{ navigation('performer').menu().setPartial('performer/profile/navigation') | raw }}
+                        {% endblock profileNavigation %}
+                    </div>
+                </div>
+            </div>
+            <aside class="sidebar col-sm-4 top-fix-margin">
+                {% include 'performer/profile/left' %}
+            </aside>
+            <div class="content col-sm-8">
+                <div class="profile-main-content full-width" id="profile-content">
+                    {% block content %}
+                        {{ content | raw }}
+                    {% endblock content %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock container %}

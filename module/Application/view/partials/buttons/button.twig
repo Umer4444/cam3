@@ -1,0 +1,16 @@
+{% block button %}
+
+    <a
+        id="{% block button_id %}{% endblock button_id %}"
+        class="{% block button_class %}btn btn-success btn-block {{ block('button_id') }}{% endblock button_class %}"
+        target="{% block button_target %}_self{% endblock button_target %}"
+        {% block button_data %}{% endblock button_data %}
+        href="{% block button_href %}{% if zfcUserIdentity() %}{% block button_href_logged %}javascript:void(0);{% endblock button_href_logged %}{% else %}{% block button_href_notlogged %}{{ url('zfcuser/login') }}{% endblock button_href_notlogged %}{% endif %}{% endblock button_href %}">
+        {% block button_text %}Button{% endblock button_text %}
+    </a>
+
+    {% block button_append %}{% endblock button_append %}
+
+{% endblock button %}
+
+<script type="text/javascript">{% block button_javascript %}{% endblock button_javascript %}</script>

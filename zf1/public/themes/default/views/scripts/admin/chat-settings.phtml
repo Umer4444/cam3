@@ -1,0 +1,268 @@
+<? $this->headTitle('Price Settings'); ?>
+
+
+<div class="page-content round-corners">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="page-title">Chips/minute in phone calls</h1>
+            <br/>
+
+            <form method="post" class="form-horizontal" role="form">
+
+                <div class="form-group">
+                    <label for="call_cost" class="col-sm-2 control-label">Cost call (chips)</label>
+
+                    <div class="col-sm-10">
+                        <input type="text" name="call_cost" class="form-control" id="call_cost"
+                               value="<? /*= config()->call_cost */ ?>">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <input type="submit" name="save_call_cost" value="Save call cost" id="submit"
+                               class="btn btn-success">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="page-content round-corners form-horizontal">
+    <?= $this->notice ?>
+    <? $units = 'chips'; ?>
+    <h1 class="page-title">Price Limits Settings</h1>
+
+    <form action="" method="post" class="form-horizontal" role="form">
+
+        <div class="join-box-fields" style="min-height: 380px">
+            <span class="column_header">Min <?= $units ?></span>
+            <span class="column_header">Max <?= $units ?></span>
+            <span class="column_header">Default <?= $units ?></span>
+
+            <div class="join-box-fields-partial rates">
+                <?
+
+                foreach ($this->rates_min as $field) {
+
+                    $field_name = ucfirst(str_replace('_', ' ', $field->type));
+
+                    echo '<div class="field">';
+                    echo '<label for="' . $field->id . "_" . $field->limit_type . '">' . $field_name . '</label>';
+                    echo '<div class="field_wrapper">';
+                    echo $this->formText($field->id . "_" . $field->limit_type, number_format($field->value, 0), array("class" => "small_field", "title" => $field_name));
+                    echo '</div></div>';
+                }
+                ?>
+            </div>
+
+            <div class="join-box-fields-partial rates">
+                <?
+                $units = 'chips';
+                foreach ($this->rates_max as $field) {
+
+                    $field_name = ucfirst(str_replace('_', ' ', $field->type));
+
+                    echo '<div class="field">';
+                    echo '<label for="' . $field->id . "_" . $field->limit_type . '">' . $field_name . '</label>';
+                    echo '<div class="field_wrapper">';
+                    echo $this->formText($field->id . "_" . $field->limit_type, number_format($field->value, 0), array("class" => "small_field", "title" => $field_name));
+                    echo '</div></div>';
+                }
+                ?>
+            </div>
+            <div class="join-box-fields-partial rates">
+                <?
+                $units = 'chips';
+                foreach ($this->rates_default as $field) {
+
+                    $field_name = ucfirst(str_replace('_', ' ', $field->type));
+
+                    echo '<div class="field">';
+                    echo '<label for="' . $field->id . "_" . $field->limit_type . '">' . $field_name . '</label>';
+                    echo '<div class="field_wrapper">';
+                    echo $this->formText($field->id . "_" . $field->limit_type, number_format($field->value, 0), array("class" => "small_field", "title" => $field_name));
+                    echo '</div></div>';
+                }
+                ?>
+            </div>
+
+
+        </div>
+        <div class="clear"></div>
+        <? if ($this->acl->isAllowed($_SESSION['group'], "chat-settings", "edit")) { ?>
+            <div class="col-sm-11 text-center">
+                <input type="submit" name="save_limits" value="Save prices" id="submit" class="btn btn-success">
+            </div>
+        <? } ?>
+        <div class="clear"></div>
+    </form>
+    <div class="clear"></div>
+</div>
+<br>
+
+<? if ($this->acl->isAllowed($_SESSION['group'], "all_resources", "view")) { ?>
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Chips packages</h1>
+        <br/>
+
+        <form method="post" class="form-horizontal" role="form">
+
+            <?= $this->formHidden("id", null); ?>
+
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">Package name</label>
+
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="name" name="name">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="amount" class="col-sm-2 control-label">Amount</label>
+
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="amount" id="amount">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="chips" class="col-sm-2 control-label">Chips</label>
+
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="chips" id="chips">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="bonus" class="col-sm-2 control-label">Bonus</label>
+
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="bonus" id="bonus">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="epoch_form" class="col-sm-2 control-label">Epoch PI CODE</label>
+
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="epoch_form" id="epoch_form">
+                </div>
+            </div>
+
+            <div class="col-sm-11 text-center">
+                <input type="submit" name="save_package" value="Save package" class="btn btn-success">
+            </div>
+
+        </form>
+
+        <? if (count($this->packages)) { ?>
+            <br/>
+            <br/>
+            <br/>
+            <table class="list_notifications">
+                <tbody>
+                <tr class="table table_header">
+                    <th>Package name</th>
+                    <th>Chips</th>
+                    <th>Amount</th>
+                    <th>Bonus chips</th>
+                    <th>Epoch PI CODE</th>
+                    <th width="70">Options</th>
+                </tr>
+                <? foreach ($this->packages as $package) { ?>
+                    <tr>
+                        <td>
+                            <span class="pid" style="display:none"><?= $package->id ?></span>
+                            <span class="pname"><?= $package->name ?></span>
+                        </td>
+                        <td><span class="pchips"><?= $package->chips ?></span></td>
+                        <td><span class="pamount"><?= $package->amount ?></span></td>
+                        <td><span class="pbonus"><?= $package->bonus ?></span></td>
+                        <td><span class="epoch_form"><?= $package->epoch_form ?></span></td>
+                        <td align="">
+                            <input type="button" style="" class="btn btn-sm edit_package" value="edit"/>
+                            <input type="checkbox" class="case" name="case" value="<?= $package->id ?>"/>
+                        </td>
+                    </tr>
+                <? } ?>
+                </tbody>
+            </table>
+            <br/>
+            <form action="" method="POST">
+                <input type="hidden" name="multiple_select" id="multiple_select"/>
+
+                <p style="text-align:right;">
+                    <input type="submit" name="mark_delete" class="btn btn-danger" id="mark_delete" value="Delete selected"/>
+                </p>
+            </form>
+        <? } ?>
+
+    </div>
+    <SCRIPT>
+        /* multiple selection */
+        function check() {
+            var ids = '';
+            $('.case:checkbox:checked').each(function () {
+                if (typeof $(this).val() != 'undefined') {
+                    ids += $(this).val() + ',';
+                }
+            });
+            $('#multiple_select').val(ids);
+        }
+
+        $(function () {
+            // add multiple select / deselect functionality
+            $("#selectall").click(function () {
+                $('.case').attr('checked', this.checked);
+                check();
+            });
+
+            // if all checkbox are selected, check the selectall checkbox
+            // and viceversa
+            $(".case").click(function () {
+                check();
+                // alert(this);
+                if ($(".case").length == $(".case:checked").length) {
+                    $("#selectall").attr("checked", "checked");
+                } else {
+                    $("#selectall").removeAttr("checked");
+                }
+
+            });
+        });
+
+        $("#amount").bind("change keyup keydown", function () {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+        });
+        $("#chips").bind("change keyup keydown", function () {
+            $(this).val($(this).val().replace(/[^0-9\.]/g, ''));
+        });
+
+        $(".edit_package").each(function () {
+            $(this).click(function () {
+
+                row = $(this).parent().parent();
+                $("#amount").val(row.children("td").children("span.pamount").html());
+                $("#name").val(row.children("td").children("span.pname").html());
+                $("#bonus").val(row.children("td").children("span.pbonus").html());
+                $("#chips").val(row.children("td").children("span.pchips").html());
+                $("#id").val(row.children("td").children("span.pid").html());
+                $("#epoch_form").val(row.children("td").children("span.epoch_form").html());
+
+                $('#amount, #name, #chips, #bonus').change(function () {
+                    if ($('#amount').val().length == 0 && $('#name').val().length == 0 && $('#chips').val().length == 0 && $('#bonus').val().length == 0) {
+                        $('#id').val("");
+                    }
+                });
+
+                return false;
+
+            });
+        });
+
+    </script>
+<? } ?>

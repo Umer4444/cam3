@@ -1,0 +1,8 @@
+{% extends 'buttons/watch' %}
+
+{% block button_text %}{{ user.isOnline() and not user.inShow() ? 'Take in private' : '' }}{% endblock button_text %}
+{% block button_href %}{{ url('performer/profile', {'action': 'watch', 'type': 'private', 'name': user.getDisplayName(), (constant('Application\\Mapper\\Injector::USER')): user.getId()}) }}{% endblock button_href %}
+
+{%- block button_javascript -%}
+    App.button.private('{{ block('button_id') }}', '{{ cfg(user).getConfigValue('price/private_chat') }}', {id: {{ user.getId() }}}, '{{ block('button_href') }}')
+{%- endblock button_javascript -%}

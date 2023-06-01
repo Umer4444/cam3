@@ -1,0 +1,120 @@
+<?
+$page_title = "Revenue Log";
+
+$this->headTitle($page_title);
+?>
+
+<div class="page-content round-corners">
+    <?= $this->notice ?>
+
+    <h1 class="page-title"><?= $page_title ?></h1>
+
+    <div class="join-box-fields">
+        <div class="field_wrapper">
+            <label for="from_date">From date:</label>
+            <input type="text" name="to_date" id="fromDate" placeholder="From date" class="small_tfield_date">
+            <label for="to_date">To date:</label>
+            <input type="text" name="to_date" id="toDate" placeholder="To date" class="small_tfield_date">
+            <label for="to_date">Show by:</label>
+            <?= $this->formSelect('showBy', null, null, array("day" => "Day", "month" => "Month")) ?>
+            <input type="button" id="showStats" class="button-gray" value="Show stats"/>
+
+        </div>
+    </div>
+
+    <div id="chart_div" style="width: 90%; height:400px; margin-left:auto; margin-right:auto;"></div>
+    <div id="table_div" style=" margin-left:auto; margin-right:auto;"></div>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+
+        google.load("visualization", "1", {packages: ["corechart"]});
+        google.load('visualization', '1', {packages: ['table']});
+
+        $("#fromDate").datepicker({
+            maxDate: "+6M"
+        });
+        $("#toDate").datepicker({
+            maxDate: "+6M"
+        });
+
+
+        function drawChart(earnigs) {
+
+            var data = google.visualization.arrayToDataTable(earnigs.chartdata);
+
+            var options = {
+                title: earnigs.message + ': $' + earnigs.total,
+                vAxis: {title: 'Amount'},
+                hAxis: {title: "Time"}
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+
+        function getDasboardStatsGrafic(fromDate, toDate, showBy) {
+
+            $.ajax({
+                url: '/process',
+                data: {
+                    action: 'revenueStats',
+                    showBy: showBy,
+                    fromDate: fromDate,
+                    toDate: toDate
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (Output) {
+                    if (Output) {
+                        drawChart(Output);
+                        drawTable(Output);
+                    }
+
+
+                    //                setTimeout(function(){
+//                    $('#show').removeClass("disable");
+//                    $("#show").removeAttr("disabled");
+//                },3000);
+
+                },
+                error: function () {
+                    alert("Error fetching data..")
+                    // setTimeout(function(){
+//                    $('#show').removeClass("disable");
+//                    $("#show").removeAttr("disabled");
+//                },3000);
+                }
+            });
+        }
+
+
+        function drawTable(earnigs) {
+            var data = google.visualization.arrayToDataTable(earnigs.earningtype);
+            var table = new google.visualization.Table(document.getElementById('table_div'));
+            table.draw(data, {showRowNumber: false});
+        }
+
+
+        $('#showStats').click(function () {
+            if ($("#toDate").val() && $("#fromDate").val()) {
+                toDate = $("#toDate").datepicker("getDate").getTime() / 1000;
+                fromDate = $("#fromDate").datepicker("getDate").getTime() / 1000;
+                showBy = $("#showBy").val();
+                getDasboardStatsGrafic(fromDate, toDate, showBy);
+
+            } else {
+                alert("Select date range");
+            }
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            today = new Date();
+            fromDate = parseInt(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 1000);
+            toDate = parseInt(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), "23", "59") / 1000);
+            getDasboardStatsGrafic(fromDate, toDate, "day");
+        });
+    </script>
+</div>

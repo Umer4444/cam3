@@ -1,0 +1,10 @@
+<div class="row">
+    <h2 class="title">Bought Videos</h2>
+</div>
+<div class="row">
+    <?
+        foreach($this->paginator as $video) echo $this->partial('partials/items/video-small.phtml',array('item' => $video));
+        echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+    ?>
+</div>
+

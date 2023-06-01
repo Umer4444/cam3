@@ -1,0 +1,19 @@
+{% set blogUrl = url('blog/view', {(constant('Application\\Mapper\\Injector::BLOG_SLUG')): result.getSlug() }) %}
+
+<article class="timeline-entry {{ serviceLocator().get('ViewRenderer').cycle().setName('align').next() }}">
+
+    <div class="timeline-entry-inner">
+        <time class="timeline-time" datetime=""><span>{{ result.getPostedOn().format('Y-M-d') }}</span></time>
+
+        <div class="timeline-icon">
+            <img class="inherit-width" src="{{ result.getSmallCover() }}" />
+            <i class="entypo-feather"></i>
+        </div>
+
+        <div class="timeline-label">
+            <div>User : <a href="{{ user(result.getUser()).url('performer/profile') }}">{{ result.getUser().getScreenName() }}</a></div>
+            <div>Blog Title : <a href="{{ blogUrl }}">{{ result.getTitle() | slice(0, 35) }} ...</a></div>
+        </div>
+    </div>
+
+</article>

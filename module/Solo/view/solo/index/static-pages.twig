@@ -1,0 +1,9 @@
+{% extends 'layout/frontend' %}
+{% block content %}
+    <div class="background-rounded">
+        <h2 class="title">{{ page.getTitle() }}</h2>
+
+        {{ page.getContent() |raw }}
+
+    </div>
+{% endblock %}

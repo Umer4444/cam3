@@ -1,0 +1,41 @@
+<?php
+$name = 'user';
+if (!$picture) {
+
+    $picture = '/images/user_default.png';
+}
+
+    $profile_url = "";
+?>
+<table class="review_table <?= ($this->review->active > 0 ? "active" : "inactive") ?>"
+       id="review_<?= $this->review->id ?>">
+
+    <tr>
+        <td><?= $name ?></td>
+        <td><a name="review_<?= $this->review->id ?>"><?= date("l, F j Y", $this->review->date); ?>
+                at <?= date("H:i", $this->review->date); ?></a></td>
+    </tr>
+
+    <?
+    if ((Auth::isModerator() && $this->model->assigned_to == $_SESSION["user"]["id"]) || (Auth::isModel() && $this->model->id == $_SESSION["user"]["id"])) {
+        ?>
+        <tr>
+            <td></td>
+            <td>
+                <a href="" class="edit button-round-small blue left"
+                   onClick="editForm('edit', <?= $this->review->id ?>, 'makeform', <?= $this->review->active ?>); return false;">edit</a>
+
+                <a href="" class="delete button-round-small blue right"
+                   onClick="editForm('delete', <?= $this->review->id ?>); return false;">delete</a>
+
+                <div class="clear"></div>
+            </td>
+
+        </tr>
+    <? } ?>
+    <tr>
+        <td valign="top"><a href="<?= $profile_url ?>"><img width="40" height="40" src="<?= $picture ?>"></a></td>
+        <td class="review"><?= $this->review->review ?><?php if ($this->pending) echo " --- pending for moderation" ?></td>
+    </tr>
+
+</table>

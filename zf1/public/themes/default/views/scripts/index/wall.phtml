@@ -1,0 +1,95 @@
+<h3 class="sub_header top">Users Transfer Wall History</h3>
+
+<table class="profileChipsHistory">
+    <thead>
+    <th>Sender</th>
+    <th>Receiver</th>
+    <th id="lastAmount">Amount</th>
+    <th id="lastDate">Date</th>
+    </thead>
+    <tbody>
+    <?php foreach ($this->paginator as $user) { ?>
+        <tr>
+            <td class="receiver"><a
+                    href="<?= $this->url(array("profile_action" => "profile", "id" => $user->sender_id, "name" => $user->sender), "user_profile") ?>"><?= $user->sender ?></a>
+            </td>
+
+            <?php
+            if ($user->status == -1) {
+                $disabled = '_disabled';
+                $url = "#";
+                $status = " (User Disabled)";
+            } else {
+                $url = $this->url(array("profile_action" => "profile", "id" => $user->sender_id, "name" => $user->sender), "user_profile");
+                $url = "#";
+                $disabled = '';
+                $status = '';
+            }
+            ?>
+            <td class="receiver<?= $disabled ?>"><a href="<?= $url ?>"><?= $user->receiver ?></a><?= $status ?></td>
+            <td><?= intval($user->amount) ?> Chips</td>
+            <td><?= date("Y/d/m", $user->data) ?></td>
+        </tr>
+    <?php } ?>
+    <tr>
+        <td colspan="4">
+            <?php
+            if (count($this->paginator) == 0) {
+                echo "<b>There are no transfers at this point</b>";
+            } else {
+                echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+            }?>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h3 class="sub_header top">Models Transfer Wall History</h3>
+<table class="profileChipsHistory">
+    <thead>
+    <th>Sender</th>
+    <th>Receiver</th>
+    <th id="lastAmount">Amount</th>
+    <th id="lastDate">Date</th>
+    </thead>
+    <tbody>
+    <?php foreach ($this->paginator_model as $model) { ?>
+        <tr>
+            <td class="receiver"><a
+                    href="<?= $this->url(array("profile_action" => "profile", "id" => $model->sender_id, "name" => $model->sender), "user_profile") ?>"><?= $model->sender ?></a>
+            </td>
+
+            <?php
+            if ($model->status == -1 or $model->receiver_id == null) {
+                $disabled = '_disabled';
+                $url = "#";
+                $status = " (User Disabled)";
+            } else {
+                $disabled = '';
+                $url = $this->url(array("profile_type" => "profile", "id_model" => $model->receiver_id, "name" => $model->receiver), "model-profile");
+                $disabled = '';
+                $status = '';
+            }
+            ?>
+            <td class="receiver<?= $disabled ?>"><a href="<?= $url ?>"><?= $model->receiver ?></a><?= $status ?></td>
+            <td><?= intval($model->amount) ?> Chips</td>
+            <td><?= date("Y/d/m", $model->data) ?></td>
+        </tr>
+
+    <?php } ?>
+    <tr>
+        <td colspan="4">
+            <?php
+            if (count($this->paginator_model) == 0) {
+                echo "<b>There are no transfers at this point</b>";
+            } else {
+                echo $this->paginationControl($this->paginator_model, 'Sliding', 'partials/pagination.phtml');
+            }
+            ?>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+   

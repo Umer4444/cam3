@@ -1,0 +1,16 @@
+<? $this->headTitle('Notification Mail Settings');
+
+echo $this->partial('partials/moderator-submenu.phtml',
+    array("params" => $this->theme()->view->params,
+        "type" => "notifications",
+        "acl" => $this->acl
+    ));
+
+echo $this->partial('partials/notification-settings.phtml',
+    array(
+        //"notifications" => $this->notifications
+        "settings" => $this->settings,
+        "userSettings" => $this->userSettings
+    )
+);
+?>

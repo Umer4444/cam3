@@ -1,0 +1,125 @@
+<div class="search_bar visible-xs">
+    <form class="form-search form-inline">
+        <input type="text" class="form-control input-sm" placeholder="Search">
+    </form>
+</div>
+<div class="content">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <div class="content-block">
+
+                <div class="slider_wrapper">
+                    <div class="container center-block">
+                        {% for performer in performers %}
+                            <div class="{{ loop.index == 3 ? 'col-sm-3':'col-sm-2' }}">
+                                <div class="slider_imgwrp">
+                                    <img src="{{ performer.getAvatar() }}" class="img-responsive img-circle center-block">
+                                    <div class="img_tag img-responsive">
+                                        <img src="images/img_tag01.png" class="img-responsive">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+                <div class="top_filter2">
+                    <ul>
+                        <li>
+                            <a href="" class="active">All</a>
+                        </li>
+                        <li>
+                            <a href="" class="">Hourly</a>
+                        </li>
+                        <li>
+                            <a href="" class="">Daily</a>
+                        </li>
+                        <li>
+                            <a href="" class="">Weekly</a>
+                        </li>
+                        <li>
+                            <a href="" class="">Monthly</a>
+                        </li>
+                        <li>
+                            <a href="" class="">Holiday</a>
+                        </li>
+                        <li>
+                            <a href="" class="">Secial Promotion</a>
+                        </li>
+                    </ul>
+                    <div class="show_drop">
+                        Show :
+                        <select>
+                            <option>Performers Contest</option>
+                            <option>Performers Contest2</option>
+                        </select>
+                        Only :
+                        <select>
+                            <option>Videos/Photos Contest</option>
+                            <option>Video Contest2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="clearfix"><br></div>
+                <div class="contest-list-block">
+                    <h4>Special Events</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="contest-list-block">
+                    <h4>Contests Ending Soonest</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="contest-list-block">
+                    <h4>Hourly Contest</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="contest-list-block">
+                    <h4>Daily Contest</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="contest-list-block">
+                    <h4>Weekly Contest</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="contest-list-block">
+                    <h4>Yearly Contest</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="contest-list-block">
+                    <h4>Holyday Contest</h4>
+                    <div class="conten_list">
+                        <div class="row">
+                            {{ related(newInstance('Application\\Entity\\User'), 'contest-list-item', null, null, 10) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

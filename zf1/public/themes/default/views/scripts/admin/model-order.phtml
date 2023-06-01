@@ -1,0 +1,80 @@
+<?php $this->headTitle('Model order'); ?>
+
+<script>
+    $(document).ready(function () {
+        $("#simple_with_animation").sortable();
+        $("#save").on("click", function () {
+            serialized = $("#simple_with_animation").sortable("serialize");
+            $.ajax({
+                type: "POST",
+                url: "/process",
+                data: serialized + '&action=modelsOrder',
+                success: function (data) {
+                    console.log(data);
+                    alert("Positions saved");
+                },
+                error: function () {
+                    alert("Save error");
+                }
+            }).done(function (msg) {
+                // update your status
+            });
+
+            return false;
+        });
+    });
+</script>
+
+
+<input type='button' class="button-gray" id="save" value="Save positions"/>
+<br>
+<!--
+<ol class="simple_with_animation vertical" id="simple_with_animation">
+
+       <li>
+         <div class="positions">First Group</div>
+         <ol class="simple_with_animation"></ol>
+       </li>
+       <li>
+         <div class="positions">Second Group</div>
+         <ol class="olContainer"></ol>
+       </li>
+       <li>
+         <div class="positions">Third Group</div>
+         <ol class="olContainer"></ol>
+       </li>
+       <li>
+           <div class="positions">Fourth Group</div>
+           <ol class="olContainer"></ol>
+       </li>
+       <li>
+           <div class="positions">Fifth Group</div>
+           <ol class="olContainer"></ol>
+       </li>
+</ol>
+-->
+
+<ol class="simple_with_animation vertical" id="simple_with_animation">
+
+
+    <?php foreach ($this->details as $model) { ?>
+
+        <li class="liClass" id="modelpositions_<?= $model->id ?>">
+            <div class="modelPosition">
+                <div class="modelPositionImage">
+                    <img src="<?= $model->getCover() ?>" border="0" width="50">
+                </div>
+                <div class="modelPositionContent">
+                    <h1>Stage Name : <?= $model->id ?> : <?= $model->screen_name ?></h1>
+
+                    <h1>Chips : <?= $model->chips ?></h1>
+                </div>
+                <div class="ratingOrder">
+                    <? /*   Rating : <?=$model->rating?>*/ ?>
+                </div>
+
+            </div>
+        </li>
+
+    <?php } ?>
+</ol>

@@ -1,0 +1,126 @@
+<div class="page-content round-corners row">
+    <div class="model_submenu col-xs-12">
+        <?php
+
+        switch ($this->type) {
+            case "videos":
+                ?>
+                <a class="<?= $this->params['type'] == 'private_show_promos' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "private_show_promos"), "model-manage-videos1") ?>">Private Show
+                    Promos</a>
+                <a class="<?= $this->params['type'] == 'mouse_over_teasers' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "mouse_over_teasers"), "model-manage-videos1") ?>">Mouse Over
+                    Teasers</a>
+                <a class="<?= $this->params['type'] == 'profile_videos' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "profile_videos"), "model-manage-videos1") ?>">Profile
+                    Videos</a>
+                <a class="<?= $this->params['type'] == 'clips_for_sale' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "clips_for_sale"), "model-manage-videos1") ?>">Clips For
+                    Sale</a>
+                <a class="<?= $this->params['type'] == 'vod' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "vod"), "model-manage-videos1") ?>">Video on Demand</a>
+                <a class="<?= $this->params['type'] == 'requested' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "requested"), "model-manage-videos1") ?>">Requested/Offers</a>
+                <a class="<?= $this->params['type'] == 'guest_promos' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "guest_promos"), "model-manage-videos1") ?>">Guest Promos</a>
+
+                <?php
+                break;
+
+            case "photos":
+                ?>
+                <a class="<?= $this->sub_menu_type == 'photo_galeries' || $this->sub_menu_type == '' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "photo_galeries"), "model-manage-photos1") ?>">Photo
+                    Galeries</a>
+                <? /* */ ?> <a class="<?= $this->sub_menu_type == 'snapshots' ? 'selected' : '' ?>"
+                               href="<?= $this->url(array("type" => "snapshots"), "model-manage-photos1") ?>">Snapshots</a>
+                <!--<a class="<?/*= $this->sub_menu_type == 'zipsets' ? 'selected' : '' */?>"
+                   href="<?/*= $this->url(array("type" => "zipsets"), "model-manage-photos1") */?>">Zip Sets</a>
+                <a class="<?/*= $this->sub_menu_type == 'photo' ? 'selected' : '' */?>"
+                   href="<?/*= $this->url(array("type" => "photo"), "model-manage-photos1") */?>">Photos</a>-->
+
+                <?
+                break;
+
+            case "uploadMedia":
+                ?>
+                <a class="<?= $this->params['type'] == 'photo' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "photo"), "model-media-upload") ?>">Upload Photo</a>
+                <? /* */ ?><a class="<?= $this->params['type'] == 'video' ? 'selected' : '' ?>"
+                              href="<?= $this->url(array("type" => "video"), "model-media-upload") ?>">Upload
+                Video</a><? /**/ ?>
+
+                <?
+                break;
+
+            case 'privacy':
+                ?>
+                <a class="<?= $this->params['action'] == 'privacySettings' && (!$this->params['type'] || $this->params['type'] == 'general') ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "model-privacy-settings") ?>">Privacy Settings</a>
+
+                <? if ($_SESSION['group'] == 'admin') {?>
+
+                <a class="<?= $this->params['type'] == 'global' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "global"), "model-privacy-settings-lists") ?>">Global Settings
+                    List</a>
+
+                <? /*  */ ?>
+
+                <a class="<?= $this->params['type'] == 'user' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "user"), "model-privacy-settings-lists") ?>">User Settings</a>
+                <a class="<?= $this->params['type'] == 'list' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type" => "list"), "model-privacy-settings-lists") ?>">Users Settings
+                    List</a>
+
+                <? } ?>
+
+                <?
+                break;
+            case "notifications":
+                ?>
+                <a class="<?= $this->params['action'] == 'notifications' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "model-notifications") ?>">Notifications</a>
+                <a class="<?= $this->params['action'] == 'notificationSettings' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "model-notifications-set") ?>">Notification Mail Settings</a>
+                <? break;
+            case 'blog':
+                ?>
+                <a class="<?= $this->params['type_action'] == 'posts' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type_action" => "posts"), "model-manage-blog") ?>">Posts list</a>
+                <a class="<?= $this->params['type_action'] == 'post-add' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type_action" => "post-add"), "model-manage-blog") ?>">New blog post</a>
+                <a class="<?= $this->params['type_action'] == 'categories' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type_action" => "categories"), "model-manage-blog") ?>">Categories
+                    list</a>
+                <a class="<?= $this->params['type_action'] == 'category-add' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array("type_action" => "category-add"), "model-manage-blog") ?>">New
+                    category</a>
+
+
+                <?
+                break;
+            case 'blog-controller':
+                echo $this->partial("blog/blog-submenu.phtml", $this);
+                break;
+            case 'pledges':
+                ?>
+                <a class="<?= ($this->params['action'] == 'list-pledges') ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "pledge-list-performer-backend") ?>">Pledges list</a>
+                <a class="<?= $this->params['action'] == 'add-pledge' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), "pledge-add-performer-backend") ?>">Add pledge</a>
+
+                <?
+                break;
+            case 'banner':
+                ?>
+                <a class="<?= $this->params['action'] == 'list-banners' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), 'banner-list-performer-backend') ?>">Banners list</a>
+                <a class="<?= $this->params['action'] == 'add-banners' ? 'selected' : '' ?>"
+                   href="<?= $this->url(array(), 'banner-add-performer-backend') ?>">Add banner</a>
+                <?
+                break;
+        }
+
+        ?>
+    </div>
+</div>

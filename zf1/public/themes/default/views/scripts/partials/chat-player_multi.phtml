@@ -1,0 +1,305 @@
+<script src="/scripts/swfobject.js"></script>
+<script>
+    function switchPlayer(c) {
+        if (c == 1) return false;
+        p1stream = $f("player1").getClip().extension;
+        p2stream = $f("player" + c).getClip().extension;
+        $f("player1").play({url: p2stream, autoplay: true});
+        $f("player" + c).play({url: p1stream, autoplay: true});
+        //});
+    }
+</script>
+<?
+
+//include APPLICATION_PATH."/../public/flashservices/config.php";
+//playerContainer content
+
+$rates = array();
+if ($this->model_rates) {
+    foreach ($this->model_rates as $this->model_rate) {
+        $rates[$this->model_rate["type"]] = $this->model_rate["value"];
+    }
+}
+
+$content = '';
+
+$file_name = $this->stream;
+$rtmp = $this->rtmp;
+
+if (
+    ($this->model->chat_type == 'normal'
+        || (Auth::isUser() && $_SESSION['user_chat'][$this->model->id]['chat_type'] == $this->model->chat_type)
+        || ($_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy'
+            && ($this->model->chat_type == 'private'
+                || $this->model->chat_type == 'show')
+        )
+    )
+    && $this->model_status == 'online'
+) {
+
+
+    $content .= "<style>";
+    $content .= "#chatLineHolder { height: 555px; }";
+    //$content .= "#emoticonsContainer { top: 561px; }";
+    $content .= "#chatUsers { height: 565px; }";
+    $content .= " </style>";
+
+    $i = 0;
+    foreach ($this->model_streams as $this->model_stream):
+        $volume = ($_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy' ? 0 : 100);
+
+        $i++;
+        $width = 520;
+        $height = 388;
+
+
+        if ($i > 1) {
+            $volume = 0;
+            $width = 259;
+            $height = 193;
+            $extra = "float:left;";
+        }
+        $content .= '
+
+            <div class="player_wrapper_front" style="' . $extra . ' width: ' . $width . 'px; height: ' . $height . 'px; " id="player' . $i . '"> </div>
+
+
+            <script>
+
+                $f("player' . $i . '",
+                    {
+                        src: "/scripts/player/flowplayer-3.2.11.swf",
+                        quality: "best",
+                        wmode: "direct"
+                    },
+                    {
+                        clip : {
+                            autoPlay: true,
+                            url: "' . $this->model_stream . '",
+                                live: true,
+                                provider: "rtmp",
+                                scaling : "scale",
+                                autoBuffering: true,
+                                bufferLength : 1,
+                                accelerated: true
+                        },
+
+                        // logo can a JPG, PNG or SWF file.
+                        // NOTE: the logo can only be changed in commercial versions
+                        // the url must be absolute or relative to the flowplayer SWF
+                        logo: {
+                            // default logo and its position
+                            url: "/' . config()->video_logo . '",
+                            top: 20,
+                            right: 20,
+                            opacity: 0.4,
+
+                            // you can supply a relative size
+                            // (to make the logo larger in fullscreen)
+                            width: "6.5%",
+                            height: "6.5%",
+
+                            // if set to false, then the logo is also shown in non-fullscreen mode
+                            fullscreenOnly: false,
+
+                            // time to display logo (in seconds). 0 = show forever
+                            displayTime: 0,
+
+                            // if displayTime > 0 then this specifies the time it will take
+                            // for the logo to fade out. this happens internally by changing
+                            // the opacity property from its initial value to full
+                            // transparency.  value is given in milliseconds.
+                            fadeSpeed: 0,
+
+                            // for commercial versions you can specify where the user is
+                            // redirected when the logo is clicked
+                            linkUrl: "http://xexposed.com"
+                        },
+
+                        plugins: {
+                            rtmp: {
+                                url: "/scripts/player/flowplayer.rtmp-3.2.11.swf",
+                                netConnectionUrl: "' . $rtmp . '"
+                            },
+                            controls: {
+
+                                // location of the controlbar plugin
+                                url: "/scripts/player/flowplayer.controls-3.2.11.swf",
+                                all: false,
+                                display: "none"
+                            },
+                            audio: {
+                                url: "/scripts/player/flowplayer.audio-3.2.10.swf"
+                            }
+
+                        },
+                        onBeforePause: function() {
+                            return false;
+                        },
+                        onLoad: function() { // called when player has finished loading
+                            this.setVolume(' . ($volume) . '); // set volume property
+                        },
+                        click: function(e) {
+                            e.preventDefault();
+                        },
+                        onMouseOver: function(e) {
+
+                            switchPlayer(' . $i . ');
+                        },
+                        play:
+                        {
+                            opacity: 0.0,
+                            label: null, // label text; by default there is no text
+                            replayLabel: null // label text at end of video clip
+                        }
+                    }
+                );
+
+
+            </script>  ';
+
+    endforeach;
+
+} else {
+
+    $title = $this->model_status == 'online' ? 'in ' . ucwords(str_replace("_", " ", $this->model->chat_type)) . " Mode" : 'offline';
+
+    if ($this->model_status == 'banned')
+        $title .= ". You are banned for 24h. " . $this->banned_message;
+
+    if(false && $this->performer->getIntroVideo() && array_key_exists('value', $this->performer->getIntroVideo())) {
+        $content .= '<div style="height:280px">';
+        $content .= ' <a id="player_turnoff" ></a>
+                    <script language="JavaScript">
+                    flashembed("player_turnoff", "/scripts/player/flowplayer-3.2.11.swf", {
+                        config: {
+                            clip: {
+                                url:"' . $this->performer->getIntroVideo()['value'] . '",
+                                autoPlay: false,
+                                autoBuffering: true
+                            }
+                        }
+                    });
+                    </script> ';
+        $content .= "</div>";
+        $content .= "<br/>";
+
+    }
+
+    $content .= '<div class="player_wrapper_front" style="float: left; width: 518px; height: ' . ($this->model_status == 'online' && ($this->model->chat_type == 'normal' || Auth::isUser()) ? '386px' : '478px') . '; vertical-align: middle; text-align: center; border: 1px solid white; -moz-border-radius: 4px; border-radius: 4px;" id="player1">
+            ';
+    $content .= "";
+
+    //SHOW MODE CONFIRM if model in show mode ask user to login
+
+    if ($this->model->chat_type == 'show') {
+        $content .= "<br/>";
+        $content .= '<form method="POST">';
+
+        if (Auth::isUser()) {
+            $content .= '<input type="submit" name="fee_agree" class= "button btn btn-magenta" value="Join show"/>';
+        } else {
+            $content .= '<a href="/account/login" class= "button btn btn-magenta">Login</a>';
+        }
+        if ($this->show_rates)
+            //$content .= $this->show_rates["0"]["value"] . ' per minute';
+
+        $content .= "</form>";
+        $content .= "<br/>";
+    }
+
+    //GROUP MODE CONFIRM if model in show mode ask user to login
+
+    if ($this->model->chat_type == 'group') {
+        $content .= "<br/>";
+        $content .= '<form method="POST">';
+        $content .= '<p>' . $this->counter_chat_users . '/' . $this->max_group_users . ' users</p>';
+        if (Auth::isUser()) {
+
+            if ($this->counter_chat_users != $this->max_group_users)
+                $content .= '<input type="submit" name="join_group" class= "button btn btn-magenta" value="Join group!"/>';
+            else
+                $content .= '<p>Group full</p>';
+
+        } else {
+            $content .= '<a href="/account/login" class= "button btn btn-magenta">Login</a>';
+        }
+
+        $content .= "</form>";
+        $content .= "<br/>";
+    }
+
+    $content .= ($this->model_status == 'online' && ($this->model->chat_type == 'normal' || Auth::isUser()) ? '' : '<br /><br /><br />') . '
+            <h2>The model is currently ' . $title . '</h2>
+            <br />
+            <img src="' . $this->theme("images/private.png") . '" title="Model ' . $title . '" alt="Model ' . $title . '" /></div>';
+}
+
+$content .= '<div class="clear"></div>';
+
+if (Auth::isUser() && $this->model_status == 'online') {
+
+    $content .= '<div class="requestContainer">';
+    $type = $_SESSION['user_chat'][$this->model->id]['chat_type'] ? $_SESSION['user_chat'][$this->model->id]['chat_type'] : $this->model->chat_type;
+    $chat_types = array("private", "vip", "group", "3D");
+    $chat_modes = array("spy", "show");
+
+    if (in_array($type, $chat_types)) $type_rate = $type . "_chat";
+    elseif (in_array($type, $chat_modes)) $type_rate = $type . "_mode";
+    else $type_rate = $type;
+
+    $content .= '<div id="chat_logo" ' . ($_SESSION['user_chat'][$this->model->id] && ($type != 'normal') ? 'class="private"' : '') . '><img id="img_logo" src="' . $this->theme("images/" . $type_rate . ".png") . '" alt="' . $type . '"><span id="chat_label">' . ucwords(str_replace("_", " ", $type_rate)) . '</span></div>';
+
+
+    if ($_SESSION['user_chat'][$this->model->id] && ($this->model->chat_type == 'normal')) {
+
+        $content .= '<div id="go_private">';
+        $content .= '<span id="request_counter"></span>';
+        $content .= '<input type="btn button" id="request"      class="btn_request" value="Go Private!" data-fee="' . $rates["private_chat"] . '"/>';
+        $content .= '<input type="btn button" id="request_vip"  class="btn_request" value="VIP Private!" data-fee="' . $rates["vip_chat"] . '"/>';
+        $content .= '<input type="btn button" id="request_group" class="btn_request" value="Group chat" data-fee="' . $rates["group_chat"] . '"/>';
+        $content .= '     <span id="waiting_label" class="ui-widget-content ui-corner-all">Waiting for model response.</span>';
+        $content .= '</div>';
+    }
+    if ($_SESSION['user_chat'][$this->model->id]) {
+
+        $content .= '<div id="stop_chat_div" style="z-index: 0;"><input type="button" id="stop_chat" value="Stop chat!" /></div>';
+
+        if ($this->model->chat_type == 'normal'
+            || $_SESSION['user_chat'][$this->model->id]['chat_type'] == $this->model->chat_type
+            || ($_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy'
+                && $this->model->chat_type == 'private' && $this->model->chat_type == 'show'
+                && $this->model->chat_type == 'show')
+        ) {
+            $content .= '<span class="chips_number">Chips: ' . floor(user()->chips) . '</span>';
+            if (!($_SESSION['user_chat'][$this->model->id]['chat_type'] == 'spy' && $this->model->chat_type == 'private')) {
+                $content .= '<div id="tipContainer">';
+                $values = array("1" => 1,
+                    "5" => 5,
+                    "10" => 10,
+                    "25" => 25,
+                    "50" => 50,
+                    "100" => 100,
+                    "250" => 250,
+                    "500" => 500,
+                    "750" => 750,
+                    "1000" => 1000);
+                $content .= $this->formSelect("tip_value", 100, null, $values);
+                $content .= '<input type="btn button" id="tip" value="Tip!" /></div>';
+            }
+        }
+
+
+        if ($this->model->chat_type != 'normal') $content .= '<script>$("#stop_chat_div").css("display", "inline-block");</script>';
+    }
+
+
+    if ($this->model->chat_type != "vip" && ($this->model->chat_type == 'private' && !$_SESSION['user_chat'][$this->model->id])) {
+        $content .= '<div id="go_spy">
+                                    <input type="btn button" id="request_spy" value="Spy Mode!" />
+                            </div>';
+    }
+    $content .= '</div>';
+}
+
+echo $content;

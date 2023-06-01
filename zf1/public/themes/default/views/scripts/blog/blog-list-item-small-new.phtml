@@ -1,0 +1,82 @@
+<?
+$route_name = Zend_Controller_Front::getInstance()->getRouter()->getCurrentRouteName();
+
+if (Auth::isModel() && strpos($route_name, "performer") !== false) {
+    $view_url = $this->url(array("id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-performer-backend", true);
+    $edit_url = $this->url(array("id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-edit-performer-backend", true);
+} else if (Auth::isModerator() && strpos($route_name, "moderator") !== false) {
+
+    $view_url = $this->url(array("id_model" => $this->article->user_id, "name" => $this->params["name"], "id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-view-moderator-backend", true);
+    $edit_url = $this->url(array("id_model" => $this->article->user_id, "name" => $this->params["name"], "id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-edit-moderator-backend", true);
+} else if (strpos($route_name, "frontend")) {
+    $view_url = $this->url(array("id_model" => $this->article->user_id, "name" => $this->params["name"], "id_post" => $this->article->id, "title" => slug($this->article->title)), "blog-post-frontend", true);
+    if (Auth::isModerator())
+        $edit_url = "";
+    elseif (Auth::isModel())
+        $edit_url = "";
+}
+
+?>
+
+<div class="col-sm-6">
+    <div class="post-2">
+        <h1><?= $this->article->title; ?></h1>
+        <?= date("h:i a l, F Y ", $this->article->date) ?>
+        <? if (Auth::isModerator() || (Auth::isModel() && user()->id == $this->article->user_id)) { ?>
+            <? if ($this->article->status == 1) {
+                $color = "chartreuse";
+                $stat = "active";
+            } elseif ($this->article->status == 2) {
+                $color = "red";
+                $stat = "denied";
+            } elseif ($this->article->status == 0) {
+                $color = "orange";
+                $stat = "pending";
+            }?>
+            <span style="color:<?= $color ?>"><?= $stat ?></span>
+        <? } ?>
+
+        <? if (Auth::isModerator() && (user()->id == 0 || user()->id == $this->article->id_moderator)) { ?>
+            <a class="btn-xs btn btn-magenta" href="<?= $edit_url ?>"> edit</a>
+        <? } else if (Auth::isModel() && (user()->id == $this->article->user_id && $this->article->status != 1)) { ?>
+            <a class="btn-xs btn btn-magenta" href="<?= $edit_url ?>"> edit</a>
+        <? } //else if((Auth::isModel() && user()->id != $this->article->id_model) || !Auth::isModerator()) { ?>
+
+        <div>
+            <a class="catname col-sm-6" href="<?= $category_url ?>">
+                <?= $this->article->category_title ?>
+            </a>
+        </div>
+        <div class="text-right col-sm-6">
+            <?= $this->article->tags ?>
+        </div>
+
+        <div class="post_picture_big">
+            <img src="<?= $this->article->small_cover ?>">
+
+            <div class="blog-post-stats">
+                <?= $this->article->likes ?: 0 ?> Likes
+                · <?= $this->article->dislikes ?: 0 ?> Dislike
+                · 0 Comments
+                · <?= $this->article->reposts ?: 0 ?> Reposts
+            </div>
+        </div>
+
+        <p class="post-text text-justify">
+            <?= short_description($this->article->content) ?>
+        </p>
+
+        <p class="text-right read-more">
+            <a href="<?= $view_url ?>">Read More &gt;</a>
+        </p>
+
+        <hr>
+        <div class="reposted">
+            <img class="profilepic2" src="images/profile_pic_s.jpg">
+            Reposted by <a href="#">Anakliyah+200</a>
+        </div>
+        <div class="reposted">
+            <a href="<?= $view_url ?>"><img class="viewmore" src="images/view_more.jpg"></a>
+        </div>
+    </div>
+</div>

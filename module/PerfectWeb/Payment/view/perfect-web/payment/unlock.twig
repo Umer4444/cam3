@@ -1,0 +1,10 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+
+    {{ form().openTag(form) }}
+    {{ formRow(form.get('password')) }}
+    {{ formSubmit(form.get('submit')) }}
+    {{ form().closeTag() }}
+
+{% endblock %}

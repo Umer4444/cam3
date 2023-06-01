@@ -1,0 +1,5 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}SMS{% endblock button_text %}
+{% block button_target %}_blank{% endblock button_target %}
+{% block button_href_logged %}{#TODO check this#}{{ user(user).url('performer/profile', {action: 'sms'}) }}{% endblock button_href_logged %}

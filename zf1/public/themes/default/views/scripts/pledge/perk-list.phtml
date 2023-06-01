@@ -1,0 +1,79 @@
+<?
+$action_url = "";
+if (Auth::isModerator())
+    $action_url = $this->url(array("id_model" => $this->params["id_model"], "id_pledge" => $this->params["id_pledge"], "name" => $this->params["name"]), "perk-moderate-moderator-backend");
+
+
+?>
+<div class="page-content round-corners">
+    <h1 class="page-title">Perks</h1>
+    <br/>
+    <? if (count($this->perks_model) > 0) { ?>
+        <div>
+            <label for="selectallPerk">Select all</label> <input type="checkbox" id="selectallPerk">
+
+            <form method="POST" style="display: inline;" action="<? echo $action_url; ?>">
+                <input type="hidden" name="multiple_selectPerk" id="multiple_selectPerk">
+
+                <? if (Auth::isModel()) { ?>
+                    <input type="submit" name="multiple_delete" id="multiple_delete" class="denyButton"
+                           value="Delete selected">
+                <? } elseif (Auth::isModerator()) { ?>
+                    <input type="submit" name="denyButtonPerk" id="multiple_deny" class="denyButton"
+                           value="Deny selected">
+                    <input type="submit" name="acceptButtonPerk" id="multiple_accept" class="acceptButton"
+                           value="Accept selected">
+                <? } ?>
+            </form>
+        </div>
+
+    <? } ?>
+    <div class="perks">
+        <? if (count($this->perks_moderator) > 0) { ?>
+            <h3>Admin bonuses</h3>
+            <? foreach ($this->perks_moderator as $this->perk) { ?>
+                <? echo $this->partial("pledge/perk-item.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+
+            <? } ?>
+
+        <? } else { ?>
+            No admin bonuses
+        <? } ?>
+
+        <? if (count($this->perks_model) > 0) { ?>
+            <h3>Performer offers</h3>
+            <? foreach ($this->perks_model as $this->perk) { ?>
+                <? echo $this->partial("pledge/perk-item.phtml", array("perk" => $this->perk, "end_date" => $this->end_date, "pledge" => $this->pledge, "frontend" => "true", "pledge_status" => $this->pledge_status)); ?>
+
+            <? } ?>
+
+        <? } else { ?>
+            No performer offers
+        <? } ?>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        // instantiaza multi select
+        multipleCheck("casePerk", "multiple_selectPerk", "selectallPerk");
+
+        //img on mouseover
+        $(".perk").each(function () {
+            if ($(this).children("img").length > 0) {
+                width = $(this).children("img").width();
+                $(this).mouseover(function () {
+                    $(this).children("img").fadeIn();
+                    $(this).mousemove(function (e) {
+                        $(this).children("img").offset({left: e.pageX + 10, top: e.pageY});
+                    });
+
+                }).mouseleave(function () {
+                    $(this).children("img").fadeOut();
+                });
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,9 @@
+{% extends 'layout/backend' %}
+
+{% set content %}
+
+    {{ headTitle('Announcements') }}
+
+    {{ news(zfcUserIdentity())}}
+
+{% endset %}

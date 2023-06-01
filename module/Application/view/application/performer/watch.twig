@@ -1,0 +1,33 @@
+{% extends 'layout/' ~ (params().fromRoute('type') != 'popup' ? 'frontend' : 'bare') %}
+
+{% block content %}
+    <div class="row row-no-margin container-fluid-fix">
+        {% if zfcUserIdentity() and user.isBroadcasting() %}
+            {% if user.getBroadcastType() in ['video', 'duplex', 'audio'] %}
+                <div class="col-md-5">
+                    <div class="margin-10 generic-border">
+                        {{ stream(user).setWidth('100%').getLive() }}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="col-md-7">
+                <div class="margin-10 generic-border">
+                    {{ chat(user) }}
+                </div>
+            </div>
+            {% if user.getNumberOfCameras() > 1 %}
+                {% for i in 2 .. user.getNumberOfCameras()  %}
+                    <div class="col-md-4">
+                        {{ stream(user).setHeight('400').getLive(i) }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="col-md-12">
+                <div class="alert alert-warning" role="alert">
+                    Please login first
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

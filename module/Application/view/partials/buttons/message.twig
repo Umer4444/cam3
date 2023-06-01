@@ -1,0 +1,7 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Send Message{% endblock button_text %}
+{% block button_class %}btn btn-info btn-block{% endblock button_class %}
+{% block button_href %}
+   {{ user(zfcUserIdentity()).url('messages/compose/send-to', {(constant('Application\\Mapper\\Injector::TOUSER')): user.getId()}) }}
+{% endblock button_href %}

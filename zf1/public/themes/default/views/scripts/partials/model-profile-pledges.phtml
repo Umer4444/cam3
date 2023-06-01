@@ -1,0 +1,9 @@
+<? if (count($this->paginator)) {
+    foreach ($this->paginator as $this->pledge) {
+        echo $this->partial("pledge/pledge-list-item.phtml", $this);
+    }
+
+} else {
+    echo "No pledge found!";
+}
+?>

@@ -1,0 +1,73 @@
+<div class="page-content round-corners">
+    <? if (count($this->paginator) > 0) { ?>
+        <table class="listing_items messages" cellpadding="5" cellspacing="1">
+            <tbody>
+            <tr class="table_header">
+                <th class="center" width="100">Status</th>
+                <th class="center" width="250">Banner Zones</th>
+                <th class="center" width="50">Banner Size</th>
+                <th class="center">Start Date</th>
+                <th class="center">End Date</th>
+
+                <th class="center" width="200">Options</th>
+            </tr>
+            <?php foreach ($this->paginator as $this->banner) { ?>
+                <?php
+                if (Auth::isModel()) {
+                    $edit_url = $this->url(array("id_banner" => $this->banner->id), "banner-edit-performer-backend");
+                    $delete_url = $this->url(array("id_banner" => $this->banner->id), "banner-delete-performer-backend");
+                } elseif (Auth::isModerator()) {
+                    $edit_url = $this->url(array("id_banner" => $this->banner->id, "id_model" => $this->params["id_model"], "name" => $this->params["name"]), "banner-edit-moderator-backend");
+                    $delete_url = $this->url(array("id_banner" => $this->banner->id, "id_model" => $this->params["id_model"], "name" => $this->params["name"]), "banner-delete-moderator-backend");
+                }
+                ?>
+                <tr class="moderator_message">
+                    <td class="center"><?= statusType($this->banner->status) ?></td>
+                    <td class="center"><?= bannerZones($this->banner->banner_zone); ?></td>
+                    <td class="center"><?= $this->banner->banner_size; ?></td>
+                    <td class="center"><?= date('M d Y', $this->banner->start_date); ?></td>
+                    <td class="center"><?= date('M d Y', $this->banner->end_date); ?></td>
+                    <td class="center">
+                        <a href="#" data-id="<?= $this->banner->id; ?>" class="banner_preview button btn btn-magenta">Preview</a>
+                        <a href="<?= $edit_url ?>" class="button btn btn-magenta">Edit</a>
+                        <a href="<?= $delete_url ?>" class="button btn btn-magenta">Delete</a>
+                    </td>
+                </tr>
+
+
+
+            <?php } ?>
+            </tbody>
+        </table>
+        <?php foreach ($this->paginator as $this->banner) { ?>
+            <div id="banner_<?= $this->banner->id; ?>" class="" style="display:none; text-align: center;"
+                 title="Baner preview">
+                <div>
+                    <?= $this->banner->content ?>
+                </div>
+            </div>
+        <? } ?>
+
+    <? } else { ?>
+        No banners
+    <? } ?>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $(".banner_preview").click(function (e) {
+            e.preventDefault();
+
+
+            $("#banner_" + $(this).data("id")).dialog();
+            $("#banner_" + $(this).data("id")).dialog({
+                width: 750,
+                modal: true,
+                position: "center"
+            });
+
+        });
+
+    });
+</script>

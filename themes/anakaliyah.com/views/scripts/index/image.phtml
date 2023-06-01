@@ -1,0 +1,101 @@
+<? 
+
+//$photo = $this->loadModel("photos")->getPhotoById($this->params["id_image"]);
+
+if($this->image){
+    $photo = $this->image;
+?>
+<div class="row center">
+         <div class="thumbnail with-caption">
+             <a class="a_cover" rel="group" href="/files/photos/<?=$photo->filename?>">
+                <img  class="col-lg-12" alt="<?=$photo->caption?>" title="<?=$this->photo->caption?>"  src="/files/photos/<?=$photo->filename?>">
+             </a> 
+                <div class="left stars<?=$disable?>" data-id="<?=$photo->id?>" data-average="<?=$photo->rating?>" data-extra="image"></div> 
+                 <?  echo $this->partial('partials/items/rating_script.phtml',array('size' => "big", "div" => "", "color" => "")); ?>
+
+                <div class="right">    
+                    <?  echo $this->partial('partials/items/like_buttons.phtml', array('id' => $photo->id, "type" => "image")); ?>
+                    <?  echo $this->partial('partials/items/like_script.phtml', array("")); ?>                
+                </div>
+                <? if($photo->caption){ ?>
+                    <p><?=$photo->caption?></p>
+                <? } ?>
+               <? /*if(Auth::isModel() && $_SESSION['user']['id'] == $this->album->id_model){ ?> 
+           <p class="photo_controls">
+                <a onclick="App.model.setGalleryCover(<?=$this->photo->id?>)" id='c_<?=$this->photo->id?>' href="javascript:;">set cover</a> 
+                <a onclick="App.model.deletePhoto(<?=$this->photo->id?>)" id='d_<?=$this->photo->id?>' class="right" href="javascript:;">delete</a>
+           </p>
+           <?} */ ?> 
+            
+        </div>
+</div>
+<br/>
+
+
+<div class="row">
+        <div id="tabs">
+         <ul>
+           <? /* <li><a href="#more_videos">More Clips From <?=$this->video->screen_name?></a></li> */?>
+            <li><a href="#disqus_thread">Comments</a></li>      
+            <li><a href="#reviews"><?=$this->video->total_active_reviews?> Reviews</a></li>
+          </ul>
+        <div id="reviews">
+            <?=$this->notice?>
+            
+            <? if(Auth::isLogged()) { ?>
+            <a id="review_button"  class="button-round-small blue right" style="color:white" >Add review</a>
+            <div class="clear"></div>
+            <br/>
+            <div id="add_review" style="display:none;">
+                <form action = "" method="post">
+                    <textarea id="new_review" name="new_review"></textarea>
+                    <input type="submit" name="add_review" class="green-button" value="Save"/>
+                    <br/>
+                    <br/>
+                    <hr/>
+                    <br/>
+                </form>
+            </div>              
+            <? } ?>
+            <? if(count($this->reviews)) { ?>
+                <? foreach($this->reviews as $this->review) {  
+                    echo $this->partial('partials/review-item.phtml',$this); 
+                } ?>
+            <? } else { ?>
+                <p> No reviews. Write the first review</p>
+            <? } ?>
+        </div>             
+         <div id="disqus_thread"></div>
+         <? /*
+        <div id="more_videos">
+              
+            <?  
+                if($this->more_videos){
+                    foreach($this->more_videos as $video) echo $this->partial('partials/video-small-item.phtml',array('video' => $video));
+                }else{
+                    echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';    
+                }    
+            ?>
+                <div class="clear"></div>
+                    
+                <h2 class="section_title">Related Clips</h2>
+            <?  
+                if($this->related_videos){
+                    foreach($this->related_videos as $video) echo $this->partial('partials/video-small-item.phtml',array('video' => $video));
+                }else{
+                    echo '<br><br><br><br><center>There are no videos available at this time. Please check back later. </center><br><br><br><br><br>';    
+                }    
+            ?>
+            <div class="clear"></div>
+            
+        </div>
+         */ ?>
+    </div>
+            
+    <? echo $this->partial('partials/items/comments_review_script.phtml', array("")); ?>
+    <? echo $this->partial('partials/disqus.phtml', array("title" => "Image", "identifier" =>  'image'.$photo->id)); ?>
+    <? echo $this->partial('partials/items/fancybox2.phtml',array("")); ?>
+</div>
+
+<? } ?>
+

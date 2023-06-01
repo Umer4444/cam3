@@ -1,0 +1,98 @@
+<?
+$page_title = "Add photos";
+
+$this->headTitle($page_title);
+//p($this->params);
+
+?>
+<?php $timestamp = time(); ?>
+
+
+<link rel="stylesheet" media="all" type="text/css" href="/scripts/Timepicker/jquery-ui-timepicker-addon.css"/>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-sliderAccess.js"></script>
+
+
+<link type="text/css" rel="stylesheet" media="screen" href="/themes/default/css/uploadify.css">
+<script type="text/javascript" src="/scripts/jquery.uploadify-3.1.min.js"></script>
+
+
+<div class="model_content">
+    <? echo $this->partial("partials/model-submenu.phtml", array("type" => "pledges", "params" => $this->params)); ?>
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+
+        <h1 class="page-title"><?= $page_title ?></h1>
+
+        <form method="post" id="pledgeAdd" enctype="multipart/form-data">
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="upload_photos">Add photos</label>
+
+                    <div class="field_wrapper">
+                        <input type="file" id="upload_photos"/>
+
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="field_wrapper">
+                        <br/>
+                        <input type="button" name="" id="save" value="Save" class="btn btn-success"
+                               style="display: inline;">
+                    </div>
+                </div>
+                <br>
+
+            </div>
+
+        </form>
+        <br/>
+
+    </div>
+</div>
+
+<script>
+
+
+    /*upload photos */
+
+    function submitForm(str) {
+
+        var _fdata = {
+            'sizeLimit': parseInt(1 * 1024 * 1024 * 1024),
+            'total_photos': $(".uploadify-queue-item").length,
+            'timestamp': '<?php echo $timestamp;?>',
+            'token': '<?php echo md5('unique_salt_pw.ro2013' . $timestamp);?>'
+        };
+        $('#upload_photos').uploadify('settings', 'formData', _fdata);
+        $('#upload_photos').uploadify('upload', '*');
+        window.onbeforeunload = false;
+    }
+
+
+    $(function () {
+        return_url = '<?=$this->url(array("title" => slug($this->params["title"]), "id_pledge" => $this->params["id_pledge"]),"pledge-photos-performer-backend")?>';
+        $('#upload_photos').uploadify({
+            'swf': '/scripts/uploadify-3.2.1/uploadify.swf',
+            'uploader': return_url,
+            'method': 'post',
+            'fileTypeExts': '*.gif; *.jpg; *.png; *.jpeg;',
+            'fileTypeDesc': 'Images',
+            'auto': false,
+            'uploadLimit': 10,
+            'buttonText': "Select photos",
+            //'fileObjName'   : "upload_photos",
+            'onQueueComplete': function (queueData) {
+                //RELOAD PAGE
+                location.href = '<?=$this->url(array(),"pledge-list-performer-backend")?>';
+            }
+        });
+
+
+        $('#save').bind("click", function (e) {
+            e.preventDefault();
+            submitForm('save_moderation');
+        });
+    });
+
+</script>

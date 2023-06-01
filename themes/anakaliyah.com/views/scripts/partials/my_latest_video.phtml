@@ -1,0 +1,33 @@
+<?     
+
+    $video = $this->loadModel("video")->getVideos($id_model = $this->id_model, $type = 'vod', $private = null, $order = "id DESC", $nr = 1, $id_show = null, $not_type = null, $search = null);
+
+ ?>
+<div class="my_video">
+    <div class="widget-container">
+        <h2>My <span class="highcolor">Latest Video</span></h2>
+        
+        <div class="side-video">
+    
+            
+
+                        <a href="<?=$this->url(array("id" => $video->id, "name" => ro_slug($video->title)), "video")?>" title="<?=$video->title?>">
+                            <span class="play_button"></span>
+                            <img src="<?=$video->getCover()?>"/>
+                        </a>
+            
+
+                                <? /*<!-- fb like box -->
+                                    <div id="fb-root"></div>
+                                        <script>(function(d, s, id) {
+                                          var js, fjs = d.getElementsByTagName(s)[0];
+                                          if (d.getElementById(id)) return;
+                                          js = d.createElement(s); js.id = id;
+                                          js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                                          fjs.parentNode.insertBefore(js, fjs);
+                                        }(document, 'script', 'facebook-jssdk'));</script>
+                                    
+                                    <div class="fb-like-box" data-href="https://www.facebook.com/FacebookDevelopers" data-width="292" data-show-faces="true" data-stream="false" data-show-border="false" data-header="false"></div>*/?>
+                            <!-- end fb like box -->
+    </div>
+ </div>

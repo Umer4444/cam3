@@ -1,0 +1,9 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+
+    {% for performer in performers %}
+        {% include 'performer/block' %}
+    {% endfor %}
+
+{% endblock content %}

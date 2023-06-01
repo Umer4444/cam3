@@ -1,0 +1,24 @@
+<div class="package-container" data-amount="<?= $this->package->amount ?>" data-chips="<?= $this->package->amount ?>"
+     data-plan="<?= $this->package->id ?>">
+    <div class="upper-bar">
+        <div class="triangle-left"></div>
+        <div class="package-name"><?= $this->package->name ?></div>
+        <div class="triangle-right"></div>
+    </div>
+    <div class="package">
+        <div class="top-bar"></div>
+        <div class="chips-bar">
+            <p class="chips-number"><?= number_format($this->package->amount, 0, '.', ',') ?></p>
+
+            <p class="bonus">Bonus: <?= number_format($this->package->bonus, 0, '.', ',') ?></p>
+
+            <p class="chips">chips</p>
+        </div>
+        <div class="price-bar">
+            <p>$<?= number_format($this->package->amount, 2, '.', ',') ?></p>
+
+            <p class="chips"><?= number_format($this->package->amount, 2, '.', ',') ?> $/chip</p>
+        </div>
+        <div class="bottom-bar"><input type="button" class="buy-chips" value="Buy chips"/></div>
+    </div>
+</div>

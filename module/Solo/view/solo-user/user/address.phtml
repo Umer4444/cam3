@@ -1,0 +1,65 @@
+<?php
+$editRoute = 'address/edit' /*$this->editRoute ?:*/;
+$deleteRoute = 'address/delete' /*$this->deleteRoute ?:*/;
+$addRoute = 'address/add' /*$this->addRoute ?:*/;
+?>
+<?= $this->partial('solo/dashboard/partial/tab-menu'); ?>
+<div class="background-rounded">
+    <div class="row row-no-margin padding-10">
+        <div class="col-md-12">
+            <h2>Address book</h2>
+        </div>
+    </div>
+    <div class="row row-no-margin padding-10">
+        <div class="col-md-12">
+            <a href="<?= $this->url($addRoute) ?>" class="btn btn-magenta">Add Address</a>
+        </div>
+    </div>
+    <div class="row row-no-margin padding-10">
+        <div class="col-md-12">
+            <?php if ($this->statuses['addr-add'] === true) { ?>
+                <div class="alert alert-success">Successfully added address.</div>
+            <?php } elseif ($this->statuses['addr-add'] === false) { ?>
+                <div class="alert alert-error">Error while adding address.</div>
+            <?php } ?>
+
+            <?php if ($this->statuses['addr-edit'] === true) { ?>
+                <div class="alert alert-success">Successfully modified address.</div>
+            <?php } elseif ($this->statuses['addr-edit'] === false) { ?>
+                <div class="alert alert-error">Error while saving address.</div>
+            <?php } ?>
+
+            <?php if ($this->statuses['addr-delete'] === true) { ?>
+                <div class="alert alert-success">Successfully deleted address.</div>
+            <?php } elseif ($this->statuses['addr-delete'] === false) { ?>
+                <div class="alert alert-error">Error while deleting address.</div>
+            <?php } ?>
+
+            <?php
+            foreach ($this->addresses as $address) {
+
+                $params = http_build_query(array(
+                    'markers' => '|' . $address->getStreetAddress() . ' ' . $address->getCity() . ', ' . $address->getProvince(),
+                    'sensor' => 'false',
+                    'size' => '150x150'
+                ));
+
+                $imgurl = "http://maps.googleapis.com/maps/api/staticmap?" . $params;
+
+                ?>
+                <div style="float: left; margin-right: 10px;">
+                    <img src="<?= $imgurl ?>"/>
+                </div>
+                <p><em><?= $address->getName() ?></em><br/>
+                    <?= $address->getStreetAddress() ?><br/>
+                    <?= $address->getCity() ?>, <?= $address->getProvince() ?> <?= $address->getPostalCode() ?><br/>
+                    <?= $address->getCountry() ?></p>
+                <?php $editUrl = $this->url($editRoute, array('id' => $address->getAddressId())); ?>
+                <?php $deleteUrl = $this->url($deleteRoute, array('id' => $address->getAddressId())); ?>
+                <a href="<?= $editUrl ?>">Edit</a> &middot; <a href="<?= $deleteUrl ?>">Delete</a>
+                <p style="clear: both"></p>
+            <?php } ?>
+
+        </div>
+    </div>
+</div>

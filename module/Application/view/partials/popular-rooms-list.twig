@@ -1,0 +1,20 @@
+<div class="col-lg-4 col-sm-6 col-md-4 col-xs-12 ">
+    <div class="col-sm-12 wishlist_box">
+        <div class="col-lg-4 col-sm-4 col-xs-12 no-padding wish_img">
+            <img src="{{ room.getAvatar() }}" class="img-responsive">
+        </div>
+        <div class="col-lg-8 col-sm-8 col-xs-12 padd_large">
+            <div class="row">
+                <div class="wish_title">
+                    <h4 class="theme-color"><strong>{{ room.getScreenName() }}</strong></h4>
+                    <div class="wish_des most-pop-des">
+                        <p><strong>Room topic: </strong>Enchatment for yellow rain!...</p>
+                        <p><strong>Current viewers:</strong>301</p>
+                        <p><strong>vistors: </strong>2156</p>
+                    </div>
+                    {{ buttons(user).watchPopup() }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

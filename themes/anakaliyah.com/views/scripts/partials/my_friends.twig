@@ -1,0 +1,110 @@
+<div class="my_fans">
+    <div class="widget-container">
+        <h2 class="no-top-margin">My Fans</h2>
+        <div class="ionTabs" id="tabs" data-name="users">
+            <ul id="friends">
+                <li>
+                    <a href="#usersT" class="performer-tab">My Fans</a>
+                </li>
+                <li>
+                    <a href="#performersT" class="performer-tab">Performers</a>
+                </li>
+            </ul>
+            <div class="tab_content">
+                <div id="usersT" data-name="My_Fans">
+                    <div class="row row-no-margin">
+                        {% if friends %}
+                            {% set counter = 0 %}
+                            {% for friend in friends %}
+                                {% set position = friend.getPosition() %}
+                                {% set friend = friend.getUser() %}
+                                {% if position >= 0 and counter < 6 %}
+                                    <div class="col-md-4 col-md-4-solo">
+                                        <div class="modal-content margin-10">
+                                            <div class="modal-header modal-header-solo">
+                                                <span class="highcolor">{{ friend.getUsername()|slice(0, 10) }}</span>
+                                            </div>
+                                            <div class="modal-body">
+                                                <a href="{{ url('solo/profile', {'username' : friend.getUsername()}) }}"
+                                                   title="{{ friend.getUsername() }}">
+                                                    {% if friend.getAvatar() is null %}
+                                                        <img class="solo-friends-image"
+                                                             src="/assets/themes/anakaliyah.com/assets/images/user_default.png"
+                                                             title="{{ friend.getUsername() }}"/>
+                                                    {% else %}
+                                                        <img src="{{ friend.getAvatar() }}"
+                                                             title="{{ friend.getUsername }}"/>
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    {% if counter == 0 %}
+                                        No top friends are selected!
+                                    {% endif %}
+                                {% endif %}
+                                {% set counter = counter + 1 %}
+                            {% endfor %}
+                            <div class="clear"></div><br/><br/>
+                            <a href="/friends">View all friends</a>
+                        {% else %}
+
+                            No top friends are selected!
+                            <div class="clear"></div><br/>
+                            <a href="/friends">View all friends</a>
+                        {% endif %}
+                     </div>
+                </div>
+                <div id="performersT" data-name="Performers">
+                    <div class="row row-no-margin">
+                        {% if performers %}
+                            {% for performer in performers %}
+                                {% set counterperformer = 0 %}
+                                {% set position = performer.getPosition() %}
+                                {% set performer = performer.getUser() %}
+                                {% if position >= 0 and counterperformer < 6 %}
+                                    <div class="col-md-4 col-md-4-solo">
+                                        <div class="modal-content margin-10">
+                                            <div class="modal-header modal-header-solo">
+                                                <span class="highcolor">{{ performer.getUsername()|slice(0, 10) }}</span>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <a href="{{ url('solo/profile', {'username' : performer.getUsername()}) }}"
+                                                   title="{{ performer.getUsername() }}">
+                                                    {% if performer.getAvatar() is null %}
+                                                        <img class="solo-friends-image" src="/assets/themes/anakaliyah.com/assets/images/user_default.png"
+                                                             title="{{ performer.getUsername() }}"/>
+                                                    {% else %}
+                                                        <img src="{{ performer.getAvatar() }}"
+                                                             title="{{ performer.getUsername }}"/>
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    No performer friends yet!
+                                {% endif %}
+                                {% set counterperformer = counterperformer + 1 %}
+                            {% endfor %}
+                            <div class="clear"></div><br/>
+                            <a href="/friends">View all friends</a>
+                        {% else %}
+
+                            No top performer friends are selected!<div class="clear"></div> <br /><br/>
+                            <a href="/friends">View all friends</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("#tabs").tabs();
+    });
+</script>
+

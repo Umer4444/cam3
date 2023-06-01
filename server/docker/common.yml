@@ -1,0 +1,14 @@
+camclients:
+  expose:
+    - 80
+  ports:
+    - 80
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  hostname: camclients.com
+  domainname: camclients.com
+  volumes:
+    - ../..:/var/www/html/camclients
+    - ../server/nginx:/etc/nginx/camclients
+    - ../server/nginx/production/nginx.conf:/etc/nginx/vhosts/vhost.conf

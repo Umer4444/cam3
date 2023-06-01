@@ -1,0 +1,113 @@
+<?  
+    //$this->article = $this->loadModel("blog_posts")->getById($this->params->id_post);    
+  
+    //foreach    
+    $page_title = $this->article->title;        
+    $this->headTitle($page_title);  
+    
+    if(isset($_SESSION["rate"]) && isset($_SESSION["rate"]["post"])) { if(in_array($this->article->id, $_SESSION["rate"]["post"])) $disable =  " disableRate"; } 
+//    $post_chips = 0;
+//    if(!isset($this->article->purchased) || !$this->article->purchased){
+//        $types = (explode(',', $this->article->type));
+//        $chips = (explode(',', $this->article->chips));
+//        $dates = (explode(',', $this->article->date));
+//        
+//        $post_chips = array_search('everyone', $types);             
+//        $post_chips = (!is_null($post_chips) ? $chips[$post_chips] : null);               
+//        if(!$post_chips || $post_chips == 0){
+//            if(Auth::isUser()){
+//                $post_chips = array_search('user', $types);
+//                if($post_chips)
+//                    $post_chips = $chips[$post_chips];
+//            } elseif(Auth::isModel()){
+//                $post_chips = array_search('model', $types);
+//                if($post_chips)
+//                    $post_chips = $chips[$post_chips];
+//            } 
+//        }
+        //p($post_chips) ;      
+//    } 
+    //p($this->article->toArray());
+  //248e85d8c35de0be6e6082323c9a9edd
+?>
+
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="row">
+            <h2 class="title left"><?=$page_title?></h2>     
+        </div>
+    <? if($this->post_chips > 0 ) { ?><a href="<?=$this->url(array("id_post" => $this->article->id, "title" => ro_slug($this->article->title)), 'theme-blog')?>/purchase" class="btn btn-purple">Purchase (<?=$this->post_chips?> chips)</a><br> <?php } ?>
+    <img src="/files/photos/<?=$this->article->full_cover ?>" alt="<?=$page_title?>"/>
+    
+    <? if($this->post_chips > 0 ) { ?>
+        <?=short_description($this->article->content)?>   
+    <? } else { ?>
+        <div class="clear"></div>
+        <div class="pull-left stars<?=$disable?>" data-id="<?=$this->article->id?>" data-average="<?=$this->article->rating?>" data-extra="post"></div> 
+        <?  echo $this->partial('partials/items/rating_script.phtml',array('size' => "big", "div" => "", "color" => "black")); ?>
+
+        <div class="pull-right">    
+            <?  echo $this->partial('partials/items/like_buttons.phtml', array('id' => $this->article->id, "type" => "post")); ?>
+            <?  echo $this->partial('partials/items/like_script.phtml', array("")); ?> 
+        </div>
+        <div class="clear"></div>
+        <? echo $this->article->content; 
+    
+    } ?>
+  
+    <hr>
+   <?=$this->article->tags?>
+   <hr>
+    <div id="tabs">
+        <ul>
+            <li><a href="#disqus_thread">Comments</a></li>
+            <? if($this->reviews) { ?>
+                <li><a href="#reviews"><?=$this->image->total_active_reviews?> Reviews</a></li>
+            <? } ?>
+        </ul>
+        <? if($this->reviews) { ?>
+        <div id="reviews">
+
+            <?=$this->notice?>
+
+            <? if(Auth::isLogged()) { ?>
+            <a id="review_button"  class="button-round-small blue right" style="color:white" >Add review</a>
+            <div class="clear"></div>
+            <br/>
+            <div id="add_review" style="display:none;">
+                <form action = "" method="post">
+                    <textarea id="new_review" name="new_review"></textarea>
+                    <input type="submit" name="add_review" class="green-button" value="Save"/>
+                    <br/>
+                    <br/>
+                    <hr/>
+                    <br/>
+                </form>
+            </div>
+            <? } ?>
+
+            <? if($this->reviews) { ?>
+                <? foreach($this->reviews as $this->review) { 
+                    echo $this->partial('partials/review-item.phtml',$this); 
+                } ?>
+            <? } ?>
+        </div>  
+        <? } ?>           
+        <div id="disqus_thread"></div>
+        </div>
+        <script>
+            $(function() {$( "#tabs" ).tabs();});
+
+            $(document).ready(function(){
+                    $("#review_button").click(function(){
+                            $("#add_review").toggle();
+                    });
+            });
+        </script>   
+    </div> 
+     <div class="col-lg-4">
+          <? echo $this->partial("partials/side-bar.phtml", $this); ?>
+    </div>
+</div>
+<? echo $this->partial('partials/disqus.phtml', array("title" =>"", "identifier" =>  'post'.$this->article->id)); ?>  

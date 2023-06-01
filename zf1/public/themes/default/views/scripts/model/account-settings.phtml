@@ -1,0 +1,23 @@
+<?php
+$this->headTitle('Account Settings');
+?>
+<div class="model_content">
+    <?php
+echo $this->partial('partials/model-account-settings.phtml',
+    array(
+        "model" => $this->model,
+        "acl" => $this->acl,
+        "notice" => $this->notice,
+        //"countries" => $this->countries,
+        "country" => $this->country,
+        "region" => $this->region,
+        "city" => $this->city,
+        "gift_country" => $this->gift_country,
+        "gift_region" => $this->gift_region,
+        "gift_city" => $this->gift_city,
+        "timezones" => $this->timezones,
+        "terms" => $this->terms,
+    )
+);
+?>
+    </div>

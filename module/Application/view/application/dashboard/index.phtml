@@ -1,0 +1,37 @@
+<?= $this->partial('application/dashboard/partial/tab-menu'); ?>
+<br/>
+<div class="row-fluid">
+    <div class="span12">
+        <p>The following is your account info. This includes your account login (your email address) and billing
+            information.</p>
+
+        <div class="well">
+            <dl>
+                <dt>Account Login:</dt>
+                <dd><?= $this->user->getEmail() ?></dd>
+
+                <dt>Account Number:</dt>
+                <dd><?= $this->user->getId() ?></dd>
+
+                <dt>Billing Name:</dt>
+                <dd><?php echo $this->accountSettings['billing_name']["value"] ?></dd>
+
+                <dt>Default Billing Address:</dt>
+                <dd>???</dd>
+
+                <dt>Username:</dt>
+                <dd><?= $this->user->getUsername() ?></dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<?php
+//p($this->zfcUserIdentity());
+//    p($this->zfcUserIdentity());
+//    foreach($this->zfcUserIdentity()->getAccessResources() as $access)
+//    {
+//        p($access);
+//    }
+
+?>

@@ -1,0 +1,132 @@
+<div class="col-lg-12 col-sm-12 col-xs-12">
+    {% if zfcUserIdentity() %}
+        <div class="profile-sidebar">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-parent="#accordion" href="#"> Inbox </a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-parent="#accordion" href="#"> Chips </a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#Account" aria-expanded="false"> Account Setting
+                            <span class="glyphicon pull-right glyphicon-plus"></span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="Account" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <ul>
+                        <li><a href="#">Personal details</a></li>
+                        <li><a href="#">Privacy settings</a></li>
+                        <li><a href="#">Phone setting</a></li>
+                        <li><a href="#">Chat setting</a></li>
+                        <li><a href="#">Latest News</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#Media_manager" aria-expanded="false"> Media Manager
+                            <span class="glyphicon pull-right glyphicon-plus"></span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="Media_manager" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <ul>
+                        <li><a href="#" class="txt-muted">Upload media*</a></li>
+                        <li><a href="#" class="txt-muted">Manage Blog*</a></li>
+                        <li><a href="#" class="txt-muted">Manage Photos*</a></li>
+                        <li><a href="#" class="txt-muted">Manage Videos*</a></li>
+                        <li><a href="#" class="txt-muted">Manage Guestbook*</a></li>
+                        <li><a href="#" class="txt-muted">Manage Notes*</a></li>
+                        <li><a href="#">Manage Friends</a></li>
+                        <li><a href="#">Manage Comments</a></li>
+                        <li><a href="#">Manage Reviews</a></li>
+                        <li><a href="#" class="txt-muted">Create Club*</a></li>
+                        <li><a href="#" class="txt-muted">Create Lobby*</a></li>
+                        <li><a href="#" class="txt-muted">Create Contest*</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" href="#"> Chat quotes </a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" href="#"> Special request </a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-parent="#accordion" href="#"> Schedule Appointment </a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#Stats" aria-expanded="true"> Stats
+                            <span class="glyphicon glyphicon-minus pull-right"></span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="Stats" class="panel-collapse collapse in" aria-expanded="true">
+                    <ul>
+                        <li><a href="#">Chips spent</a></li>
+                        <li><a href="#">Referrals Stats</a></li>
+                        <li><a href="#">Chat Archive</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-parent="#accordion" href="#"> User Experience</a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-parent="#accordion" href="#"> Purchased content</a>
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#forum" aria-expanded="true"> Forum
+                            <span class="glyphicon glyphicon-minus pull-right"></span>
+                        </a>
+                    </h4>
+                </div>
+                <div id="forum" class="panel-collapse collapse in" aria-expanded="true">
+                    <ul>
+                        <li><a href="#">Users only</a></li>
+                        <li><a href="#">Main Forum </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div><a href="#"><img src="/images/live_help.jpg" class="img-responsive"></a></div>
+    </div>
+    {% endif %}
+</div>

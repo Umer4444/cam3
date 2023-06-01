@@ -1,0 +1,39 @@
+{% set approved = constant('PerfectWeb\\Core\\Utils\\Status::ACTIVE') %}
+{% set pending = constant('PerfectWeb\\Core\\Utils\\Status::PENDING') %}
+{% set denied = constant('PerfectWeb\\Core\\Utils\\Status::REJECTED') %}
+
+<div class="item-status">
+    <div class="btn-group moderate-items col-md-12 no-padding" id="moderate_{{ object.getId() }}" data-toggle="buttons">
+
+        <button
+            type="button" value="{{ denied }}" name="status" id="moderate_{{ object.getId() }}_{{ object.getStatus() }}"
+            class="btn-xs btn-danger {{ denied == object.getStatus() ? "active" : '' }}">
+            Deny
+        </button>
+
+        <button
+            type="button" value="{{ pending }}" name="status" id="moderate_{{ object.getId() }}_{{ object.getStatus() }}"
+            class="btn-xs btn-warning  {{ pending == object.getStatus() ? "active" : '' }}">
+            Pending
+        </button>
+
+        <button
+            type="button" value="{{ approved }}" name="status" id="moderate_{{ object.getId() }}_{{ object.getStatus() }}"
+            class="btn-xs btn-success {{ approved == object.getStatus() ? "active" : '' }}">
+            Approve
+        </button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#moderate_{{ object.getId() }} button").on("click", function () {
+        $.ajax({
+            url: "{{ url }}",
+            type: 'PATCH',
+            data: {'status': $(this).prop('value')},
+            success: function() {
+                location.reload();
+            }
+        });
+    });
+</script>

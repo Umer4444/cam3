@@ -1,0 +1,110 @@
+<?
+$page_title = "Bad words";
+
+$this->headTitle($page_title);
+?>
+
+<div class="model_content">
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+
+        <h1 class="page-title"><?= $page_title ?></h1>
+
+        <form method="post">
+            <div class="join-box-fields">
+
+
+                <div class="field">
+                    <label for="word">Word</label>
+
+                    <div class="field_wrapper">
+                        <input type="text" name="word" id="word" maxlength="100">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="replacement">Replacement</label>
+
+                    <div class="field_wrapper">
+                        <input type="text" name="replacement" id="replacement" maxlength="100">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="field_wrapper">
+                        <input type="submit" name="save" id="save" value="Save quote" class="btn btn-success">
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+        <br/>
+        <table class="table listing_items messages" style="vertical-align:middle; margin-left: auto; margin-right: auto;">
+            <tr class="table_header">
+                <th>Words</th>
+                <th>Replacements</th>
+                <th align="right" width="60">
+                    <label for="selectall">Select all </label>
+                    <input type="checkbox" id="selectall"/>
+                </th>
+            </tr>
+            <?  if ($this->badWords) {
+                foreach ($this->badWords as $badWord) {
+                    ?>
+
+                    <tr>
+                        <td><?= $badWord->word ?></td>
+                        <td><?= $badWord->replacement ?></td>
+                        <td align="right"><input type="checkbox" class="case" name="case" value="<?= $badWord->id ?>"/>
+                        </td>
+                    </tr>
+                <?
+                }
+            }
+            ?>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <form action="" method="POST">
+                        <input type="hidden" name="multiple_select" id="multiple_select"/>
+                        <input type="submit" name="mark_delete" id="mark_delete" class="btn btn-danger" value="Delete selected"/>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<SCRIPT>
+    /* multiple selection */
+    function check() {
+        var ids = '';
+        $('.case:checkbox:checked').each(function () {
+            if (typeof $(this).val() != 'undefined') {
+                ids += $(this).val() + ',';
+            }
+        });
+        $('#multiple_select').val(ids);
+    }
+
+    $(function () {
+        // add multiple select / deselect functionality
+        $("#selectall").click(function () {
+            $('.case').attr('checked', this.checked);
+            check();
+        });
+        // if all checkbox are selected, check the selectall checkbox
+        // and viceversa
+        $(".case").click(function () {
+            check();
+            // alert(this);
+            if ($(".case").length == $(".case:checked").length) {
+                $("#selectall").attr("checked", "checked");
+            } else {
+                $("#selectall").removeAttr("checked");
+            }
+
+        });
+    });
+</SCRIPT>

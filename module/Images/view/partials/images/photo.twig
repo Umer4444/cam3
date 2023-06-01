@@ -1,0 +1,11 @@
+{% if rows|length == 0 %}
+	<div class="col-md-12">
+		<div class="alert alert-success" role="alert">
+			No photo uploaded yet!
+		</div>
+	</div>
+{% else %}
+    {% for image in rows %}
+        {% include 'image/item' %}
+    {% endfor %}
+{% endif %}

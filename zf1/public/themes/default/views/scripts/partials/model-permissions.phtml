@@ -1,0 +1,97 @@
+<div class="page-content round-corners">
+
+    <h1 class="page-title"><?= $this->model->first_name . " " . $this->model->name ?>'s Permissions</h1>
+
+    <form role="form" method="post" id="form_permissions_admin">
+        <div class="join-box-fields">
+            <div class="join-box-fields-partial permissions">
+                <?
+                $actions = user_permissions();
+                $actions = $actions['model'];
+
+                $i = 0;
+                $limit = floor(count($actions) / 2);
+                foreach ($actions as $action) {
+
+                    $i++;
+
+                    if ($i == $limit + (count($actions) % 2 > 0 ? 2 : 1)) {
+                        echo '
+                                </div>
+                                <div class="join-box-fields-partial permissions">';
+
+                    }
+                    $name = ucwords(str_replace("-", " ", $action));
+
+                    if ($action === "broadcast-quality") {
+                        echo '
+                                <div class="field">
+                                    <label for="' . $action . '">' . $name . '</label>
+                                    <div class="field_wrapper" id="' . $action . '">';
+                        /* echo '<label for="'.$action.'_sd">SD</label>';
+
+                      $opt = array();
+                       if(isset($this->permissions[$action.'_sd'])) $opt["checked"] = "checked";
+                       $opt['onclick'] = "click_permission('".$action."', 'sd')";
+                       echo $this->formCheckbox($action.'_sd', null, $opt);*/
+
+                        echo '<label for="' . $action . '_view">HD</label>';
+                        if (isset($this->permissions[$action . '_view'])) $opt["checked"] = "checked";
+                        else unset($opt["checked"]);
+                        $opt['onclick'] = "click_permission('" . $action . "', 'view')";
+                        echo $this->formCheckbox($action . '_view', null, $opt);
+                        echo '</div>
+                                </div>';
+
+                    } else {
+                        echo '
+                                <div class="field">
+                                    <label for="' . $action . '">' . $name . '</label>
+                                    <div class="field_wrapper" id="' . $action . '">
+                                        <label for="' . $action . '_view">View</label>';
+
+                        $opt = array();
+                        if (isset($this->permissions[$action . '_view'])) $opt["checked"] = "checked";
+                        $opt['onclick'] = "click_permission('" . $action . "', 'view')";
+                        echo $this->formCheckbox($action . '_view', null, $opt);
+                        echo '<label for="' . $action . '_edit">Edit</label>';
+
+                        if (isset($this->permissions[$action . '_edit'])) $opt["checked"] = "checked";
+                        else unset($opt["checked"]);
+                        $opt['onclick'] = "click_permission('" . $action . "', 'edit')";
+                        echo $this->formCheckbox($action . '_edit', null, $opt);
+                        echo '</div>
+                                </div>';
+                    }
+
+
+                }
+                ?>
+
+            </div>
+
+            <br>
+            <? if ($this->acl->isAllowed($_SESSION['group'], "model-permissions", "edit")) { ?>
+                <div class="join-button">
+                    <input type="submit" name="save2" value="Save permissions" class="btn btn-success"
+                           style="clear: both;">
+                    <input type="hidden" name="save2" value="Save permissions">
+                </div>
+            <? } ?>
+
+            <br/>
+    </form>
+
+</div>
+<script type="text/javascript">
+    function click_permission(perm, type) {
+        if (type == 'view') {
+            if (typeof $('#' + perm + '_view').attr('checked') == 'undefined') {
+                $('#' + perm + '_edit').removeAttr('checked');
+            }
+        }
+        else if (typeof $('#' + perm + '_edit').attr('checked') !== 'undefined') {
+            $('#' + perm + '_view').attr('checked', 'checked');
+        }
+    }
+</script>

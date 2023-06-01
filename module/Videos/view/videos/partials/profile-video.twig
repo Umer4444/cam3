@@ -1,0 +1,23 @@
+{% set slug = slugify(video.getTitle())~'-'~video.getId() %}
+    {% set url = url('videos/video', {(constant('Application\\Mapper\\Injector::VIDEO')) : video.getId(), 'slug' : slug}) %}
+<div class="col-lg-4 col-sm-6 col-md-4 col-xs-12  block-box">
+    <div>
+        <div class="club-title">
+            <span class="pull-left profile-video-title">
+                <a href="{{ url }}">{{ video.getTitle() | slice(0, 25) }}... </a>
+                </br>
+                <small class="cat_name">
+                    {{ video.getCategory() }}
+                </small>
+            </span>
+            <span class="pull-right">
+                {{ video.getPrice() }}
+            </span>
+        </div>
+        <div class="club-img">
+            <a href="{{ url }}">
+                <img alt="" class="img-responsive" src="{{ video.getCover() }}">
+            </a>
+        </div>
+    </div>
+</div>

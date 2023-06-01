@@ -1,0 +1,6 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}Add Favorite{% endblock button_text %}
+{% block button_class %}btn btn-info btn-block {{ block('button_id') }}{% endblock button_class %}
+{% block button_data %} data-url='{{ url('process-ajax', {'getdata' : 'add-favorite'}) }}' {% endblock button_data %}
+{% block button_javascript %}App.button.favorite('{{ block('button_id') }}'){% endblock button_javascript %}

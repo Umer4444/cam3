@@ -1,0 +1,68 @@
+{% extends 'buttons/default' %}
+
+{% block button_text %}
+
+    {% if isPurchased %}
+        {% if object.getCost() %}
+            Purchased
+        {% elseif object.getPassword()%}
+            Unlocked
+        {% endif %}
+    {% elseif object.getCost() > 0 %}
+        ${{ object.getCost() }}
+    {% elseif object.getPassword() %}
+        Unlock
+    {% endif %}
+
+{% endblock button_text %}
+
+{% block button_class %}
+
+    {% if isPurchased %}
+        btn btn-info btn-block
+    {% elseif object.getCost() > 0 or object.getPassword() %}
+        btn btn-primary btn-block
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+
+{% endblock button_class %}
+
+{% block button_href_logged %}
+
+    {% if not isPurchased %}
+
+        {# for payable objects #}
+        {% if object.getCost() > 0 %}
+
+            {% if zfcUserIdentity().getCredit() >= object.getCost() %}
+                {{ url('payment/purchase', {hash: hash, url: crypt().encrypt(url)}) }}
+            {% elseif zfcUserIdentity().getCredit() < object.getCost() %}
+                {{ url('payment') }}
+            {% endif %}
+
+        {# for unlockable objects #}
+        {% elseif object.getPassword() %}
+
+            {{ url('payment/unlock', {hash: hash, url: crypt().encrypt(url)}) }}
+
+        {% endif %}
+
+    {# for unconstrained objects #}
+    {% else %}
+
+        {{ url }}
+
+    {% endif %}
+
+{% endblock button_href_logged %}
+
+{% block button_href_notlogged %}
+
+    {% if not object.getCost() and not object.getPassword() %}
+        {{ url }}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+
+{% endblock button_href_notlogged %}

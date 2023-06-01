@@ -1,0 +1,58 @@
+{% for pledge in rows %}
+<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+    <div class="box-main margin-10">
+            <div class="col-lg-12 col-sm-12 col-xs-12 generic-border">
+                <div class="clearfix"></div>
+                <div class="pledge-img">
+                    <a href="/pledge/view/{{ pledge.getId() }}/{{ pledge.getTitle() }}">
+                        <img src="{{ pledge.getModel.getAvatar() }}" align="image" class="img-responsive">
+                    </a>
+                    <div class="pledge-tagline text-center">{{ pledge.getTitle() }}</div>
+                    <div class="strip-tag">
+                        <a href="/pledge/view/{{ pledge.getId() }}/{{ pledge.getTitle() }}">
+                            <img src="/assets/images/fan-requested.png" width="87" height="92">
+                        </a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="pledge-detail-box col-ssm-12 pad-5px">
+                    <div class="pull-left">
+                        <span class="theme-color"><i class="fa fa-heart"></i> 145</span>
+                        <span class="text-muted">Peoples Funded</span>
+                    </div>
+                </div>
+                <a href="/pledge/view/{{ pledge.getId() }}/{{ pledge.getTitle() }}">
+                    <div class="fan-req">
+                        <div class="pull-left">
+                            <span class="small-txt-pledge">Amount requested</span>
+                            <span class="big-txt">
+                                $ {{ pledge.getGoalAmount() | round }},
+                                <small>00</small>
+                            </span>
+                        </div>
+                        <div class="pull-right">
+                            <span class="white">
+                                <small>
+                                    {{ pledge.getEndDate().format('Y-m-d') }}
+                                </small>
+                            </span>
+                                <br>
+                            <span class="text-center days-left">DAYS LEFT</span>
+                        </div>
+                    </div>
+                </a>
+                <p class="no-margin pad-5px">
+                    <span class="pull-left">
+                        <small class="theme-color">124%</small>
+                        <small class="text-muted">Funded</small>
+                    </span>
+                    <span class="pull-right">
+                        <small class="theme-color">$74,00</small>
+                        <small class="text-uppercase">pledged</small>
+                    </span>
+                </p>
+
+            </div>
+        </div>
+</div>
+{% endfor %}

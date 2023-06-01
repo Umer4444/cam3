@@ -1,0 +1,43 @@
+<?
+$title = '';
+switch ($this->params['type']) {
+    case 'private_show_promos':
+        $title = 'Manage Private Show Promos';
+        break;
+    case 'mouse_over_teasers':
+        $title = 'Manage Mouse Over Teasers';
+        break;
+    case 'profile_videos':
+        $title = 'Manage Profile Videos';
+        break;
+    case 'clips_for_sale':
+        $title = 'Manage Clips For Sale';
+        break;
+    case 'vod':
+        $title = 'Manage Videos on Demand';
+        break;
+    case 'requested':
+        $title = 'Manage Requested/Offers Videos';
+        break;
+    case 'guest_promos':
+        $title = 'Manage Guest Promos';
+        break;
+    default:
+        $title = 'Manage All Videos';
+        break;
+
+}
+$this->headTitle($title);
+
+?>
+<div class="model_content">
+    <?
+    //echo $this->partial('partials/model-submenu.phtml', $this);
+    ?>
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+        <h1 class="page-title"><?= $title ?></h1>
+
+    </div>
+
+</div>

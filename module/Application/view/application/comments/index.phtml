@@ -1,0 +1,72 @@
+
+<div id="table"></div>
+<div class="clear"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#table").zfTable('<?=$this->url('admin/table-ajax-comments')?>');
+
+    });
+    $(document).ajaxComplete(function (event, xhr, settings) {
+        if (settings.url === '<?=$this->url('admin/table-ajax-comments')?>') {
+
+            $(".editable-status").editable({
+                url: '<?=$this->url('admin/manage-comments/change-status')?>',
+                title: 'Change status',
+                type: 'select',
+                send: 'always',
+                name: 'status',
+                savenochange: true,
+                source: [
+                    {value: 0, text: 'Hidden'},
+                    {value: 1, text: 'Visible'}
+                ],
+                display: function (value, sourceData, response) {
+
+                    if (value == 1) {
+                        $(this).html('<span class="label label-success pointer">Visible</span>');
+                    } else if (value == 0) {
+                        $(this).html('<span class="label label-warning pointer">Hidden</span>');
+                    }
+
+                }
+
+            });
+            $(".editable-content").editable({
+                url: '<?=$this->url('admin/manage-comments/change-status')?>',
+                title: 'Change status',
+                type: 'textarea',
+                send: 'always',
+                name: 'content',
+                inputclass: 'edit-content-textarea',
+                savenochange: false
+
+            });
+
+            $("#additionalParams").on('submit', function (e) {
+                e.preventDefault();
+                table();
+            });
+
+            /* init tooltip inside datatable */
+            $('[data-toggle="tooltip"]').tooltip();
+
+            function table() {
+                $("#table").zfTable('<?=$this->url('admin/table-ajax-comments')?>', {
+                    sendAdditionalParams: function () {
+                        var data = $('#additionalParams').serialize();
+
+                        return '&' + data;
+                    }
+                });
+            }
+        }
+
+    });
+</script>
+<style>
+    textarea.edit-content-textarea {
+        min-width: 350px;
+        width: 100%;
+    }
+</style>

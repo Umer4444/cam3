@@ -1,0 +1,59 @@
+{% extends 'layout/profile' %}
+
+{% block content %}
+
+    {% set userFriends = {} %}
+    {% set userPerformers = {} %}
+
+    {% for friend in user.getFriends() %}
+        {% if friend.getFriend().isPerformer() %}
+            {% set userPerformers = userPerformers|merge([friend.getFriend()]) %}
+        {% else %}
+            {% set userFriends = userFriends|merge([friend.getFriend()]) %}
+        {% endif %}
+    {% endfor %}
+
+    <div role="tabpanel">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+
+            <li role="presentation" class="active">
+                <a href="#users" aria-controls="users" role="tab" data-toggle="tab">My Fans</a>
+            </li>
+            <li role="presentation">
+                <a href="#performers" aria-controls="performers" role="tab" data-toggle="tab">Performers</a>
+            </li>
+
+        </ul>
+        <br/>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="users">
+                <div class="row">
+                    {% if userFriends|length %}
+                        {% for fan in userFriends %}
+                            {% include 'friends/small-block' with {'user': fan} only %}
+                        {% endfor %}
+                    {% else %}
+                        No users friends!
+                    {% endif %}
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="performers">
+                <div class="row">
+                    {% if userPerformers|length %}
+                        {% for fan in userPerformers %}
+                            {% include 'friends/small-block' with {'user': fan} only %}
+                        {% endfor %}
+                    {% else %}
+                        No performers friends!
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,75 @@
+<?
+$disable = "";
+if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["gallery"])) {
+    if (in_array($this->album->id, $_SESSION["rate"]["gallery"])) $disable = " disableRate";
+
+}
+?>
+
+    <div class="col-md-4">
+<div class="album-box">
+
+    <div class="album-box-head">
+        <a title="<?= $this->album->name ?>"
+           href="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name), "model-profile-gallery") ?>"><?= $this->album->name ?>
+            (<?= $this->album->total_photos ?>)</a>
+    </div>
+
+    <div class="album">
+        <div class="album-thumb">
+            <?php if ($this->album->amount == 0 and is_null($this->album->password)) {
+                $blur = null;
+            } else {
+                $blur = 'blur';
+            } ?>
+
+            <a class="a_cover <?= $blur ?>" <?= $this->new_window ? 'target="_blank"' : '' ?>
+               title="<?= $this->album->name ?>"
+               href="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name), "model-profile-gallery") ?>">
+                <span class=""></span>
+
+                <img alt="" src="<?= $this->album->getCover() ?>">
+            </a>
+
+            <? if (Auth::isModel() && $_SESSION['user']['id'] == $this->album->model_id) { ?>
+                <div class="album_controls">
+                    <a title="edit album"
+                       href="<?= $this->url(array("type" => "photo_galeries", "id" => $this->album->id), "model-manage-photos2") ?>">edit</a>
+                    <a onclick='return confirm("Are you sure you want to delete this album?")'
+                       href="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name, "action_type" => "delete"), "model-profile-gallery2") ?>"
+                       class="right">delete</a>
+                </div>
+            <? } ?>
+            <div class="album-stats">
+                <div>
+                    by <a title="View <?= $this->album->screen_name ?>'s profile" data-toggle="tooltip"
+                          data-placement="top"
+                          href="<?= $this->url(array("id_model" => $this->album->model_id, "name" => $this->album->screen_name, "profile_type" => "profile"), "model-profile") ?>">
+                        <?= $this->album->screen_name ?>
+                    </a>
+                </div>
+                <a data-disqus-identifier="<?= 'gallery' . $this->album->id ?>"
+                   href="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name), "model-profile-gallery") ?>#disqus_thread"></a>
+            </div>
+            <div class="rating">
+                <div class="stars<?= $disable ?>" data-id="<?= $this->album->id ?>"
+                     data-average="<?= $this->album->rating ?>" data-extra="gallery"></div>
+                <b><a href="<?= $this->url(array("id_gallery" => $this->album->id, "name" => $this->album->name), "model-profile-gallery") ?>#reviews"><?= $this->album->total_active_reviews ?>
+                        reviews</a></b>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="viewable">
+        <? if (Auth::isModel() && $_SESSION['user']['id'] == $this->album->model_id && $this->album->viewable > 0) { ?>
+            viewable: <span
+                class="<?= $this->album->viewable <= time() ? 'red' : '' ?>"><?= date('m/d/Y', $this->album->viewable) ?></span>
+        <? } else { ?>
+            &nbsp;
+        <? } ?>
+    </div>
+</div>
+
+    </div>
+
+

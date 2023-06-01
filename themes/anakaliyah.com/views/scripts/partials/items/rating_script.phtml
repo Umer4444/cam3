@@ -1,0 +1,32 @@
+<script src="/scripts/jrating/jRating.jquery.js"></script>
+<link rel="stylesheet" type="text/css" href="/scripts/jrating/jRating.jquery.css"/>
+
+<? if($this->size) $size = $this->size; else $size = 'small'; 
+
+  if($this->div) $div = $this->div; else $div = '.stars'; 
+  
+  if($this->color) $color = '_'.$this->color; else $color = ''; 
+  
+   
+   ?>   
+<script type="text/javascript">
+//rating stars
+  $(document).ready(function(){
+    $("<?=$div?>").each(function(){         
+        if($(this).hasClass("disableRate")){ disabled = true;
+        } else { disabled = false; }        
+        $(this).jRating({
+            phpPath: '/process',
+            action: 'rating',
+            isDisabled: disabled,
+            bigStarsPath : '/scripts/jrating/icons/stars<?=$color?>.png', // path of the icon stars.png
+            smallStarsPath : '/scripts/jrating/icons/small<?=$color?>.png', // path of the icon small.png  
+            type:'<?=$size?>', // type of the rate.. can be set to 'small' or 'big'
+            length : 5, // nb of stars
+            decimalLength : 0, // number of decimal in the rate
+            step: true, //fil stats full
+            rateMax: 5
+        });
+      });
+  }) ;
+</script>

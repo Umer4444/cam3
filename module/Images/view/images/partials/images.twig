@@ -1,0 +1,212 @@
+{#
+
+FIXME requires this variables to be passed  :
+
+'prev': prev,
+'next' : next,
+'form' : form,
+'reviewPending' : reviewsPending,
+'reviews': reviews,
+'image': image,
+'viewPhoto': viewPhoto
+
+#}
+
+<script type="text/javascript"
+        src="/assets/themes/anakaliyah.com/scripts/fancybox2/lib/jquery.mousewheel-3.0.6.pack.js"></script>
+
+<!-- Add fancyBox main JS and CSS files -->
+<script type="text/javascript"
+        src="/assets/themes/anakaliyah.com/scripts/fancybox2/source/jquery.fancybox.js?v=2.1.4"></script>
+<link rel="stylesheet" type="text/css"
+      href="/assets/themes/anakaliyah.com/scripts/fancybox2/source/jquery.fancybox.css?v=2.1.4"
+      media="screen"/>
+
+<!-- Add Button helper (this is optional) -->
+<link rel="stylesheet" type="text/css"
+      href="/assets/themes/anakaliyah.com/scripts/fancybox2/source/helpers/jquery.fancybox-buttons.css?v=1.0.5"/>
+<script type="text/javascript"
+        src="/assets/themes/anakaliyah.com/scripts/fancybox2/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+
+<!-- Add Thumbnail helper (this is optional) -->
+<link rel="stylesheet" type="text/css"
+      href="/assets/themes/anakaliyah.com/scripts/fancybox2/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7"/>
+<script type="text/javascript"
+        src="/assets/themes/anakaliyah.com/scripts/fancybox2/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7"></script>
+
+<script type="text/javascript"
+        src="/assets/themes/anakaliyah.com/scripts/fancybox2/source/helpers/jquery.fancybox-media.js?v=1.0.5"></script>
+
+<script type="text/javascript"
+        src="/assets/themes/anakaliyah.com/scripts/fancybox2/source/helpers/jquery.fancybox-media.js?v=1.0.5"></script>
+
+{% if prev %}
+    {% set previous = url('solo/photos', {'imageSlug' : prev}) %}
+{% else %}
+    {% set previous = 'none' %}
+{% endif %}
+
+    {% if next %}
+        {% set nextUrl = url('solo/photos', {'imageSlug' : next}) %}
+    {% else %}
+        {% set nextUrl = 'none' %}
+    {% endif %}
+
+<div class="row-fluid center">
+    <div class="thumbnail with-caption full-size">
+        <a class="a_cover" rel="group" id="fancy"
+           href="#image_link">
+            <img class="span12" alt="test" title="test" src="{{ image.getPhotoPath() }}">
+        </a>
+        <div style="display:none">
+            <div id="image_link">
+                <div style="height:100%;overflow:hidden;">
+                    <div class="imageWrapper">
+                        <div class="image">
+                            <img src="{{ image.getPhotoPath() }}" style="height: 100%; width: 100%;"/>
+                        </div>
+                    </div>
+                    <div class="comments"></div>
+                </div>
+            </div>
+        </div>
+        <div class="left">{{ stars('image', image.getId(), image.getRating()) }}</div>
+        <div class="right">
+            <div class="container-like">
+                {{ likes(image) }}
+            </div>
+        </div>
+        <p>{{ image.getCaption() }}</p>
+    </div>
+</div>
+<br/>
+<div class="row-fluid">
+    <div id="tabs">
+        <ul>
+
+            <li><a href="#disqus_thread" id="com">Comments</a></li>
+            <li><a href="#reviews">{{ reviews|length }} Reviews</a></li>
+        </ul>
+        <div id="reviews">
+
+            {% if(zfcUserIdentity()) %}
+                <a id="review_button" class="btn purple-button right" style="color:black;">Add review</a>
+                <div class="clear"></div>
+                <br/>
+                <div id="add_review" style="display:none;">
+
+                    {% set form = form.prepare().setAttribute('class', 'form-horizontal').setAttribute('action', '') %}
+                    {% do form.get('submit').setAttributes({'class' : 'green-button'}).setAttributes({'id' : 'submit'}) %}
+                    {% do form.get('review').setAttributes({'id' : 'new_review'}) %}
+
+                    {{ form(form) }}
+
+                </div>
+                <script>
+
+                    $('.form-horizontal').submit(function (e) {
+                        $('#submit').attr('disabled', true);
+                        e.preventDefault();
+
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ url('process-ajax') }}",
+                            data: {
+                                'action': 'review',
+                                'item_type': 'image',
+                                'item': '{{ image.getId() }}',
+                                'review': $('#new_review').val()
+                            },
+                            dataType: 'json',
+                            //"option=" + option + "&item=" + item + "&item_type=" + item_type,
+
+                            success: function (json_data) {
+                                var reviewj = json_data.review;
+
+                                var string = '<table class="review_table active" id="review_ajax">';
+                                string += '<tr>';
+                                string += '<td>';
+                                string += reviewj.user;
+                                string += '</td>';
+                                string += '<td>';
+                                string += '<a id="date">';
+                                string += ' A few moments ago..';
+                                string += '</a>';
+                                string += '</td></tr>';
+                                string += '<tr>';
+                                string += '<td align="top"><a href="#">';
+                                string += '<img width="40" height="40" src="' + reviewj.avatar + '"/>';
+                                string += '</a>';
+                                string += '</td>';
+                                string += '<td class="review">' + reviewj.review + ' --- pending for moderation</td>';
+                                string += '</tr></table>';
+
+                                $('.review_table').first().before(string);
+                                $('#add_review').val('').hide();
+                                $('#review_button').hide();
+                            }
+                        });
+                    });
+
+
+                </script>
+
+            {% endif %}
+            {% for review in reviewsPending %}
+                {% set name = review.getUser().getUsername() %}
+                {% set avatar = review.getUser().getAvatar() %}
+                <table class="review_table  active"
+                       id="review_{{ review.getId() }}">
+
+                    <tr>
+                        <td>{% if review.getUser().getUsername() %}{{ review.getUser().getUsername() }}  {% else %} Anonymous {% endif %}</td>
+                        <td><a name="review_{{ review.getId() }}"> {{ review.getDate()|date('l, F j Y') }}
+                                at {{ review.getDate()|date('H:i') }}</a></td>
+                    </tr>
+
+
+                    <tr>
+                        <td valign="top"><a href=" "><img width="40" height="40"
+                                                          src="{{ avatar }}"
+                                                          title="{{ review.getUser().getUsername() }}"></a></td>
+                        <td class="review">{{ review.getReview() }} --- pending for moderation</td>
+                    </tr>
+
+                </table>
+
+            {% endfor %}
+            {% for review in reviews %}
+                {% set name = review.getUser().getUsername() %}
+                {% set avatar = review.getUser().getAvatar() %}
+
+                <table class="review_table  active"
+                       id="review_{{ review.getId() }}">
+
+                    <tr>
+                        <td>{% if review.getUser().getUsername() %}{{ review.getUser().getUsername() }}  {% else %} Anonymous {% endif %}</td>
+                        <td><a name="review_{{ review.getId() }}"> {{ review.getDate()|date('l, F j Y') }}
+                                at {{ review.getDate()|date('H:i') }}</a></td>
+                    </tr>
+
+                    <tr>
+                        <td valign="top"><a href=" "><img width="40" height="40"
+                                                          src="{{ avatar }}"
+                                                          title="{{ review.getUser().getUsername() }}"></a></td>
+                        <td class="review">{{ review.getReview() }}</td>
+                    </tr>
+
+                </table>
+
+            {% endfor %}
+
+            {% if(zfcUserIdentity()) %}
+            {% else %}
+                Please <a href="{{ url('zfcuser/login') }}" class="">login</a> to write a review
+            {% endif %}
+
+        </div>
+        <div id="disqus_thread" class="mCustomScrollbar"
+             style="background-color: black!important; background: black;">{{ commentCustom() }}</div>
+    </div>
+
+</div>

@@ -1,0 +1,17 @@
+<?
+$is_my_profile = $this->user->user_id == $_SESSION['user']['id'] && Auth::isUser() ? 1 : 0;
+
+echo '<h3 class="sub_header top">Following</h3>';
+
+if (count($this->paginator)) {
+    foreach ($this->paginator as $model) echo $this->partial('partials/model-item-small.phtml', array('model' => $model, 'show_favorite_btn' => $is_my_profile));
+} else {
+    echo "<br><br>" . ($is_my_profile ? "You aren't" : ucfirst($this->user->username) . " isn't") . " following anyone yet.";
+}
+
+?>
+
+    <div class="clear"></div>
+<?
+echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+?>

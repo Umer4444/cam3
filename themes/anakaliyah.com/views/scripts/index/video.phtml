@@ -1,0 +1,186 @@
+<?php
+
+$reviews = $this->reviews;
+$video = $this->video;
+$categories = $this->categories;
+$users = $this->users;
+// check if allready voted this session
+$disable = "";
+if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["video"])) {
+    if (in_array($video->id, $_SESSION["rate"]["video"])) $disable = " disableRate";
+}
+?>
+
+<div class="row">
+    <?php
+    if ($video){
+    ?>
+    <h2 class="title"><?= $video->title ?> [<?= $video->type ?>]</h2>
+    <?= $this->notice ?>
+
+    <? $this->headTitle($video->title . ' - Video'); ?>
+
+    <div class="content_container col-lg-12">
+        <div class="row">
+            <div class="player col-lg-7">
+                <? if ($video->type == 'vod') { ?>
+                    <script src="/scripts/flowplayer-3.2.6.min.js"></script>
+                <? if (!$this->isPaidVideo){ ?>
+                    <div style="height: 400px;">
+                        <a id="player"></a>
+                        <script language="JavaScript">
+                            flashembed("player", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+                                        url: '<?=$video->getVideoFile()?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+
+                <? }else { ?>
+                    <form action="" method="post">
+                        <div id="player">
+                            <img src="<?= $video->getCover() ?>" border="0" style="width:100%">
+                        </div>
+                        <br/>
+                        <input type="submit" class="btn btn-info" id="submit"
+                               value="<?= $this->video->getVideoCost($this->video->type) ?>" name="unlock">
+                    </form>
+
+                <? } ?>
+
+                <? }else{ ?>
+                    <div style="height: 400px;">
+                        <a id="player"></a>
+                        <script language="JavaScript">
+                            flashembed("player", "/scripts/player/flowplayer-3.2.11.swf", {
+                                config: {
+                                    clip: {
+                                        url: '<?=$video->getVideoFile()?>',
+                                        autoPlay: false,
+                                        autoBuffering: true
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                <? } ?>
+
+                <div class="left">
+                    <div class="stars<?= $disable ?>" data-id="<?= $video->id ?>" data-average="<?= $video->rating ?>"
+                         data-extra="video"></div>
+                    <? echo $this->partial('partials/items/rating_script.phtml', array('size' => "big", "div" => "", "color" => "black")); ?>
+                </div>
+                <div class="right">
+                    <? echo $this->partial('partials/items/like_buttons.phtml', array('id' => $video->id, "type" => "video")); ?>
+                    <? echo $this->partial('partials/items/like_script.phtml', array("")); ?>
+
+                </div>
+
+                <div class="clear"></div>
+                <br>
+
+            </div>
+            <div class="thumbs col-lg-5">
+                <? for ($i = 1; $i <= 6; $i++) {
+                    ?>
+                    <div class="thumbnail left"><img src="<?= $video->getCover() ?>" border="0" width="124" height="91">
+                    </div>
+                <? } ?>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="row">
+        <div class="col-lg-6">
+            <p class="description"><?= $video->description ?></p>
+            <p class="cast"><b>Cast:</b> <a
+                    href="<?= $this->url(array("profile_type" => "profile", "id_model" => $video->id_model, "name" => $this->video->screen_name), "model-profile") ?>"><?= $this->video->screen_name ?></a>
+            </p>
+
+            <p class="tags"><b>Tags:</b>
+                <?php
+                $tags = explode(',', $video->tags);
+                $i = 0;
+                $tag_print = "";
+                foreach ($tags as $tag) {
+                    $i++;
+                    if (!empty($tag)) {
+                        $tag_print .= '<a href="#">' . strtolower(trim($tag)) . '</a>';
+                        if ($i < count($tags)) $tag_print .= ', ';
+                    }
+                }
+                echo trim($tag_print, ", ");
+                ?>
+            </p>
+            <?php if (count($categories) > 0) { ?>
+                <p class="tags"><b>Categories:</b>
+                    <?php
+                    $i = 0;
+                    $tag_print = "";
+                    foreach ($categories as $tag) {
+                        $i++;
+                        $tag_print .= '<a href="#">' . strtolower(trim($tag['name'])) . '</a>';
+                        if ($i < count($this->categories)) $tag_print .= ', ';
+                    }
+                    echo trim($tag_print, ", ");
+                    ?>
+                </p>
+            <? } ?>
+        </div>
+        <div class="col-lg-6">
+            <p><b>Added:</b> <?= $video->getDateAdded('full') ?></p>
+            <p><b>Duration:</b> <?= $video->getDuration() ?> minutes</p>
+            <p><b>Views:</b> <?= $video->views ?></p>
+
+        </div>
+    </div>
+<!-- tabs -->
+<br>
+    <div class="row">
+        <div id="tabs">
+            <ul>
+                <? /* <li><a href="#more_videos">More Clips From <?=$this->video->screen_name?></a></li> */
+                ?>
+                <li><a href="#disqus_thread">Comments</a></li>
+                <li><a href="#reviews"><?= $video->total_active_reviews ?> Reviews</a></li>
+            </ul>
+            <div id="reviews">
+                <?= $this->notice ?>
+
+                <? if (Auth::isLogged()) { ?>
+                    <a id="review_button" class="button-round-small blue right" style="color:white">Add review</a>
+                    <div class="clear"></div>
+                    <br/>
+                    <div id="add_review" style="display:none;">
+                        <form action="" method="post">
+                            <textarea id="new_review" name="new_review"></textarea>
+                            <input type="submit" name="add_review" class="green-button" value="Save"/>
+
+                        </form>
+                    </div>
+                <? } ?>
+                <? if (count($reviews)) { ?>
+                    <? foreach ($reviews as $this->review) {
+                        echo $this->partial('partials/review-item.phtml', $this);
+                    } ?>
+                <? } else { ?>
+                    <p> No reviews. Write the first review</p>
+                <? } ?>
+            </div>
+            <div id="disqus_thread"></div>
+        </div>
+    </div>
+<? echo $this->partial('partials/items/comments_review_script.phtml', array("")); ?>
+
+<? echo $this->partial('partials/disqus.phtml', array("title" => $this->video->title, "identifier" => 'video' . $this->video->id)); ?>
+<? } else {
+    echo "Invalid video url ";
+
+} ?>
+

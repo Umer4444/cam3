@@ -1,0 +1,224 @@
+{% extends 'layout/frontend' %}
+
+{% block container %}
+    <div class="main">
+
+        <div class="vod-video">
+            <div class="container" id="video">
+                <video class="flowplayer is-splash">
+                    <source type="video/mp4"
+                            src="{{ video.getFilename() }}">
+                    <source type="video/flash"
+                            src="{{ video.getFilename() }}:bauhaus">
+                </video>
+            </div>
+        </div>
+        <div class="vod-video-des">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                    <span>
+                        <strong>Directors</strong> Director Name
+                    </span>
+                    <span>
+                        <strong>Studio</strong> Vicious Image
+                    </span>
+                    <span>
+                        <strong>Camera Type</strong> Webcame
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                    <span>
+                        <strong><Categories</strong>
+                        <span class="text-decoration-underline ">
+
+                        </span>
+                    </span>
+                    <span>
+                        <strong>Tags</strong>
+                        <a href="#" class="text-decoration-underline ">
+                            {{ video.tags }}
+                        </a>
+                    </span>
+                    <span>
+                        <strong>Copyrights</strong> 2015  all rights reservedrows
+                    </span>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="clip-page">
+                        <span class="">
+                            <a data-original-title="Added" href="#" data-toggle="tooltip" data-placement="left"
+                               title="">
+                                <i class="fa fa-calendar"></i>
+                                {{ video.uploadedOn.date }}
+                            </a>
+                            <a data-original-title="Views" href="#" data-toggle="tooltip" data-placement="left"
+                               title="">
+                                <i class="fa fa-eye"></i>
+                                {{ video.interaction.views }}
+                            </a>
+                            <a data-original-title="Comments" href="#" data-toggle="tooltip" data-placement="left"
+                               title="">
+                                <i class="fa fa-comment"></i>
+                                {{ video.interaction.votes }}
+                            </a>
+                            <a data-original-title="Reviews" href="#" data-toggle="tooltip" data-placement="left"
+                               title="">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 caste">
+                        <span>CAST:</span>
+                        <ul>
+                            <li>
+                                <a href="#" class="tooltip-img text-decoration-underline">{{ video.getCasts() }}
+                                    <span class="tooltip_body"> <img src="images/popular_room/popular6.jpg"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="rating-video">
+                            <div class="left">
+                                {% set id = video.getId() %}
+                                {% set average = video.getRating() %}
+                                {% set itemType = 'video' %}
+                                {{ stars(itemType,id,average,'big') }}
+                            </div>rows
+                            <div class="right">
+                                {{ likes(video) }}
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div>
+                            <a href="#" class="theme-btn">
+                                <i class="fa fa-shopping-cart"></i>
+                            </a>
+                            <a href="#" class="theme-btn">
+                                <i class="fa fa-cloud-download"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="main-content">
+                <div class="search_bar visible-xs">
+                    <form class="form-search form-inline">
+                        <input type="text" class="form-control input-sm" placeholder="Search">
+                    </form>
+                </div>
+                <div class="content">
+                    <div class="row">
+                        <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                            <div class="content-block">
+                                <div class="small-content">
+                                    <small class="text-muted">
+                                        {{ video.description() }}
+                                    </small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="perf-pic-gal form-group">
+                                            <div class="gal-title">Picture Gallery</div>
+                                            <div class="pic-gal">
+                                                <ul>
+                                                    {% for i in 0..5 %}
+                                                        <li><img src="/assets/images/scence/gallery1.jpg" alt="gallery"></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="pledge_comments">
+                                            <!-- tab content -->
+                                            <ul class="nav nav-tabs" style="padding:0;">
+                                                <li class="active">
+                                                    <a aria-expanded="true" href="#disqus_thread" data-toggle="tab"> Comments </a></li>
+                                                <li class="">
+                                                    <a aria-expanded="false" href="#updates" data-toggle="tab"></a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="disqus_thread">
+                                                    <div class="">
+                                                        <div class="form-group">
+                                                            <div class="profile-post">
+                                                                <div class="post-here">
+                                                                    <textarea rows="3" class="form-control post-here" placeholder="Post here..."></textarea>
+                                                                </div>
+                                                                <div class="text-right pos_by">
+                                                                    <a href="#">
+                                                                        <img src="/assets/images/camera.jpg">
+                                                                    </a>
+                                                                    <a href="#">
+                                                                        <img src="/assets/images/video-icon.jpg">
+                                                                    </a>
+                                                                    <a href="#">
+                                                                        <img src="/assets/images/music-icon.jpg">
+                                                                    </a>
+                                                                    <a href="#">
+                                                                        <img src="/assets/images/calender-icon.jpg">
+                                                                    </a>
+                                                                    <a href="#">
+                                                                        <img src="/assets/images/link-icon.jpg">
+                                                                    </a>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <input class="form-control input-sm" placeholder="Add name or circles" type="text">
+                                                                </div>
+                                                                <div>
+                                                                    <input class="btn-white-grad" value="Share" type="submit">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane " id="updates"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="club-page form-group">
+                                        <div class="col-lg-12 col-sm-12 col-xs-12 ">
+                                            <h5><strong>MORE CLIPS FROM THIS MODEL</strong></h5>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                {{ related(video, 'video/partial/related', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_MORE')) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="club-page form-group">
+                                            {% set difference = date('NOW').diff(date(date('NOW').getTimestamp() + video.getDuration())) %}
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 ">
+                                                <h5><strong>RELETAD CLIPS</strong></h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    {{ related(video, 'video/partial/related') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

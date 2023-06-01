@@ -1,0 +1,10 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    <div class="row row-no-margin padding-10 margin-top-fix">
+        <h2 class="album-title-h2">Album {{ album.getName() }}</h2>
+    </div>
+    {% for image in album.getPhotos() %}
+        {% include 'image/item' %}
+    {% endfor %}
+{% endblock %}

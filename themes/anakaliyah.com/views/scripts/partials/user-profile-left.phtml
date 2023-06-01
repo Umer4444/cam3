@@ -1,0 +1,43 @@
+<div class="avatar">
+    <img width="260" alt="" src="<?=$this->user->getAvatar()?>">
+</div>
+
+<p><?=$this->user->about_me?></p>
+
+<div class="break-line"></div>
+
+
+<? if($this->user->id == $_SESSION['user']['id'] && Auth::isUser()){ ?>
+<h3 class="sub_header">My Account</h3>
+<ul class="profile_quicklinks">
+    <li class="first <?=$this->params->action=='messages'?'active':''?>"><a href="<?=$this->url(array("message_action"=>"inbox"),"messages")?>" class="">Messages</a> </li>
+    
+    <li class="<?=$this->params->profile_action=='edit'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"edit","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Edit My Account</a> </li>
+    
+    <li class="<?=$this->params->profile_action=='special-requests'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"special-requests","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Special Requests</a> </li>
+    
+    <li class="<?=$this->params->profile_action=='videos'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"videos","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Videos</a> </li>
+    
+    <li class="<?=$this->params->profile_action=='chips'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"chips","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Chips</a> </li>
+    
+</ul>    
+<?}?> 
+<? /*
+<h3 class="sub_header">Quick Links</h3>
+<ul class="profile_quicklinks">
+
+    <li class="first <?=$this->active=='profile'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"profile","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" >Recent Updates</a> </li>
+    
+    <li class="<?=$this->active=='favorite'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"favorite","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Favorite models</a> </li>
+    
+    <li class="<?=$this->active=='following'?'active':''?>" ><a href="<?=$this->url(array("profile_action"=>"following","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Following models</a> </li>
+    
+    <li class="<?=$this->active=='friends'?'active':''?>"><a href="<?=$this->url(array("profile_action"=>"friends","id" => $this->user->id,"name" => $this->user->username),"user_profile")?>" class="">Friends models</a> </li>
+    
+</ul>
+*/ ?>
+<h4 class="sub_header">Last Online</h4>
+<p class="info"> <?=date('d, F Y',strtotime($this->user->last_login))?> </p>
+
+<h4 class="sub_header">Share <?=$this->user->username?> profile</h4>
+<?=$this->formText('share', 'http://'.$_SERVER['SERVER_NAME'].$this->url(array("profile_action" => "profile", "id" => $this->user->id, "name" => $this->user->username), "user_profile"),array())?>

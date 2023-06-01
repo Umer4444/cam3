@@ -1,0 +1,141 @@
+<div class="page-content round-corners">
+
+    <? /*
+       <form action="" method="post" >
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="vip_message">VIP Member Message</label>
+                    <div class="field_wrapper">
+                        <?=$this->formText('vip_message', '', array())?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="vip_message_file">VIP Sound File</label>
+                    <div class="field_wrapper">
+                        <?=$this->formFile('vip_message_file', '', array())?>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="field">
+                    <label for="tip">Tip</label>
+                    <div class="field_wrapper">
+                        <?=$this->formText('tip', '', array())?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="tip_file">Tip Sound File</label>
+                    <div class="field_wrapper">
+                        <?=$this->formFile('tip_file', '', array())?>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="field">
+                    <label for="private_message">Private Message</label>
+                    <div class="field_wrapper">
+                        <?=$this->formText('private_message', '', array())?>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="private_message_file">Private Sound File</label>
+                    <div class="field_wrapper">
+                        <?=$this->formFile('private_message_file', '', array())?>
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <div class="field">
+                    <label for="message_in_show">Message In Show</label>
+                    <div class="field_wrapper">
+                        <?=$this->formText('message_in_show', '', array())?>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="message_in_show_file">Show Sound File</label>
+                    <div class="field_wrapper">
+                        <?=$this->formFile('message_in_show_file', '', array())?>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="join-button">
+                <input type="submit" name="save2" value="Save" id="submit" class="btn btn-success">
+            </div>
+        </form>
+        */
+
+    $sounds['0'] = "(none)";
+    $sounds['/assets/sounds/thinking.wav'] = "thinking";
+    $sounds['/assets/sounds/click_1.wav'] = "click";
+    $sounds['/assets/sounds/buddy_in.wav'] = "budy in";
+    $sounds['/assets/sounds/buddy_out.wav'] = "buddy out";
+    $sounds['/assets/sounds/pager.wav'] = "pager";
+    $sounds['/assets/sounds/bike_horn.wav'] = "bike horn";
+
+    ?>
+
+    <form action="" method="post">
+        <div class="join-box-fields" style="min-height: 60px;">
+
+            <div class="join-box-fields-partial-third sounds">
+
+                <?
+                $limit = floor(count($this->sounds_fields) / 3);
+                $i = 0;
+
+                $user = Zend_Registry::get('service_manager')->get('zfcuser_auth_service')->getIdentity();
+
+                foreach ($this->sounds_fields as $field) {
+                    $field = (object)$field;
+                    $i++;
+                    if (($i == $limit + (count($this->sounds_fields) % 3 > 0 ? 2 : 1)) || ($i == $limit * 2 + (count($this->sounds_fields) % 3 > 0 ? (count($this->sounds_fields) % 3 > 1 ? 3 : 2) : 1))) {
+                        echo '
+                            </div>
+                            <div class="join-box-fields-partial-third sounds">';
+                    }
+                    echo '<div class="field">';
+
+
+
+                    $field_name = ucfirst(str_replace('_', ' ', $field->name));
+                    echo '<label for="' . $field->name . '">' . $field_name . '</label>';
+                    echo '<div class="field_wrapper">';
+                    echo $this->formSelect('sounds_' . $field->name, ($user->getSetting($field->name) ? $user->getSetting($field->name)
+                        : '0'), null,
+                                           $sounds);
+                    echo '<button  id="button_' . $field->name . '" class="btn btn-default" type="button"
+                    onclick="play_sound(\'' . $field->name . '\');"> <span class="glyphicon glyphicon-play"
+                    aria-hidden="true"></span></button>
+                            <audio id="sound_' . $field->name . '" src="' . $field->value . '" controls preload=auto hidden=true autobuffer></audio></div></div>';
+                }
+                ?>
+
+            </div>
+
+
+        </div>
+
+        <div class="join-button">
+
+            <input type="submit" name="save2" value="Save" id="submit2" class="btn btn-success">
+            <input type="hidden" name="save2" value="Save">
+        </div>
+
+    </form>
+</div>
+<script>
+
+    //play current selection
+    function play_sound(field_id) {
+
+        if ($("#sounds_" + field_id + " option:selected").val()) {
+
+            $("#sound_" + field_id).attr("src", $("#sounds_" + field_id + " option:selected").val());
+            thissound = document.getElementById("sound_" + field_id);
+            thissound.play();
+
+        }
+
+    }
+
+</script>

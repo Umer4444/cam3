@@ -1,0 +1,47 @@
+<? $this->headTitle('My Notes'); ?>
+
+<div class="model_content">
+
+    <div class="page-content round-corners">
+
+        <?=$this->notice?>
+        <h1 class="page-title">My Notes</h1>
+
+        <form method="post" id="model_notes" role="form" class="form-horizontal">
+            <div class="input-group">
+                <textarea name="note" class="form-control custom-control" rows="5" cols="30"
+                          placeholder="Add notes here!"></textarea>
+                <span class="input-group-addon btn btn-success" onclick="$('#model_notes').submit();">Save</span>
+            </div>
+        </form>
+        <? if (count($this->notes)) { ?>
+            <br/>
+            <hr/><br/>
+            <table class="table table-striped listing_items messages">
+                <thead>
+                <tr class="table_header">
+                    <th width="250px">Date</th>
+                    <th>Note</th>
+                    <th width="50px">Options</th>
+                </tr>
+                </thead>
+                <tbody>
+                <? foreach ($this->notes as $this->note) { ?>
+                    <tr id="row<?=$this->note->id?>">
+                        <td><?=(new \DateTime($this->note->added))->format('l, F j, Y \a\t h:ia')?></td>
+                        <td><?=$this->note->notes?></td>
+                        <td>
+                            <a href="<?=$this->url(
+                                array("id_note" => $this->note->id, "action_type" => "delete"), "model-notes", true
+                            )?>"
+                               onclick="return confirm('Delete note?');"
+                               class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></a>
+                        </td>
+                    </tr>
+                <? } ?>
+                </tbody>
+            </table>
+        <? } ?>
+    </div>
+
+</div>

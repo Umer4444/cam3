@@ -1,0 +1,123 @@
+<?= $this->partial('solo/dashboard/partial/tab-menu'); ?>
+<div class="background-rounded">
+    <div class="row row-no-margin padding-10">
+        <h2>Edit account information</h2>
+    </div>
+    <div class="row row-no-margin padding-10">
+        <?php
+            echo $this->ztbform($this->form);
+        ?>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // bind on click event
+
+        $("#myModal").modal('hide');         // initialized with defaults
+        // initialized with defaults
+
+        $("#submit").click(function (e) {
+            e.preventDefault();
+
+            // Assign handlers immediately after making the request,
+            // and remember the jqXHR object for this request
+            var formSerializedArray = $('#account-settings-form').serializeArray();
+
+            objectData = {};
+
+            $.each(formSerializedArray, function () {
+                if (this.name == 'submit') {
+                    return;
+                }
+
+                value = this.value;
+
+                if (objectData[this.name] != null) {
+                    if (!objectData[this.name].push) {
+                        objectData[this.name] = [objectData[this.name]];
+                    }
+
+                    objectData[this.name].push(value);
+                } else {
+                    objectData[this.name] = value;
+                }
+
+            });
+
+            if (typeof objectData.receive_newsletter != 'string')
+                objectData.receive_newsletter = '1';
+
+            var settings = {
+                dataType: 'json',
+                type: 'POST',
+                data: objectData,
+            };
+
+            var jqxhr = $.ajax($('#account-settings-form').attr('action'), settings)
+                .done(function (response) {
+                    //show errors, display notifications
+                    formDone(response);
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    // console.log( "complete" );
+                });
+        });
+
+        today = new Date();
+        $('#birthday').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1900:' + today.getFullYear(),
+            dateFormat: "mm/dd/yy",
+            maxDate: "-18y"
+        })
+
+    })
+    function formDone(response) {
+        if (response.status == 'success') {
+
+            $(".control-group.error span[class*='help-']").remove();
+            $(".control-group.error").removeClass('error');
+
+        } else if (response.status == 'fail') {
+
+
+            $(".control-group.error span[class*='help-']").remove();
+            $(".control-group.error").removeClass('error');
+            if (response.hasOwnProperty("errors")) {
+                for (key in response.errors) {
+                    insertedMessages = '<span class="help-block"><ul>';
+                    if (response.errors.hasOwnProperty(key)) {
+                        messages = response.errors[key];
+                        $.each(messages, function (key_m, value_m) {
+                            if (messages.hasOwnProperty(key_m)) {
+                                insertedMessages = insertedMessages + '<li>' + value_m + '</li>';
+                            }
+                        });
+                    }
+                    insertedMessages = insertedMessages + '</ul></span>';
+
+                    $('#' + key).after(insertedMessages);
+                    $('#' + key).parents().eq(1).addClass("error");
+                }
+            }
+        }
+    }
+
+
+    $(document).ready(function () {
+        $(".secondary-nav a").on("click", function () {
+            $.each($(".account-menu-arrow"), function () {
+                if ($(this).hasClass('hide')) {
+                    $(this).removeClass('hide');
+                } else if (!$(this).hasClass('hide')) {
+                    $(this).addClass('hide');
+                }
+            })
+        })
+    });
+
+</script>

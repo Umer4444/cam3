@@ -1,0 +1,16 @@
+.ui-chatbox-titlebar {
+	height: auto;
+}
+
+.ui-chatbox-titlebar.ui-widget-header {
+	background: #ff00ff;
+}
+
+.ui-chatbox {
+	background: none;
+	padding: 0px;
+}
+
+.ui-chatbox .ui-state-focus {
+	color: #FFFFFF;
+}

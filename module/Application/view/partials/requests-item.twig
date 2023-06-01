@@ -1,0 +1,52 @@
+{% for user in users %}
+    <div class="media">
+        <div class="media-left text-center">
+            <h6>
+                Request by:<br/>
+                <a href="#">{{ user.getUsername() }}</a>
+            </h6>
+            <img class="media-object" src="{{ user.getAvatar() }}" alt="">
+            <a class="btn btn-pink">Show Interest</a>
+            <p class="h6">
+                <a class="link" href="#">View more request from </a><br/>
+                <span><a href="">{{ user.getUsername() }}</a> </span>
+            </p>
+        </div>
+        <div class="media-body">
+            <p>
+                I'm looking for a girl to send me an abusive email each day for a week.
+                I'm not looking for the standard "you're pathetic", you have to be a little creative,
+                but I'm not looking for much more than a paragraph or two. Open to negotiation on price.
+            </p>
+            <p class="margin-bottom-20">
+                <b>Offer: 50 chips </b>
+            </p>
+            <p>
+                <b>Tags:</b>
+                <a class="link" href="#">Shower</a>
+                <a class="link" href="#">69</a>
+                <a class="link" href="#">5 min minimum</a>
+                <a class="link" href="#">eat out</a>
+                <a class="link" href="#">suck alot</a>
+                <a class="link" href="#">deep throath</a>
+            </p>
+            <p><b>Media type:</b> <a class="link" href="#">Video</a></p>
+
+            <p class="margin-bottom-20">
+                <b>License type:</b>
+                <a class="link" href="#">Private</a>
+            </p>
+
+            <div class="well">
+                <h5>People interested:</h5>
+                <div class="interested">
+                    <a href="#">
+                        <img src="/images/user-1.png" alt="">
+                    </a>
+                </div>
+                <i class="h6">8 people expressed intrest</i>
+            </div>
+
+        </div>
+    </div>
+{% endfor %}

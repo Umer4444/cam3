@@ -1,0 +1,5 @@
+{% if blog.isFeatured() %}
+    {% include 'blog/item-big' %}
+{% else %}
+    {% include 'blog/item-small' %}
+{% endif %}

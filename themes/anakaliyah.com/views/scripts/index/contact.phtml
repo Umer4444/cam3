@@ -1,0 +1,107 @@
+<? $this->headTitle('Contact'); ?>
+    <?php 
+            
+    //   echo form_field(array("type" => "", "value"=>"", name=> "", "label"=>""), $attr = array(), $options = array(), $icon = null)
+    
+ //    echo form_field(array("type" => "select", "name" => "contact", "value" => "1", "label" => "Name"), $attr = array("class"=>"", "id"=>"newId"), $options = array("asdasd","sadasdsad","test"), $icon = "icon-envelope");
+        
+        ?>
+<div class="row">
+    <h2 class="title">Contact</h2>
+    <br>
+    <?=$this->notice?>
+    
+        <p>You can contact us using the form below. We would appreciate any comments, suggestions, and tips on
+what direction to take the site.</p>
+
+        <form class="form-horizontal"id="form_contact" action="/contact/" method="post">
+             <?
+                $options = array (
+                            "suggestion" => "Suggestions/Feedback",
+                            "bug-report" => "Bug Report",
+                            "general-questions" => "General Questions",
+                            "abuse" => "Report Abuse",
+                            "other" => "Other",
+                );
+                echo form_field(array("type" => "select", "name" => "reason", "value" => "", "label" => "Subject"), $attr = array("class" => "col-lg-5"), $options, $icon = "");
+             ?>
+             <? 
+             /*
+             <div class="join-box-fields">
+                <div class="field">
+                    <label for="reason">Subject</label>
+                    <div class="field_wrapper">
+                        <input type="hidden" name="reason" value="suggestion">
+                        <select name="reason" id="reason">
+                            <option value="suggestion" selected>Suggestions/Feedback</option>
+                            <option value="bug-report">Bug Report</option>
+                            <option value="general-questions">General Questions</option>
+                            <option value="abuse">Report Abuse</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                 </div>
+             </div>
+
+             <div class="join-box-fields">
+                <div class="field">
+                    <label for="message">Your message</label>
+                    <div class="field_wrapper">
+                        <textarea rows="5" cols="44" name="message" id="message"></textarea>
+                    </div>
+                 </div>
+             </div>
+             
+             <div class="join-box-fields">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <div class="field_wrapper">
+                        <?=(user()->nickname ? '<input type="hidden" name="username" value="'.user()->nickname.'">' : "")?>
+                        <input name="username" id="username" type="text" <?=(user()->nickname ? 'value="'.user()->nickname.'"' : "")?>>
+                    </div>
+                 </div>
+             </div>
+                            <div class="join-box-fields">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <div class="field_wrapper">
+                        <?=(user()->email ? '<input type="hidden" name="email" value="'.user()->email.'">' : "")?>
+                        <input id="email" class="short" name="email" type="text" <?=(user()->email ? 'value="'.user()->email.'"' : "")?>>
+                    </div>
+                </div>
+                <br>
+            </div>
+                        <div class="clear"></div>
+            <div class="join-button">
+                <input type="submit" name="submit" value="Send" id="submit" class="btn btn-purple" onclick="javascript: if(confirm('Send message?')){ if($('#form_contact').valid()) return true; else return false;} else return false;">
+            </div>
+            
+                          */ 
+             
+             ?>
+             <?
+                 echo form_field(array("type" => "textarea", "name" => "message", "value" => "", "label" => "Your message"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>
+            <?
+                 echo form_field(array("type" => "text", "name" => "username", "value" => (user()->nickname ? user()->nickname : ""), "label" => "Username"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?> 
+            <?
+                 echo form_field(array("type" => "text", "name" => "email", "value" => (user()->email ? user()->email : ""), "label" => "Email"), $attr = array("class" => "col-lg-5"), $options = null, $icon = "");
+             ?>  
+             
+             <div class="control-group">
+                <label class="control-label" for="captcha">Are you human?</label>
+                <div class="controls"> 
+                    <img id="captcha_img" src="/process/imageverification2?<?=rand()?>" style="border: 1px solid #DDDDDD;  height: 35px; width: 80px;">
+                        <input type="text" id="captcha" name="capthca" value=""> 
+                </div>  
+                <br/>
+             <?
+                 echo form_field(array("type" => "submit", "name" => "submit", "value" => "Send"), $attr = array("class" => "btn btn-purple", "onclick" => "javascript: if(confirm('Send message?')){ if($('#form_contact').valid()) return true; else return false;} else return false;"), $options = null, $icon = "");
+             ?> 
+             
+
+
+        </form>
+
+</div>    

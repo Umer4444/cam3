@@ -1,0 +1,15 @@
+<?php $this->headTitle('Instant Updates'); ?>
+<form method="post" id="model_notes" role="form" class="form-horizontal">
+    <div class="input-group">
+        <textarea id="message" class="form-control custom-control" rows="5" cols="30" placeholder="Add message !"></textarea>
+        <input type="text" placeholder="(Optional) Url" id="url" class="form-control"/>
+        <span class="input-group-addon btn btn-success" onclick="call()">Send</span>
+    </div>
+</form>
+<script type="text/javascript">
+    function call(){
+        notificationsSocket.emit('notification', {message: $("#message").val(), url: $("#url").val()});
+        $("#message").val('');
+        $("#url").val('');
+    }
+</script>

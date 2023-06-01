@@ -1,0 +1,20 @@
+<?  
+    if(isset($this->params->id_news))
+        $one_news = $this->loadModel("announcements")->getAnnouncementById((int)$this->params->id_news);
+    else {
+        $news = $this->loadModel("announcements")->getAnnouncementsLimit('users',10);
+    }
+?>
+<div class="row">
+    <div class="col-lg-4">
+        <? if(isset($news)){ ?>
+            <? foreach($news as $new) { 
+                p($new->text);
+             } ?>
+         <? } ?>
+         <? if(isset($one_news)){ 
+                p($one_news->text);
+          } ?>
+    </div>
+
+</div>

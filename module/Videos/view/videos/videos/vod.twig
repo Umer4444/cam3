@@ -1,0 +1,213 @@
+{% extends 'layout/frontend' %}
+{% block container %}
+    <div class="main">
+        <div class="vod-video">
+            <div class="container" id="video">
+                <video class="flowplayer is-splash">
+                    <source type="video/mp4"
+                            src="{{ video.getFilename() }}">
+                    <source type="video/flash"
+                            src="{{ video.getFilename() }}:bauhaus">
+                </video>
+            </div>
+        </div>
+
+        <div class="vod-video-des">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <span>
+                            <strong>Directors</strong> Director Name
+                        </span>
+                        <span>
+                            <strong>Studio</strong> Vicious Image
+                        </span>
+                        <span>
+                            <strong>Camera Type</strong> Webcame
+                        </span>
+                    </div>
+                    <div class="col-sm-2">
+                        <span>
+                            <strong>Catagorie</strong>
+                            <span class="text-decoration-underline ">
+                                {{ video.getCategory() }}
+                            </span>
+                        </span>
+                        <strong>Tags</strong>
+                            {% for tag in videos %}
+                                <a href="#" class="text-decoration-underline ">
+                                    {{ tag.tags }}
+                                </a>
+                            {% endfor %}
+                        </span>
+                        <span>
+                            <strong>Copyrights</strong> 2015  all rights reserved
+                        </span>
+                    </div>
+                    {% set videoRepo = serviceLocator().get('doctrine.entity_manager.orm_default').getRepository('Videos\\Entity\\Video') %}
+                    <div class="col-sm-2">
+                        <div class="clip-page">
+                            <span class="">
+                                <a data-original-title="Added" href="#" data-toggle="tooltip" data-placement="left"
+                                   title="">
+                                    <i class="fa fa-calendar"></i> {{ video.getAdded()|date('d-m-Y') }}
+                                </a>
+                                <a data-original-title="Views" href="#" data-toggle="tooltip" data-placement="left"
+                                   title="">
+                                    <i class="fa fa-eye"></i> {{ video.getViews() }}
+                                </a>
+                                <a data-original-title="Comments" href="#" data-toggle="tooltip" data-placement="left"
+                                   title="">
+                                    <i class="fa fa-comment"></i> 35
+                                </a>
+                                <a data-original-title="Reviews" href="#" data-toggle="tooltip" data-placement="left"
+                                   title="">
+                                    <i class="fa fa-edit"></i> {{ videoRepo.getReviews(video.getId()) | length }}
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 caste">
+                        <span>CAST:</span>
+                        <ul>
+                            <li>
+                                <a href="#" class="tooltip-img text-decoration-underline">{{ video.getCast() }}
+                                    <span class="tooltip_body"><img src="images/popular_room/popular6.jpg"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-2">
+                        {{ interaction(video.getUser()).likes()|raw }}
+                    </div>
+                    <div class="col-sm-2"><i class="fa fa-flag red-color"></i>
+                        <a href="#" class="text-decoration-underline">Report Video</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="main-content">
+                <div class="search_bar visible-xs">
+                    <form class="form-search form-inline">
+                        <input type="text" class="form-control input-sm" placeholder="Search">
+                    </form>
+                </div>
+                <div class="content">
+                    <div class="row">
+                        <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                            <div class="content-block">
+                                <div class="small-content">
+                                    <small class="text-muted">
+                                        {{ video.getDescription()  }}
+                                    </small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="perf-pic-gal form-group">
+                                            <div class="gal-title">Picture Gallery</div>
+                                            <div class="pic-gal">
+                                                <ul>
+                                                    {% for capture in video.getCaptures() %}
+                                                        <li><img src="{{ capture }}" alt="gallery" width="100px" height="150px"></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                {% set reviews = videoRepo.getReviews(video.getId()) %}
+                                <div class="row">
+                                    <div id="tabs" role="tabpanel">
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <li role="presentation" class="active">
+                                                <a href="#comments" aria-controls="comments" role="tab" data-toggle="tab">Comments</a>
+                                            </li>
+                                            <li role="presentation" class="">
+                                                <a href="#reviews" aria-controls="reviews" role="tab" data-toggle="tab">{{ reviews|length }} Reviews</a>
+                                            </li>
+                                        </ul>
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div id="reviews" role="tabpanel" class="tab-pane">
+                                                {% if(zfcUserIdentity()) %}
+                                                    <a id="review_button" class="btn purple-button right" style="color:black;">Add review</a>
+                                                    <div class="clear"></div>
+                                                    <br/>
+                                                    <div id="add_review" class="hide">
+                                                        {% set form = newInstance('Application\\Form\\AddReview').prepare().setAttribute('class', 'form-horizontal').setAttribute('action', '') %}
+                                                        {% do form.get('submit').setAttributes({'class' : 'green-button'}).setAttributes({'id' : 'submit'}) %}
+                                                        {% do form.get('review').setAttributes({'id' : 'new_review'}) %}
+                                                        {{ form(form) }}
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if reviews|length == 0 %}
+                                                    No reviews yet! Be the first to write a review!
+                                                {% else %}
+                                                    {% for review in reviews %}
+
+                                                        <div class="col-md-12 review_table {% if review.getActive()== 0 %} inactive {% else %} active {% endif %}"
+                                                             id="review_{{ review.getId() }}">
+
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    {{ review.getUser().getUsername() }}
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    <a name="review_{{ review.getId() }}"> {{ review.getDate()|date('l, F j Y') }}
+                                                                        at {{ review.getDate()|date('H:i') }}</a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-1">
+                                                                    <a href="#"><img width="40" height="40"
+                                                                                     src="/themes/anakaliyah/images/user_default.png"
+                                                                                     title="{{ review.getUser().getUsername() }}"></a>
+                                                                </div>
+                                                                <div class="col-md-11">
+                                                                    {{ review.getReview() }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                            <div id="comments" role="tabpanel" class="tab-pane active">{{ commentCustom() }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="club-page form-group">
+                                        <div class="col-lg-12 col-sm-12 col-xs-12 ">
+                                            <h5><strong>MORE CLIPS FROM THIS MODEL</strong></h5>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                {{ related(newInstance('Videos\\Entity\\VodVideo'), 'video/partial/related', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_LATEST')) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="club-page form-group">
+                                            <div class="col-lg-12 col-sm-12 col-xs-12 ">
+                                                <h5><strong>RELETED CLIPS</strong></h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    {{ related(newInstance('Videos\\Entity\\VodVideo'), 'video/partial/related', constant('PerfectWeb\\Core\\View\\Helper\\Related::TYPE_POPULAR')) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

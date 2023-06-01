@@ -1,0 +1,95 @@
+<? $page = $this->params->page ? $this->params->page : null; ?>
+<? $this->headTitle('Contact');
+?>
+<? $options = array(
+    "suggestion" => "Suggestions/Feedback",
+    "bug-report" => "Report Bug",
+    "general-questions" => "General Questions",
+    "abuse" => "Report Abuse",
+    "other" => "Other Subject",
+); ?>
+
+<div class="page-content">
+    <h1 class="page-title">Contact</h1>
+    <br>
+    <?= $this->notice ?>
+
+    <p>You can contact us using the form below. We would appreciate any comments, suggestions, and tips on
+        what direction to take the site.</p>
+
+    <form id="form_contact" action="/contact/" method="post">
+
+        <div class="join-box-fields">
+            <? if (!$page || !array_key_exists($page, $options)) $hide = false; else $hide = true; ?>
+            <? if ($hide) echo '<h2>' . $options[$page] . '</h2>'; ?>
+            <div class="field"<?= ($hide ? ' style="display:none;"' : '') ?>>
+                <label for="reason">Subject</label>
+
+                <div class="field_wrapper">
+                    <input type="hidden" name="reason" value="suggestion">
+                    <?= $this->formSelect("reason", $page, null, $options); ?>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="join-box-fields">
+            <div class="field">
+                <label for="message">Your message</label>
+
+                <div class="field_wrapper">
+                    <textarea rows="5" cols="44" name="message" id="message"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="join-box-fields">
+            <div class="field">
+                <label for="username">Username</label>
+
+                <div class="field_wrapper">
+                    <?= (user()->nickname ? '<input type="hidden" name="username" value="' . user()->nickname . '">' : "") ?>
+                    <input name="username" id="username"
+                           type="text" <?= (user()->nickname ? 'value="' . user()->nickname . '"' : "") ?>>
+                </div>
+            </div>
+        </div>
+
+        <div class="join-box-fields">
+            <div class="field">
+                <label for="email">Email</label>
+
+                <div class="field_wrapper">
+                    <?= (user()->email ? '<input type="hidden" name="email" value="' . user()->email . '">' : "") ?>
+                    <input id="email" class="short" name="email"
+                           type="text" <?= (user()->email ? 'value="' . user()->email . '"' : "") ?>>
+                </div>
+            </div>
+            <br>
+        </div>
+
+        <div class="join-box-fields">
+            <div class="field">
+                <label for="captcha">Are you human?</label>
+
+                <div class="field_wrapper">
+                    <input name="captcha" id="captcha" type="text" style="width: 660px;">
+
+                    <div style="float:right;">
+                        <img id="captcha_img" src="/process/imageverification2?<?= rand() ?>"
+                             style="border: 1px solid #DDDDDD; float: right; height: 35px; width: 80px;">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="clear"></div>
+        <div class="join-button">
+            <input type="submit" name="submit" value="Send" id="submit" class="btn btn-success"
+                   onclick="javascript: if(confirm('Send message?')){ if($('#form_contact').valid()) return true; else return false;} else return false;">
+        </div>
+
+    </form>
+
+</div>

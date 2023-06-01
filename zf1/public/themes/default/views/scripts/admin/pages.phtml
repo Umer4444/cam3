@@ -1,0 +1,98 @@
+<?
+$this->headTitle('Static Pages');
+if ($this->pages) $this->pages = $this->pages->toArray();
+else $this->pages = array();
+
+$pages = array();
+foreach ($this->pages as $page) {
+    $pages[$page['page']] = $page['title'];
+}
+$url = $this->url(array(), 'static-pages-edit');
+
+echo $this->partial('partials/editor.phtml');
+?>
+
+
+<div class="page-content round-corners">
+
+    <?= $this->notice ?>
+    <?php if ($this->page->page == "model_release_form") { ?>
+        <p style="color:#ff0000;" align="center">
+            Modifying Model Release and Terms of Employment page results in resetting agreement with all models!
+        </p>
+    <?php } ?>
+
+    <h1 class="page-title">Static Pages </h1>
+
+    <form action="" method="post" id="">
+        <div class="join-box-fields">
+            <div class="field">
+                <label for="page">Select Page</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formSelect('page', ($this->page ? $this->page->page : $this->pages[0]['page']), null, $pages) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="title">Title</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('title', ($this->page ? $this->page->title : $this->pages[0]['title'])) ?>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="title">Link</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formText('link', ($this->page ? $this->page->link : $this->pages[0]['link'])) ?>
+                    <br/>
+                    <small>Example: http://google.com</small>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="content">Content</label>
+
+                <div class="field_wrapper">
+                    <?= $this->formTextarea('content', ($this->page ? $this->page->content : $this->pages[0]['content']), array('class' => "content", 'cols' => 30, 'rows' => 40)) ?>
+                </div>
+            </div>
+
+        </div>
+        <?if ($this->page ? $this->page->page == 'faq' : $this->pages[0]['page'] == 'faq') {
+            echo '<div class="join-box-fields">
+                        <div class="field">
+                            <label for="help">Accepted format for page content</label>
+                            <div class="field_wrapper" id="help">
+                                <p>' . htmlspecialchars('<h2><a href="#">') . 'First header' . htmlspecialchars('</a></h2>') . "<br>" . htmlspecialchars('
+        <div>') . '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;First content<br>' . htmlspecialchars('</div>') . "<br>" . htmlspecialchars('
+        <h2><a href="#">') . 'Second header' . htmlspecialchars('</a></h2>') . "<br>" . htmlspecialchars('
+        <div>') . '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Second content<br>' . htmlspecialchars('</div>') . '<p>
+                                <p>* To insert new div(' . htmlspecialchars('<div></div>') . ') press the "Insert New Layer" button</p>
+                                <p>** There should be no other elements between a Heading 2(' . htmlspecialchars('<h2></h2>') . ') and the following div(' . htmlspecialchars('<div></div>') . ')!</p>
+                                <p>*** Press the "Show/hide block elements" button to view the underlying page elements.</p>
+                            </div>
+                          </div>
+                      </div>';
+        }?>
+        <br>
+
+        <div class="join-button">
+            <input type="submit" name="save" value="Save" class="btn btn-success">
+        </div>
+    </form>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#page").change(function () {
+                window.location = "<?=$url?>/" + $('#page').val() + "";
+            });
+        });
+
+    </script>
+
+</div>
+<br>
+

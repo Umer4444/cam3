@@ -1,0 +1,39 @@
+{% extends 'layout/frontend' %}
+
+{% block content %}
+    {% set criteria = newInstance('Doctrine\\Common\\Collections\\Criteria').create() %}
+    {% if messageAction == 'archive' %}
+        {% set where = newInstance('Doctrine\\Common\\Collections\\Criteria').expr().eq('type', 'archive') %}
+    {% else %}
+        {% set where = newInstance('Doctrine\\Common\\Collections\\Criteria').expr().neq('type', 'archive') %}
+    {% endif %}
+    {% if messageAction == 'sent' %}
+        {% set messages = user.getSentMessages() %}
+    {% else %}
+        {% set messages = user.getReceivedMessages().matching(criteria.where(where)) %}
+    {% endif %}
+
+    {% if not messageAction %}
+        {% set messageAction = 'inbox' %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Messages {{ messageAction }}</h2>
+
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'messages/tab-messages' with {'user' : user, 'action': 'messages'} %}
+                    {% include 'messages/message-list' with {'paginator' : messages, 'messageAction' : messageAction} %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

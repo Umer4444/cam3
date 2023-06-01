@@ -1,0 +1,104 @@
+<h3 class="sub_header top">Chips History - You have <?= user()->chips ?> chips</h3>
+<table class="profileChipsHistory">
+    <thead>
+    <th>Date</th>
+    <th>Amount</th>
+    <th>Chips</th>
+    <th>Payment Method</th>
+    </thead>
+    <tbody>
+    <?php
+    foreach ($this->chips_history as $key => $val) {
+        $totalAmount += $val['amount'];
+        $totalChips += $val['chips'];
+        ?>
+        <tr>
+            <td><?= date("Y/d/m", $val['added']) ?></td>
+            <td><?= "&#36 " . $val['amount'] ?></td>
+            <td><?= $val['chips'] . " Chips" ?></td>
+            <td><?= $val['name'] ?></td>
+        </tr>
+    <?php } ?>
+    <tr>
+        <td class="totals">Totals :</td>
+        <td class="totals"><?= "&#36 " . $totalAmount ?></td>
+        <td class="totals"><?= $totalChips . " Chips" ?></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3 class="sub_header top">Chips transfer - *all transfers are non refundable</h3>
+
+<script src="/scripts/jquery.tokeninput.js"></script>
+<form action="" method="post" id="messages_compose">
+    <div class="join-box-fields">
+        <div class="field">
+            <label for="sendtouser" class="userProfilelabel">Send To</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText('sendtouser', null, array('class' => 'userProfilePassword')) ?>
+                <?= $this->formHidden('id_receiver', null, array('class' => 'userProfilePassword')) ?>
+                <?= $this->formHidden('receiver_type', null, array('class' => 'userProfilePassword')) ?>
+            </div>
+        </div>
+        <div class="field">
+            <label for="subject" class="userProfilelabel">Chips Amount</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText('amount', null, array('onblur' => 'test()', 'class' => 'userProfileAmount')) ?>
+                <?= $this->formText('totalChips', "You have " . $_SESSION['user']['chips'] . " Chips", array('class' => 'userProfileTotalAmount', 'disabled' => 'disabled')) ?>
+            </div>
+        </div>
+        <div class="field">
+            <label for="subject" class="userProfilelabel">Password</label>
+
+            <div class="field_wrapper">
+                <?= $this->formPassword('password', null, array('class' => 'userProfilePassword')) ?>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <div class="join-button">
+        <input type="submit" name="send" value="Transfer" class="btn btn-success">
+        <input type="hidden" name="send" value="Transfer Chips">
+    </div>
+</form>
+
+<script type="text/javascript">
+    function test() {
+
+        if ($('#amount').val() != '') {
+            if (("<?=user()->chips?>" - $('#amount').val()) < 0) {
+                var newBalance = ("<?=user()->chips?>" - $('#amount').val());
+                $('#totalChips').val("Insufficient Chips : " + newBalance + "");
+
+            } else {
+                var newBalance = ("<?=user()->chips?>" - $('#amount').val());
+                $('#totalChips').val("Remaining Chips : " + newBalance + "");
+
+            }
+        }
+    }
+
+    var sendTo = document.URL.split('#')[1];
+
+    if (sendTo) {
+        $('#sendtouser').val(sendTo);
+    }
+
+    $("#sendtouser").tokenInput("/autocomplete/sendtousers", {
+        method: "POST",
+        tokenLimit: "1",
+        resultsLimit: "1",
+        hintText: "Type a username",
+        onAdd: function (item) {
+            $('#id_receiver').val(item.id);
+            $('#receiver_type').val(item.type);
+        },
+        onDelete: function (item) {
+            $('#id_receiver').val('');
+            $('#receiver_type').val('');
+        },
+    });
+</script>

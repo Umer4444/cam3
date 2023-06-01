@@ -1,0 +1,215 @@
+<?
+$this->headTitle($this->page_title);
+
+switch ($this->params['user_type']) {
+    case 'model':
+        echo $this->partial('partials/moderator-submenu.phtml',
+            array("params" => $this->theme()->view->params,
+                "type" => "model",
+                "acl" => $this->acl,
+                "user" => $this->model,
+                "payments" => $this->payments,
+            ));
+        $chips = $this->model->chips;
+        $repShare = $this->model->rep_share;
+
+        $earnigs = $this->earnings;
+
+        break;
+
+    case 'user':
+
+        echo $this->partial('partials/moderator-submenu.phtml',
+            array("params" => $this->theme()->view->params,
+                "type" => "user",
+                "acl" => $this->acl,
+                "user" => $this->user));
+        $chips = $this->user->chips;
+
+        break;
+}
+
+?>
+
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+
+        <h1 class="page-title"><?= $this->page_title ?></h1>
+
+        <form action="" method="post" id="form_manage_chips">
+            <br>
+
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="chips">Current Chips:</label>
+
+                    <div
+                        class="field_wrapper"><?= $this->formText("chips", $chips, array("class" => "small_tfield_date")); ?></div>
+                </div>
+            </div>
+
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="saveChips" value="Update Chips" class="btn btn-success">
+            </div>
+
+        </form>
+    </div>
+
+<? if ($this->params['user_type'] == 'model') { ?>
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Rep Share:</h1>
+
+        <form action="" method="post" id="form_manage_rate_share">
+            <br>
+
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="repShare">Current Rate Share:</label>
+
+                    <div
+                        class="field_wrapper"><?= $this->formText("repShare", $repShare, array("class" => "small_tfield_date")); ?>
+                        %
+                    </div>
+                </div>
+            </div>
+
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="saveRepShare" value="Update Rep Share" class="btn btn-success">
+            </div>
+
+        </form>
+    </div>
+
+    <div class="page-content round-corners">
+
+        <h1 class="page-title">Pay model:</h1>
+
+        <form action="/payment/transfer" method="post" id="form_transfer">
+
+            <br>
+
+            <div class="join-box-fields">
+                <div class="field">
+                    <label for="amount">Total payment:</label>
+
+                    <div
+                        class="field_wrapper"><?= $this->formText("amount", ($chips * $repShare) / 100, array("class" => "small_tfield_date", "disabled" => "disabled")); ?>
+                        $
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="user_password">Payment method</label>
+
+                    <div class="field_wrapper">
+
+                        <select name="method">
+
+                            <? foreach ($this->payments as $name => $email) { ?>
+                                <option value="<?= strtolower($name) ?>"><?= $name ?></option>
+                            <? } ?>
+                        </select>
+
+                        <? foreach ($this->payments as $name => $email) { ?>
+                            <input type="hidden" value="<?= ($email) ?>" value="email<?= ($name) ?>">
+                        <? } ?>
+
+                        <input type="hidden" value="Transfer funds" name="description">
+                        <input type="hidden" value="<?= $this->model->id ?>" name="idModel">
+                        <input type="hidden" value="<?= ($chips * $repShare) / 100 ?>" name="amount">
+
+
+                    </div>
+                </div>
+                <? foreach ($this->payments as $name => $email) { ?>
+                    <input type="hidden" value="<?= strtolower($email) ?>" name="email<?= ucwords($name) ?>"/>
+
+                <? } ?>
+            </div>
+
+            <br><br>
+
+            <div class="join-button">
+                <input type="submit" name="savePayment" value="Pay model" class="btn btn-success">
+            </div>
+
+        </form>
+    </div>
+    <div class="page-content round-corners">
+        <h1 class="page-title">Model Earnings:</h1>
+        <br/>
+
+        <div class="field">
+            <div class="field_wrapper">
+                <?= $this->formSelect('sortby', null, null, array("7" => "Last 7 days", "14" => "Last 14 days", "30" => "Last 30 days")) ?>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load("visualization", "1", {packages: ["corechart"]});
+            var earnigs =  <?=$earnigs?>;
+            google.setOnLoadCallback(function () {
+                drawChart(earnigs);
+            });
+
+
+            function drawChart(earnigs) {
+
+                var data = google.visualization.arrayToDataTable(earnigs.chartdata);
+
+                var options = {
+                    title: earnigs.message + ': ' + earnigs.total + ' $',
+                    vAxis: {title: 'Amount'},
+                    hAxis: {title: "Days"}
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+
+
+            ///////////////////////////////
+
+            $('#sortby').change(function () {
+                getDasboardStatsGrafic();
+            });
+
+            function getDasboardStatsGrafic() {
+
+                $.ajax({
+                    url: '/process',
+                    data: {
+                        action: 'modelStats',
+                        showby: $('#sortby').val(),
+                        model: <?=$this->model->id?>
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (Output) {
+                        drawChart(Output);
+                        //                setTimeout(function(){
+//                    $('#show').removeClass("disable");
+//                    $("#show").removeAttr("disabled");
+//                },3000);
+
+                    },
+                    error: function () {
+                        alert("Error fetching data...")
+                        // setTimeout(function(){
+//                    $('#show').removeClass("disable");
+//                    $("#show").removeAttr("disabled");
+//                },3000);
+                    }
+                });
+            }
+
+        </script>
+        <div id="chart_div" style="width: 90%; height: 400px; margin-left:auto; margin-right:auto"></div>
+
+    </div>
+<? } ?>

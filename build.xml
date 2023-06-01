@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Application" default="build" basedir="../">
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+    <scriptdef name="propertyreset" language="javascript">
+        <attribute name="name"/>
+        <attribute name="value"/>
+        project.setProperty(attributes.get("name"), attributes.get("value"));
+    </scriptdef>
+
+    <property name="applicationDir" value="${teamcity.build.checkoutDir}"/>
+    <property name="buildDir" value="${applicationDir}/../build_${teamcity.buildType.id}"/>
+    <property name="buildFailed" value="false"/>
+
+    <target name="build"
+            depends="prepare,phpunit,phpmd,phpdcd,phpcpd,phpcs,buildStatus,phpdoc,pdepend,phpcb,phploc"/>
+    <!--php-cs-fixer,-->
+
+    <target name="updateProgress">
+        <if>
+            <not>
+                <length string="${testArtifact}" length="0"/>
+            </not>
+            <then>
+                <exec executable="php" osfamily="unix" output="${testArtifact}.tmp">
+                    <arg line="-r 'echo str_replace(array(&quot;|&quot;, &quot;'&quot;'&quot;'&quot;, &quot;\n&quot;, &quot;\r&quot;, &quot;[&quot;, &quot;]&quot;), array(&quot;||&quot;, &quot;|'&quot;'&quot;'&quot;, &quot;|n&quot;, &quot;|r&quot;, &quot;|[&quot;, &quot;|]&quot;), file_get_contents(&quot;${testArtifact}&quot;));'"/>
+                </exec>
+                <var name="testArtifactContent" unset="true"/>
+                <loadfile srcFile="${testArtifact}.tmp" property="testArtifactContent">
+                    <filterchain>
+                        <striplinebreaks/>
+                    </filterchain>
+                </loadfile>
+                <delete file="${testArtifact}.tmp"/>
+                <if>
+                    <isset property="testArtifactContent"/>
+                    <then>
+                        <echo message="##teamcity[testStdOut name='${testName}' flowId='${testName}' out='${testArtifactContent}']"/>
+                    </then>
+                </if>
+                <echo message="##teamcity[publishArtifacts path='${testArtifact}']"/>
+            </then>
+        </if>
+        <if>
+            <not>
+                <equals arg1="${testResultCode}" arg2="0" />
+            </not>
+            <then>
+                <echo message="##teamcity[testFailed name='${testName}' flowId='${testName}']"/>
+                <echo message="##teamcity[testFinished name='${testName}' flowId='${testName}']"/>
+                <!--<fail message="Latest exec failed with exitcode: ${testResultCode}" />-->
+                <propertyreset name="buildFailed" value="true"/>
+            </then>
+            <else>
+                <echo message="##teamcity[testFinished name='${testName}' flowId='${testName}']"/>
+            </else>
+        </if>
+        <echo message="##teamcity[message text='${testName} finished with exit code: ${testResultCode}' flowId='${testName}']"/>
+    </target>
+
+    <target name="buildStatus">
+        <if>
+            <istrue value="${buildFailed}"/>
+            <then>
+                <fail message="The build has failed !"/>
+            </then>
+        </if>
+    </target>
+
+    <target name="prepare">
+        <delete dir="${buildDir}"/>
+        <mkdir dir="${buildDir}"/>
+        <mkdir dir="${buildDir}/logs"/>
+        <mkdir dir="${buildDir}/logs/coverage"/>
+        <mkdir dir="${buildDir}/html/phpdoc"/>
+        <mkdir dir="${buildDir}/html/phpcb"/>
+        <mkdir dir="${buildDir}/html/phpunit"/>
+    </target>
+
+    <target name="php-cs-fixer" description="PHP Coding Standards Fixer">
+        <propertyreset name="testName" value="PHP Coding Standards Fixer"/>
+        <propertyreset name="testArtifact" value="${buildDir}/logs/php-cs-fixer.txt"/>
+        <var name="testResultCode" unset="true"/>
+        <echo message="##teamcity[testStarted name='${testName}' flowId='${testName}']"/>
+        <exec dir="${applicationDir}" executable="php-cs-fixer" osfamily="unix" output="${testArtifact}"
+              resultproperty="testResultCode">
+            <arg line="fix"/>
+            <arg line="${applicationDir}"/>
+            <arg line="--level=psr0"/>
+            <arg line="--dry-run"/>
+            <arg line="--diff"/>
+            <arg line="-vv"/>
+            <arg line="--fixers=indentation,linefeed,trailing_spaces,unused_use,phpdoc_params,php_closing_tag,braces,extra_empty_lines,controls_spaces,elseif,psr0"/>
+        </exec>
+        <antcall target="updateProgress">
+            <param name="testResultCode" value="${testResultCode}"/>
+            <param name="testName" value="${testName}"/>
+            <param name="testArtifact" value="${testArtifact}"/>
+        </antcall>
+    </target>
+
+    <target name="phpunit" description="PHPUnit">
+        <propertyreset name="testName" value="PHPUnit"/>
+        <propertyreset name="testArtifact" value="${buildDir}/logs/phpunit.raw.txt"/>
+        <propertyreset name="testArtifactXML" value="${applicationDir}/tests/phpunit.xml"/>
+        <var name="testResultCode" unset="true"/>
+        <echo message="##teamcity[testStarted name='${testName}' flowId='${testName}']"/>
+        <exec dir="${applicationDir}" executable="phpunit" osfamily="unix" output="${testArtifact}"
+              resultproperty="testResultCode">
+            <arg line="--bootstrap ${applicationDir}/tests/Bootstrap.php"/>
+            <arg line="--configuration ${testArtifactXML}"/>
+            <arg line="--coverage-clover ${buildDir}/logs/phpunit.clover.xml"/>
+            <arg line="--coverage-html ${buildDir}/logs/phpunit.html"/>
+            <arg line="--coverage-text=${buildDir}/logs/phpunit.txt"/>
+            <arg line="--coverage-xml ${buildDir}/logs/phpunit.xml"/>
+            <arg line="--testdox-html ${buildDir}/logs/phpunit.dox.html"/>
+            <arg line="--testdox-text ${buildDir}/logs/phpunit.dox.txt"/>
+            <arg line="--report-useless-tests"/>
+            <arg line="--process-isolation"/>
+            <arg line="${applicationDir}"/>
+        </exec>
+        <echo message="##teamcity[importData type='junit' path='${testArtifactXML}']"/>
+        <antcall target="updateProgress">
+            <param name="testResultCode" value="${testResultCode}"/>
+            <param name="testName" value="${testName}"/>
+            <param name="testArtifact" value="${testArtifact}"/>
+        </antcall>
+        <zip destfile="${buildDir}/logs/coverage.zip" basedir="${buildDir}/logs/coverage"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/coverage.zip']"/>
+    </target>
+
+    <target name="phpmd" description="PHP Mess Detector">
+        <propertyreset name="testName" value="PHP Mess Detector"/>
+        <propertyreset name="testArtifactFormat" value="xml"/>
+        <propertyreset name="testArtifactXML" value="${buildDir}/logs/phpmd.${testArtifactFormat}"/>
+        <var name="testResultCode" unset="true"/>
+        <echo message="##teamcity[testStarted name='${testName}' flowId='${testName}']"/>
+        <exec dir="${applicationDir}" executable="phpmd" osfamily="unix" resultproperty="testResultCode">
+            <arg line="${applicationDir}"/>
+            <arg line="${testArtifactFormat}"/>
+            <arg line="naming,unusedcode,codesize"/>
+            <arg line="--exclude */vendor/*,*/data/*,*/public*"/>
+            <arg line="--reportfile ${testArtifact}"/>
+        </exec>
+        <echo message="##teamcity[importData type='pmd' path='${testArtifact}']"/>
+        <antcall target="updateProgress">
+            <param name="testResultCode" value="${testResultCode}"/>
+            <param name="testName" value="${testName}"/>
+            <param name="testArtifact" value="${testArtifact}"/>
+        </antcall>
+    </target>
+
+    <target name="phpdoc" description="PHPDocumentor">
+        <exec dir="${applicationDir}" executable="phpdoc" osfamily="unix">
+            <arg line="run"/>
+            <arg line="--directory ${applicationDir}"/>
+            <arg line="--target ${buildDir}/html/phpdoc"/>
+            <arg line="--quiet"/>
+            <arg line="--title Application"/>
+            <arg line="--ignore */data/*,*/vendor/*,*/public/*"/>
+            <arg line="--parseprivate"/>
+            <arg line="--sourcecode"/>
+            <arg line="--force"/>
+            <arg line="--defaultpackagename Application"/>
+            <arg line="--template zend"/>
+        </exec>
+        <zip destfile="${buildDir}/phpdoc.zip" basedir="${buildDir}/html/phpdoc"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/phpdoc.zip']"/>
+    </target>
+
+    <target name="pdepend" description="PHP Depend" depends="phpunit">
+        <exec dir="${applicationDir}" executable="pdepend" osfamily="unix">
+            <arg line="--jdepend-chart=${buildDir}/logs/pdepend.jdepend.chart.png"/>
+            <arg line="--jdepend-xml=${buildDir}/logs/pdepend.jdepend.xml"/>
+            <arg line="--overview-pyramid=${buildDir}/logs/pdepend.overview.pyramid.png"/>
+            <arg line="--phpunit-xml=${buildDir}/logs/phpunit.xml"/>
+            <arg line="--summary-xml=${buildDir}/logs/pdepend.summary.xml"/>
+            <arg line="--coverage-report=${buildDir}/logs/phpunit.clover.xml"/>
+            <arg line="--coderank-mode=inheritance,property,method"/>
+            <arg line="${applicationDir}"/>
+        </exec>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.jdepend.chart.png']"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.jdepend.xml']"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.overview.pyramid.png']"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/pdepend.summary.xml']"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/logs/phpunit.clover.xml']"/>
+    </target>
+
+    <target name="phpcs" description="PHP Code Sniffer">
+        <propertyreset name="testName" value="PHP Code Sniffer"/>
+        <propertyreset name="testArtifact" value="${buildDir}/logs/phpcs.txt"/>
+        <var name="testResultCode" unset="true"/>
+        <echo message="##teamcity[testStarted name='${testName}' flowId='${testName}']"/>
+        <exec dir="${buildDir}" executable="wget" osfamily="unix">
+            <arg line="-O phpcs-zf2.xml"/>
+            <arg line="https://raw.githubusercontent.com/farazdagi/zf2-codesniffer/master/ruleset.xml"/>
+        </exec>
+        <exec dir="${applicationDir}" executable="phpcs" osfamily="unix" output="${testArtifact}"
+              resultproperty="testResultCode">
+            <arg line="--tab-width=4"/>
+            <arg line="--report=full"/>
+            <arg line="--standard=${buildDir}/phpcs-zf2.xml"/>
+            <arg line="--ignore=*/vendor/*,*/data/*,*/public/*"/>
+            <arg line="--extensions=php,phtml"/>
+            <arg line="${applicationDir}"/>
+        </exec>
+        <antcall target="updateProgress">
+            <param name="testResultCode" value="${testResultCode}"/>
+            <param name="testName" value="${testName}"/>
+            <param name="testArtifact" value="${testArtifact}"/>
+        </antcall>
+    </target>
+
+    <target name="phpcb" description="PHP Code Browser">
+        <exec dir="${applicationDir}" executable="phpcb" osfamily="unix">
+            <arg line="--log ${buildDir}/logs"/>
+            <arg line="--source ${applicationDir}"/>
+            <arg line="--output ${buildDir}/html/phpcb"/>
+            <arg line="--extensions php --extensions phtml"/>
+            <arg line="--ignore ${applicationDir}/vendor --ignore ${applicationDir}/data"/>
+        </exec>
+        <zip destfile="${buildDir}/html/phpcb.zip" basedir="${buildDir}/html/phpcb"/>
+        <echo message="##teamcity[publishArtifacts '${buildDir}/html/phpcb.zip']"/>
+    </target>
+
+    <target name="phploc" description="Project size">
+        <propertyreset name="testArtifact" value="${buildDir}/logs/phploc.txt"/>
+        <exec dir="${applicationDir}" executable="phploc" osfamily="unix" output="${testArtifact}">
+            <arg line="--count-tests"/>
+            <arg line="--exclude data --exclude vendor"/>
+            <arg line="${applicationDir}"/>
+        </exec>
+        <echo message="##teamcity[publishArtifacts '${testArtifact}']"/>
+    </target>
+
+    <target name="phpdcd" description="PHP Dead Code Detector">
+        <propertyreset name="testName" value="PHP Dead Code Detector"/>
+        <propertyreset name="testArtifact" value="${buildDir}/logs/phpdcd.txt"/>
+        <var name="testResultCode" unset="true"/>
+        <echo message="##teamcity[testStarted name='${testName}' flowId='${testName}']"/>
+        <exec dir="${applicationDir}" executable="phpdcd" osfamily="unix" output="${testArtifact}"
+              resultproperty="testResultCode">
+            <arg line="--recursive"/>
+            <arg line="--exclude vendor --exclude data --exclude public"/>
+            <arg line="${applicationDir}"/>
+        </exec>
+
+        <!-- strange that phpcd has exit code 0 even when problems are found -->
+        <if>
+            <equals arg1="${testResultCode}" arg2="0"/>
+            <var name="testResultCode" unset="true"/>
+            <property name="testResultCode" value="1"/>
+        </if>
+
+
+        <antcall target="updateProgress">
+            <param name="testResultCode" value="${testResultCode}"/>
+            <param name="testName" value="${testName}"/>
+            <param name="testArtifact" value="${testArtifact}"/>
+        </antcall>
+    </target>
+
+    <target name="phpcpd" description="Copy/Paste Detector">
+        <propertyreset name="testName" value="Copy/Paste Detector"/>
+        <propertyreset name="testArtifact" value="${buildDir}/logs/phpcpd.txt"/>
+        <propertyreset name="testArtifactXML" value="${buildDir}/logs/phpcpd.xml"/>
+        <var name="testResultCode" unset="true"/>
+        <echo message="##teamcity[testStarted name='${testName}' flowId='${testName}']"/>
+        <exec dir="${applicationDir}" executable="phpcpd" osfamily="unix" output="${testArtifact}"
+              resultproperty="testResultCode">
+            <arg line="--log-pmd ${testArtifactXML}"/>
+            <arg line="--min-lines 3"/>
+            <arg line="--exclude vendor --exclude data --exclude public"/>
+            <arg line="${applicationDir}"/>
+        </exec>
+        <echo message="##teamcity[publishArtifacts '${testArtifactXML}']"/>
+        <echo message="##teamcity[importData type='pmdCpd' path='${testArtifact}']"/>
+        <antcall target="updateProgress">
+            <param name="testResultCode" value="${testResultCode}"/>
+            <param name="testName" value="${testName}"/>
+            <param name="testArtifact" value="${testArtifact}"/>
+        </antcall>
+    </target>
+
+</project>

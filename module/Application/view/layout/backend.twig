@@ -1,0 +1,24 @@
+{% extends 'layout/layout_base' %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script src="/moxiemanager/js/moxman.loader.min.js"></script>
+{% endblock scripts %}
+
+{% block sidenavigation %}
+    <div class="col-xs-1 col-md-2">
+        {{ navigation().menu().renderMenu('backend', {'ulClass': 'metisMenu nav list-group', 'liClass': 'list-group'}) | raw }}
+    </div>
+{% endblock sidenavigation %}
+
+{% block content %}
+    <div class="col-xs-11 col-md-10">
+        <div class="panel panel-primary">
+            <div class="panel-heading">{{ headTitle().renderTitle() | raw }}</div>
+                <div class="panel-body">
+                  {{ content | raw }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

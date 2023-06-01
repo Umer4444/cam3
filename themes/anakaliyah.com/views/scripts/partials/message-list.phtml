@@ -1,0 +1,68 @@
+<table class="table" cellpadding="5" cellspacing="1">
+    <tr>
+        <? if (count($this->paginator) > 0) { ?>
+            <td class="center" width="50">
+                <input type="checkbox" id="selectall"/>
+
+
+            </td>
+
+            <td colspan="2" align="left">
+                <form method="post" action="">
+                    <input type="hidden" id="multiple_select" name="multiple_select"/>
+                    <input type="submit" class="button2 small gray actions" name="read" value="Mark as read"/>
+                    <input type="submit" class="button2 small gray actions" name="unread" value="Mark as unread"/>
+                    <? if ($this->message_action == 'inbox') { ?>
+                        <input type="submit" class="button2 small gray actions" name="archive" value="Archive"/>
+                    <? } ?>
+                    <? if ($this->message_action == 'archive') { ?>
+                        <input type="submit" class="button2 small gray actions" name="delete" value="Delete"/>
+                    <? } ?>
+                </form>
+            </td>
+        <? } ?>
+    </tr>
+    <tr>
+        <? if (!count($this->paginator)) echo '<td colspan="100" class="center"><br>No messages. </td>'; ?>
+        <? foreach ($this->paginator as $row) {
+
+            echo $this->partial('partials/item-message.phtml', array("users" => $this->users, "row" => $row, "message_action" => $this->message_action));
+        }
+        ?>
+    </tr>
+</table>
+<? echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml'); ?>
+
+
+<SCRIPT>
+    /* multiple selection */
+    function check() {
+        var ids = '';
+        $('.case:checkbox:checked').each(function () {
+            if (typeof $(this).val() != 'undefined') {
+                ids += $(this).val() + ',';
+            }
+        });
+        $('#multiple_select').val(ids);
+    }
+
+    $(function () {
+        // add multiple select / deselect functionality
+        $("#selectall").click(function () {
+            $('.case').attr('checked', this.checked);
+            check();
+        });
+        // if all checkbox are selected, check the selectall checkbox
+        // and viceversa
+        $(".case").click(function () {
+            check();
+            // alert(this);
+            if ($(".case").length == $(".case:checked").length) {
+                $("#selectall").attr("checked", "checked");
+            } else {
+                $("#selectall").removeAttr("checked");
+            }
+
+        });
+    });
+</SCRIPT>

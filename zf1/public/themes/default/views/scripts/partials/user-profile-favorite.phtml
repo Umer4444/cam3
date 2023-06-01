@@ -1,0 +1,16 @@
+<?
+$is_my_profile = $this->user->id == $_SESSION['user']['id'] && Auth::isUser() ? 1 : 0;
+
+echo '<h3 class="sub_header top">' . ($is_my_profile ? 'My' : ucfirst($this->user->username)) . ' Favorite models</h3>';
+
+if (count($this->paginator)) {
+    foreach ($this->paginator as $model) echo $this->partial('partials/model-item-small.phtml', array('model' => $model, 'show_favorite_btn' => $is_my_profile));
+} else {
+    echo "<br><br>There aren't any favorite models";
+}
+
+?>
+<div class="clear"></div>
+<?
+echo $this->paginationControl($this->paginator, 'Sliding', 'partials/pagination.phtml');
+?>

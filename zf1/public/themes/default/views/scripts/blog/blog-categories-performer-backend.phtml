@@ -1,0 +1,80 @@
+<?
+$page_title = "Categories ";
+
+$this->headTitle($page_title);
+
+?>
+
+<link rel="stylesheet" media="all" type="text/css" href="/scripts/Timepicker/jquery-ui-timepicker-addon.css"/>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-sliderAccess.js"></script>
+
+<div class="model_content">
+    <? echo $this->partial("partials/model-submenu.phtml", array("type" => "blog-controller", "params" => $this->params)); ?>
+    <div class="page-content round-corners">
+        <?= $this->notice ?>
+
+        <h1 class="page-title"><?= $page_title ?></h1>
+
+        <br/>
+        <? if ($this->categories) { ?>
+            <table class="listing_items messages" cellpadding="2" cellspacing="1">
+                <tr class="table_header">
+                    <th>Title</th>
+                    <th width=50>Options</th>
+                </tr>
+                <? foreach ($this->categories as $category) { ?>
+                    <tr>
+                        <td><?= $category->name ?></td>
+                        <td><input type="checkbox" class="case" value="<?= $category->id ?>"/></td>
+                    </tr>
+                <? } ?>
+                <tr>
+                    <td></td>
+                    <td>
+                        <form action="" method="POST">
+                            <input type="hidden" name="multiple_select" id="multiple_select"/>
+
+                            <p style="text-align:right;">
+                                <input type="submit" name="mark_delete" id="mark_delete" value="Delete"/>
+                            </p>
+
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        <? } ?>
+    </div>
+</div>
+<SCRIPT>
+    /* multiple selection */
+    function check() {
+        var ids = '';
+        $('.case:checkbox:checked').each(function () {
+            if (typeof $(this).val() != 'undefined') {
+                ids += $(this).val() + ',';
+            }
+        });
+        $('#multiple_select').val(ids);
+    }
+
+    $(function () {
+        // add multiple select / deselect functionality
+        $("#selectall").click(function () {
+            $('.case').attr('checked', this.checked);
+            check();
+        });
+        // if all checkbox are selected, check the selectall checkbox
+        // and viceversa
+        $(".case").click(function () {
+            check();
+            // alert(this);
+            if ($(".case").length == $(".case:checked").length) {
+                $("#selectall").attr("checked", "checked");
+            } else {
+                $("#selectall").removeAttr("checked");
+            }
+
+        });
+    });
+</SCRIPT>

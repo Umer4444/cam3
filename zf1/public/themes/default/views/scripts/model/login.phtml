@@ -1,0 +1,47 @@
+<? $this->headTitle('Model Login'); ?>
+
+<div id="content">
+    <div class="page-content page-login">
+        <h1 class="page-title">Model Log In</h1>
+
+        <div class="join-box">
+            <form action="/performer/login/" method="post">
+
+                <?= $this->notice ?>
+                <div class="join-box-fields">
+                    <div class="field">
+                        <label for="user_login">Email</label>
+
+                        <div class="field_wrapper">
+                            <input id="email" class="short" name="email" type="text" tabindex="10">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="user_password">Password</label>
+
+                        <div class="field_wrapper">
+                            <input type="password" class="short" id="password" name="password" tabindex="11">
+                        </div>
+                    </div>
+                    <br>
+                    <? if ($this->captcha) { ?>
+                        <div class="clear"></div>
+                        <div class="captcha" style="clear:both">
+                            <?= $this->captcha ?>
+                        </div>
+                        <br/>
+                    <? } ?>
+                </div>
+
+
+                <div class="clear"></div>
+                <div class="join-button">
+                    <input type="submit" name="login" value="Login" id="submit" class="btn btn-success">
+                    <br>
+                    <a style="color: #004A95;" href="/model/pwreset/">Request a Password Reset</a>
+                </div>
+                <input type="hidden" name="url" value="<?= $_SERVER['HTTP_REFERER'] ?>">
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+<? $this->headTitle("My  notifications"); ?>
+
+<div class="page-profile">
+
+    <div class="page-profile-top">
+        <h1><?= $this->user->username ?></h1>
+
+        <div class="clear"></div>
+    </div>
+
+    <div class="model-profile-left">
+        <? echo $this->partial('partials/user-profile-left.phtml',
+            array('user' => $this->user,
+                'country' => $this->country,
+                "active" => $this->profile_action,
+                "unread_count" => $this->unread_count,
+                "notification_count" => $this->notification_count,
+
+            ));
+        ?>
+    </div>
+
+    <div class="user-profile-content">
+        <?= $this->notice ?>
+
+
+        <? echo $this->partial('partials/notifications.phtml',
+            array(
+                //"notifications" => $this->notifications
+                "paginator" => $this->paginator
+            )
+        );
+        ?>
+    </div>
+
+    <div class="clear"></div>
+</div>
+
+

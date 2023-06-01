@@ -1,0 +1,214 @@
+<?
+
+$this->model = $this->loadModel("model")->getModel($this->image->id_model);
+if (isset($_SESSION["rate"]) && isset($_SESSION["rate"]["image"]))
+    if (in_array($this->image->id, $_SESSION["rate"]["image"])) $disable = " disableRate"; else $disable = "";
+
+?>
+<div class="page-profile">
+
+    <div class="page-profile-top">
+        <h1><?= $this->model->screen_name ?>
+            | <?= $this->model->birthday ? date('Y', time()) - substr($this->model->birthday, 0, 4) . 'yrs' : '' ?></h1>
+
+        <div
+            class="model_profile_menu"> <? //echo $this->partial('partials/model-profile-menu.phtml', array("active" => $this->profile_type, "isFollowing" => $this->isFollowing, 'model' => $this->model)); ?></div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="model-profile-left">
+        <? echo $this->partial('partials/model-profile-left.phtml', array('model' => $this->model, 'info_fields' => $this->info_fields, 'country' => $this->country, 'model_info' => $model_info, 'rates_fields' => $this->rates_fields, "favorite" => $this->favorite)); ?>
+    </div>
+
+    <div class="model-profile-content">
+        <? //moderation bar
+
+        if (Auth::isModerator() && (user()->id == $this->image->id_moderator || user()->id == 0) && $this->image->active != 1)
+            echo $this->partial("partials/moderation-bar.phtml", array("type" => "image"));
+        ?>
+        <img style="width:100%; margin-top:15px" src="/uploads/photos/<?= $this->image->filename ?>"/>
+        <br/>
+        <br/>
+        <?php if ($this->previous) { ?>
+            <a href="<?= $this->previous ?>" class="button-round-small blue ">Back</a>
+
+        <?php } ?>
+        <div class="stars<?= $disable ?>" style="float:right;" data-id="<?= $this->image->id ?>"
+             data-average="<?= $this->image->rating ?>" data-extra="image"></div>
+        <?
+        if (Auth::isLogged()) {
+            ?>
+            <span class="report tooltip top" title="Report this" data-type="photo"
+                  data-id="<?= $this->image->id ?>"></span>
+        <?
+        }
+        ?>
+        <div style="float:left; position: relative">
+            <? echo $this->partial('partials/like-html.phtml', array("id" => $this->image->id, "type" => "image")); ?>
+            <? echo $this->partial('partials/like-script.phtml', array()); ?>
+        </div>
+
+
+        <div class="clear"></div>
+        <hr/>
+
+        <br/>
+
+        <div class="clear"></div>
+
+
+        <div id="tabs">
+            <ul>
+                <li><a href="#disqus_thread">Comments</a></li>
+                <li><a href="#reviews"><?= $this->image->total_active_reviews ?> Reviews</a></li>
+            </ul>
+            <div id="reviews">
+
+                <?= $this->notice ?>
+
+                <? if (Auth::isLogged()) {
+                    echo $this->partial('partials/review-add.phtml', array("id" => $this->image->id, "type" => "image"));
+                } ?>
+
+                <? if ($this->reviews_pending) { ?>
+
+                    <? foreach ($this->reviews_pending as $this->review) {
+
+                        echo $this->partial('partials/review-item.phtml', array
+                            (
+                                'review' => $this->review,
+                                'pending' => 'pending',
+                                'users' => $this->users,
+                                'model' => $this->model)
+                        );
+                    }
+                }
+                ?>
+
+
+                <? if ($this->reviews) { ?>
+                    <? foreach ($this->reviews as $this->review) {
+                        echo $this->partial('partials/review-item.phtml', $this);
+                    } ?>
+                <? } else { ?>
+                    <p> No reviews. Write the first review</p>
+                <? } ?>
+            </div>
+            <div id="disqus_thread"><?= $this->commentCustom->__invoke() ?></div>
+        </div>
+        <script>
+            $(function () {
+                $("#tabs").tabs();
+            });
+
+            $(document).ready(function () {
+                $("#review_button").click(function () {
+                    $("#add_review").toggle();
+                });
+            });
+        </script>
+
+
+    </div>
+    <div class="clear"></div>
+</div>
+
+
+<script>
+    // review forms
+    function editReview(type, id, active) {
+        console.log(active);
+        if (active == 1) {
+
+            var review = $('#review_' + id + ' textarea').val();
+        } else {
+
+            var review = $('#review_' + id + ' textarea').val().replace(' --- pending for moderation', '');
+
+        }
+        $.ajax({
+            type: "POST",
+            url: "/process",
+            data: {
+                action: "editReview",
+                type: type,
+                id: id,
+                active: active,
+                review: review
+                // maybe some other params
+            },
+            success: function () {
+                switch (type) {
+                    case 'edit' :
+                        editForm("edit", id, "removeform", active);
+                        $("#review_" + id).removeClass("inactive");
+                        alert("Review saved");
+                        break;
+                    case "delete" :
+                        $("#review_" + id).remove();
+                        alert("Review deleted");
+                        break;
+                }
+            },
+            error: function () {
+                alert("Review not saved. There was an error, try again later");
+            }
+        }).done(function (msg) {
+            // update your status
+        });
+    }
+
+    function editForm(type, id, action, active) {
+
+        switch (type) {
+            case "delete":
+                editReview(type, id, active);
+                break;
+
+            case "edit":
+                console.log(active);
+                if (action == "makeform") {
+                    if (active == 1) {
+
+                        var reviewText = $("#review_" + id + " .review").text();
+
+                    } else {
+
+                        var reviewText = $("#review_" + id + " .review").text().replace(' --- pending for moderation', '');
+                    }
+
+
+                    var textarea = '<textarea name="editreview">' + reviewText + '</textarea> <input type="submit" value="Save" class="button-round-small green" onclick="javascript:editReview(\'edit\', ' + id + ',' + active + ')" name="edit_review">';
+                    $("#review_" + id + " .edit").attr("onclick", "editForm('edit', " + id + ", 'removeform' ," + active + "); return false;").text("cancel edit");
+                    //<a href="" onClick="editForm(\'edit\', '+id+', \'deleteform\'); return false;">cancel edit</a>
+                    $("#review_" + id + " .review").html("");
+                    $("#review_" + id + " .review").html(textarea);
+                }
+                if (action == "removeform") {
+                    if (active == 1) {
+
+                        var text = $("#review_" + id + " .review textarea").val();
+
+                    } else {
+
+                        var text = $("#review_" + id + " .review textarea").val() + ' --- pending for moderation';
+
+
+                    }
+
+
+                    $("#review_" + id + " .review").html("");
+                    $("#review_" + id + " .review").html(text);
+                    $("#review_" + id + " .edit").attr("onclick", "editForm('edit', " + id + ", 'makeform', " + active + "); return false;").text("edit");
+                }
+                break;
+        }
+    }
+    $(document).ready(function () {
+        viewItem('<?=$this->image->id?>', "image");
+    });
+</script>
+
+
+<? echo $this->partial('partials/rating-script.phtml', array('size' => "big", "div" => "")); ?>
+

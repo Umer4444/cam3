@@ -1,0 +1,101 @@
+<form method="POST" enctype="multipart/form-data">
+    <div class="join-box-fields">
+        <div class="field">
+            <label for="title">Title</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText("title", $this->perk->title, null) ?>
+            </div>
+        </div>
+        <div class="multiple_field">
+
+
+            <label for="amount">Pledge Amount</label>
+            <?= $this->formText("amount", ($this->perk->amount + ($this->perk->amount * $this->pledge->goal_rep_share) / 100), array("class" => "small_field2")) ?>
+            $
+
+
+            <label for="estimated_delivery">Estimated Delivery</label>
+            <?= $this->formText("estimated_delivery", $this->perk->estimated_delivery, array("class" => "small_field2 monthDate")) ?>
+
+        </div>
+        <div class="field">
+            <label for="description">Description</label>
+
+            <div class="field_wrapper">
+                <?= $this->formTextarea("description", $this->perk->description, array("cols" => "10", "rows" => "7")) ?>
+            </div>
+        </div>
+        <div class="field">
+            <label for="shipping">Shipping</label>
+
+            <div class="field_wrapper">
+                <?= $this->formSelect("shipping", $this->perk->shipping, null, array("no" => "no", "us" => "US only", "worldwide" => "World Wide")) ?>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="quantity">Quantiy</label>
+
+            <div class="field_wrapper">
+                <?= $this->formText("quantity", $this->perk->quantity, array("class" => "small_field2")) ?>
+                <small>* please insert 0 for unlimited quantity</small>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="photo">Image</label>
+
+            <div class="field_wrapper">
+                <?= $this->formFile("photo", null, array("class" => "small_field2")) ?>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="field_wrapper">
+                <br/>
+                <input type="submit" name="save_unfinished" id="save_unfinished" value="Save" class="btn btn-success"
+                       style="display: inline;">
+
+            </div>
+        </div>
+    </div>
+</form>
+<link rel="stylesheet" media="all" type="text/css" href="/scripts/Timepicker/jquery-ui-timepicker-addon.css"/>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="/scripts/Timepicker/jquery-ui-sliderAccess.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#estimated_delivery").datetimepicker();
+    });
+
+    $(".monthDate").datepicker({
+        dateFormat: 'MM yy',
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+
+        onClose: function (dateText, inst) {
+            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).val($.datepicker.formatDate('MM yy', new Date(year, month, 1)));
+        }
+    });
+
+    $(".monthDate").focus(function () {
+        $(".ui-datepicker-calendar").hide();
+        $(".ui-datepicker-buttonpane").hide();
+        $("#ui-datepicker-div").position({
+            my: "center top",
+            at: "center bottom",
+            of: $(this)
+        });
+    });
+
+
+    $("#amount").change(function () {
+        if (!$.isNumeric($(this).val())) {
+            alert("Amount must be a number");
+        }
+    });
+</SCRIPT>

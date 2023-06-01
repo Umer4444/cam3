@@ -1,0 +1,29 @@
+<div class="widget-container">
+
+    <div class="col-md-12">
+        <h2 class="no-top-margin">Latest <span class="highcolor">news</span></h2>
+    </div>
+
+    {% if news|length > 0 %}
+
+        <table class="table table-bordered table-striped">
+            <tbody>
+                {% for new in news %}
+                    <tr>
+                        <th scope="row"><span class="pink">{{ new.getGoLive()|date('M j, o') }}</span></th>
+                        <td>
+                            <a href="{{ object(new).toUrl() }}">
+                                {{ new|raw }}
+                            </a>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+        No news !
+    {% endif %}
+
+</div>

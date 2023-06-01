@@ -1,0 +1,208 @@
+
+<script type="text/javascript">
+    $(function() {
+        $( "#want_date" ).datepicker({ 
+                minDate: 0, 
+                maxDate: "+3M"
+            });
+    });
+</script>
+<?
+    $minutes = array('min'=>'min');
+    for($i=0;$i<60;$i++) $minutes[$i] = $i;
+    
+    $seconds = array('sec'=>'sec');
+    for($i=0;$i<60;$i++) $seconds[$i] = $i;
+   
+?>
+<div class="row">
+    <?=$this->notice?>
+    <h2 class="title">Make a special request </h2>
+</div>
+<div class="row">
+     <div class="col-lg-2"></div>
+     <div class="col-lg-8">
+        <form action="" method="post" class="form-horizontal" id="form_special_request">
+
+    <?  echo form_field(array("type" => "select", "name" => "item", "value" => $_SESSION['form_special_request']['item'], "label" => "Type"), $attr = array("class" => "col-lg-8"), $options = $this->special_items, $icon = ""); ?>
+
+    <?  echo form_field(  array("type" => "select", 
+                                "name" => "duration_h",
+                                 "value" => (isset($_SESSION['form_special_request']['duration_h']) ? $_SESSION['form_special_request']['duration_h'] : "hour"), 
+                                 "label" => "Duration"
+                                 ), 
+                          $attr = array("class" => "col-lg-3"),
+                          $options = array("hour"=>"hour", "0"=>"0", "1"=>"1", "2"=>"2", "3"=>"3"), 
+                          $icon = ""
+                          ); ?> 
+    <?  echo form_field(  array("type" => "select", 
+                                "name" => "duration_h",
+                                 "value" => (isset($_SESSION['form_special_request']['duration_m']) ? $_SESSION['form_special_request']['duration_m'] : "min"), 
+                                 "label" => " "
+                                 ), 
+                          $attr = array("class" => "col-lg-3"),
+                          $options = $minutes, 
+                          $icon = ""
+                          ); ?> 
+    <?  echo form_field(  array("type" => "select", 
+                                "name" => "duration_s",
+                                 "value" => (isset($_SESSION['form_special_request']['duration_s']) ? $_SESSION['form_special_request']['duration_s'] : "sec"), 
+                                 "label" => " "
+                                 ), 
+                          $attr = array("class" => "col-lg-3"),
+                          $options = $seconds, 
+                          $icon = "",
+                          $help = ""
+                          ); ?> 
+                          
+    <?  echo form_field(  array("type" => "text", 
+                                "name" => "offer",
+                                 "value" => (isset($_SESSION['form_special_request']['offer']) ? $_SESSION['form_special_request']['offer'] : ""), 
+                                 "label" => "Offer"
+                                 ), 
+                          $attr = array("class" => "col-lg-8"),
+                          $options = null, 
+                          $icon = null,
+                          $help = "*How much are you willing to pay"
+                          ); ?> 
+                                               
+    <?  echo form_field(  array("type" => "text", 
+                                "name" => "deposit",
+                                 "value" => (isset($_SESSION['form_special_request']['deposit']) ? $_SESSION['form_special_request']['deposit'] : ""), 
+                                 "label" => "Deposit"
+                                 ), 
+                          $attr = array("class" => "col-lg-8"),
+                          $options = null, 
+                          $icon = null,
+                          $help = "*Must have to be taken seriously"
+                          ); ?>
+                           
+                                                
+    <?  echo form_field(  array("type" => "textarea", 
+                                "name" => "description",
+                                 "value" => (isset($_SESSION['form_special_request']['description']) ? $_SESSION['form_special_request']['description'] : ""), 
+                                 "label" => "Description"
+                                 ), 
+                          $attr = array("class" => "col-lg-8"),
+                          $options = null, 
+                          $icon = null,
+                          $help = ""
+                          ); ?>
+                                                
+    <?  echo form_field(  array("type" => "textarea", 
+                                "name" => "terms",
+                                 "value" => (isset($_SESSION['form_special_request']['terms']) ? $_SESSION['form_special_request']['terms'] : ""), 
+                                 "label" => "Terms"
+                                 ), 
+                          $attr = array("class" => "col-lg-8"),
+                          $options = null, 
+                          $icon = null,
+                          $help = ""
+                          ); ?>    
+
+    <? $want_date_field_value = $_SESSION['form_special_request']['want_date'] ? $_SESSION['form_special_request']['want_date'] : date('m/d/Y',time()+60*60*24*3) ?>  
+                                                                          
+    <?  echo form_field(  array("type" => "text", 
+                                "name" => "want_date",
+                                 "value" => $want_date_field_value, 
+                                 "label" => "Want it by"
+                                 ), 
+                          $attr = array("class" => "col-lg-8"),
+                          $options = null, 
+                          $icon = null,
+                          $help = ""
+                          ); ?>
+                          
+    <?  echo form_field(  array("type" => "submit", 
+                                "name" => "send",
+                                 "value" => "Send Request", 
+                                 "label" => " "
+                                 ), 
+                          $attr = array("class" => "btn btn-purple"),
+                          $options = null, 
+                          $icon = null,
+                          $help = ""
+                          ); ?>                       
+    <?  echo form_field(  array("type" => "hidden", 
+                                "name" => "send",
+                                 "value" => "Send Request", 
+                                 "label" => " "
+                                 )
+                          ); ?>   
+                          
+    <? /*                                         
+            <div class="join-box-fields">
+
+                <div class="field">
+                <label for="item">Type</label> 
+                    <div class="field_wrapper">
+                        <?=$this->formSelect('item', $_SESSION['form_special_request']['item'], null, $this->special_items) ?>
+                    </div>
+                </div> 
+                
+                <div class="field">
+                <label for="duration">Duration</label> 
+                    <div class="field_wrapper">
+                        <?=$this->formSelect('duration_h', $_SESSION['form_special_request']['duration_h'], null, array(""=>"hour", "0"=>"0", "1"=>"1", "2"=>"2", "3"=>"3")) ?> : 
+                        <?=$this->formSelect('duration_m', $_SESSION['form_special_request']['duration_m'], null, $minutes) ?> :
+                        <?=$this->formSelect('duration_s', $_SESSION['form_special_request']['duration_s'], null, $seconds) ?> :
+                        <span class="field_notice">*Video only (min 60 sec, max 3 hour) </span>
+                    </div>
+                </div> 
+                            
+                <div class="field">
+                    <label for="offer">Offer</label>
+                    <div class="field_wrapper">
+                        <?=$this->formText('offer', $_SESSION['form_special_request']['offer'], array("class"=>"small_tfield"))?>
+                        <span class="field_notice">*How much are you willing to pay</span>
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label for="deposit">Deposit</label>
+                    <div class="field_wrapper">
+                        <?=$this->formText('deposit', $_SESSION['form_special_request']['deposit'], array("class"=>"small_tfield"))?>
+                        <span class="field_notice">*Must have to be taken seriously</span>
+                        
+                    </div>
+                </div>                
+                
+                <div class="field">
+                    <label for="description">Description</label>
+                    <div class="field_wrapper">
+                        <?=$this->formTextarea('description', $_SESSION['form_special_request']['description'], array('cols'=>30,'rows'=>3))?>
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label for="terms">Terms</label>
+                    <div class="field_wrapper">
+                        <?=$this->formTextarea('terms', $_SESSION['form_special_request']['terms'], array('cols'=>30,'rows'=>3))?>
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label for="want_date">Want it by</label>
+                    <div class="field_wrapper">
+                        <? $want_date_field_value = $_SESSION['form_special_request']['want_date'] ? $_SESSION['form_special_request']['want_date'] : date('m/d/Y',time()+60*60*24*3) ?>
+                        <?=$this->formText('want_date', $want_date_field_value, array("class"=>"small_tfield_date"))?>
+                        
+                    </div>
+                </div>
+                
+           </div>
+
+            <br>
+            <div class="join-button">
+                <input type="submit" name="send" value="Send Request" class="green-button">
+                <input type="hidden" name="send" value="Send Request" >
+            </div>
+       */?>
+        </form>
+      </div>
+
+    <? 
+
+        unset($_SESSION['form_special_request']) 
+    ?>
+</div>
